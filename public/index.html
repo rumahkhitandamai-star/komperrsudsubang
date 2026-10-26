@@ -159,6 +159,17 @@
         body.dark-mode .hover\:bg-teal-50:hover { background-color: #134e4a !important; color: #fff !important; }
         body.dark-mode a.text-blue-500 { color: #60a5fa !important; }
         body.dark-mode a.text-teal-600 { color: #5eead4 !important; }
+        body.dark-mode .text-blue-600, body.dark-mode .text-blue-500 { color: #60a5fa !important; }
+        body.dark-mode .bg-blue-50 { background-color: #1e3a5f !important; border-color: #1d4ed8 !important; color: #bfdbfe !important; }
+        body.dark-mode .bg-blue-100 { background-color: #1e40af !important; color: #dbeafe !important; }
+        body.dark-mode .text-amber-800 { color: #fde68a !important; }
+        body.dark-mode .text-amber-700, body.dark-mode .text-amber-600 { color: #fbbf24 !important; }
+        body.dark-mode .bg-amber-50 { background-color: #78350f !important; border-color: #92400e !important; color: #fef3c7 !important; }
+        body.dark-mode .bg-amber-100 { background-color: #92400e !important; color: #fef3c7 !important; }
+        body.dark-mode .border-amber-100, body.dark-mode .border-blue-100 { border-color: #374151 !important; }
+        body.dark-mode .text-purple-600, body.dark-mode .text-purple-500 { color: #c084fc !important; }
+        body.dark-mode .bg-purple-50 { background-color: #581c87 !important; border-color: #6b21a8 !important; color: #f3e8ff !important; }
+        body.dark-mode .border-purple-100 { border-color: #374151 !important; }
         body.dark-mode .profil-tab-btn.border-teal-600 { border-color: #2dd4bf !important; color: #5eead4 !important; }
         body.dark-mode .profil-tab-btn.border-transparent { color: #9ca3af !important; }
         body.dark-mode .profil-tab-btn.border-transparent:hover { color: #5eead4 !important; }
@@ -304,11 +315,123 @@
             
             <!-- BERANDA -->
             <div id="view_beranda" class="view-section">
-                <!-- Slideshow -->
-                <div class="relative z-10 bg-white rounded-2xl shadow-sm overflow-hidden border border-teal-50 mb-6">
+                <!-- Sapaan Pegawai & Status Sinkronisasi (Fitur Saran #3) -->
+                <div class="relative z-10 bg-gradient-to-r from-teal-600 to-teal-800 rounded-2xl p-4 sm:p-6 mb-6 shadow-md text-white">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div class="flex items-center gap-3 sm:gap-4">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-white/60 bg-teal-900/40 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                                <img id="beranda_user_avatar" src="" class="w-full h-full object-cover hidden" alt="Foto Profil">
+                                <i id="beranda_user_avatar_icon" class="fas fa-user-nurse text-xl sm:text-2xl text-teal-100"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h1 class="text-base sm:text-xl font-bold tracking-tight" id="beranda_greeting_text">Selamat Datang</h1>
+                                    <span id="beranda_user_role_badge" class="text-[10px] sm:text-xs bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded-full font-bold uppercase tracking-wider text-teal-50">User</span>
+                                </div>
+                                <p class="text-xs sm:text-sm text-teal-100 mt-0.5" id="beranda_sub_greeting">Komite Keperawatan RSUD Subang</p>
+                                <div class="flex items-center gap-3 text-[11px] text-teal-200 mt-1 flex-wrap">
+                                    <span><i class="far fa-calendar-alt mr-1"></i><span id="beranda_current_date">-</span></span>
+                                    <span>•</span>
+                                    <span><i class="fas fa-id-badge mr-1"></i>NIP: <span id="beranda_nip_display">-</span></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
+                            <div class="text-right hidden sm:block">
+                                <p class="text-[10px] text-teal-200 uppercase font-semibold">Sinkronisasi</p>
+                                <p class="text-xs text-teal-50 font-medium" id="beranda_last_sync_time">Baru saja</p>
+                            </div>
+                            <button type="button" onclick="manualSyncBeranda()" id="btnSyncBeranda" class="bg-white/15 hover:bg-white/25 active:bg-white/30 text-white p-2.5 sm:px-3 sm:py-2 rounded-xl text-xs font-semibold flex items-center gap-2 backdrop-blur-sm transition-all shadow-sm border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/50" title="Sinkronkan data terbaru sekarang" aria-label="Segarkan data Beranda">
+                                <i class="fas fa-sync-alt" id="iconSyncBeranda"></i>
+                                <span class="hidden sm:inline">Segarkan</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Aksi Cepat (Fitur Saran #1) -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
+                    <button type="button" onclick="kirimWA()" class="relative z-10 bg-white hover:bg-teal-50/50 border border-teal-100 rounded-2xl p-3.5 sm:p-4 text-left shadow-sm hover:shadow transition-all group focus:outline-none focus:ring-2 focus:ring-teal-400">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-teal-50 flex items-center justify-center text-teal-600 group-hover:bg-teal-600 group-hover:text-white transition-colors">
+                                <i class="fab fa-whatsapp text-lg"></i>
+                            </div>
+                            <i class="fas fa-arrow-right text-xs text-gray-400 group-hover:text-teal-600 transition-colors"></i>
+                        </div>
+                        <p class="text-xs sm:text-sm font-bold text-gray-800">Ajukan Verifikasi</p>
+                        <p class="text-[11px] text-gray-500">Konfirmasi via WA</p>
+                    </button>
+
+                    <button type="button" onclick="navigate('kredensial')" class="relative z-10 bg-white hover:bg-blue-50/50 border border-blue-100 rounded-2xl p-3.5 sm:p-4 text-left shadow-sm hover:shadow transition-all group focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                <i class="fas fa-file-signature text-lg"></i>
+                            </div>
+                            <i class="fas fa-arrow-right text-xs text-gray-400 group-hover:text-blue-600 transition-colors"></i>
+                        </div>
+                        <p class="text-xs sm:text-sm font-bold text-gray-800">Ajukan Kredensial</p>
+                        <p class="text-[11px] text-gray-500">Form permohonan</p>
+                    </button>
+
+                    <button type="button" onclick="showMissingFields()" class="relative z-10 bg-white hover:bg-amber-50/50 border border-amber-100 rounded-2xl p-3.5 sm:p-4 text-left shadow-sm hover:shadow transition-all group focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                                <i class="fas fa-clipboard-check text-lg"></i>
+                            </div>
+                            <i class="fas fa-arrow-right text-xs text-gray-400 group-hover:text-amber-600 transition-colors"></i>
+                        </div>
+                        <p class="text-xs sm:text-sm font-bold text-gray-800">Lengkapi Data</p>
+                        <p class="text-[11px] text-gray-500">Cek kolom kosong</p>
+                    </button>
+
+                    <button type="button" onclick="navigate('biodata')" class="relative z-10 bg-white hover:bg-purple-50/50 border border-purple-100 rounded-2xl p-3.5 sm:p-4 text-left shadow-sm hover:shadow transition-all group focus:outline-none focus:ring-2 focus:ring-purple-400">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                <i class="fas fa-user-edit text-lg"></i>
+                            </div>
+                            <i class="fas fa-arrow-right text-xs text-gray-400 group-hover:text-purple-600 transition-colors"></i>
+                        </div>
+                        <p class="text-xs sm:text-sm font-bold text-gray-800">Edit Profil</p>
+                        <p class="text-[11px] text-gray-500">Perbarui data diri</p>
+                    </button>
+                </div>
+
+                <!-- Slideshow (B3: pause on hover, dots indicator, controls, onerror fallback) -->
+                <div class="relative z-10 bg-white rounded-2xl shadow-sm overflow-hidden border border-teal-50 mb-6 group" id="slideshowContainer" onmouseenter="pauseSlideshow()" onmouseleave="resumeSlideshow()">
                     <div class="relative w-full h-48 sm:h-72 md:h-80 bg-gray-100 flex items-center justify-center overflow-hidden">
                         <p class="text-gray-400 text-sm" id="slideshowLoading"><i class="fas fa-spinner fa-spin mr-2"></i>Memuat gambar...</p>
-                        <img id="slideshowImage" src="" class="hidden w-full h-full object-contain transition-all duration-700">
+                        <img id="slideshowImage" src="" class="hidden w-full h-full object-cover transition-all duration-700" alt="Banner Komper" onerror="handleSlideshowError(this)">
+                        
+                        <!-- Nav buttons (visible on group-hover) -->
+                        <button type="button" onclick="prevSlide()" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 focus:outline-none focus:opacity-100" aria-label="Gambar sebelumnya">
+                            <i class="fas fa-chevron-left text-xs"></i>
+                        </button>
+                        <button type="button" onclick="nextSlide()" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 focus:outline-none focus:opacity-100" aria-label="Gambar berikutnya">
+                            <i class="fas fa-chevron-right text-xs"></i>
+                        </button>
+
+                        <!-- Dots indicator -->
+                        <div id="slideshowDots" class="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex items-center gap-1.5 z-20 pointer-events-auto"></div>
+                    </div>
+                </div>
+
+                <!-- Kartu Peringatan Masa Berlaku Dokumen (Fitur Saran #2) -->
+                <div id="beranda_expiry_container" class="relative z-10 bg-white rounded-2xl p-4 sm:p-6 border-l-4 border-amber-500 mb-6 shadow-md transition-all">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-base sm:text-lg font-bold text-gray-800">Peringatan Masa Berlaku Dokumen</h2>
+                                <p class="text-xs text-gray-500">Pantau jatuh tempo STR, SIPP/SIPB, BTCLS, Pelatihan, & Kredensial</p>
+                            </div>
+                        </div>
+                        <span id="expiry_badge_count" class="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">0 Perlu Perhatian</span>
+                    </div>
+                    
+                    <div id="expiry_items_list" class="space-y-2 mt-3">
+                        <div class="text-xs text-gray-500 italic py-1"><i class="fas fa-check-circle text-green-500 mr-1.5"></i>Semua masa berlaku dokumen & kredensial terpantau aman.</div>
                     </div>
                 </div>
 
@@ -328,7 +451,10 @@
                 </div>
 
                 <div class="relative z-10 bg-white rounded-2xl p-4 sm:p-6 border-l-4 border-teal-500 mb-6 shadow-md">
-                    <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Detail Data Status</h2>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Detail Data Status</h2>
+                        <span class="text-xs text-gray-400 hidden sm:inline"><i class="fas fa-info-circle mr-1"></i>Klik item bergaris bawah untuk detail</span>
+                    </div>
                     <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                         <div><p class="text-[10px] text-teal-600 font-bold uppercase">Verifikasi</p><p class="text-sm font-bold" id="dash_verifikasi">-</p></div>
                         <div><p class="text-[10px] text-teal-600 font-bold uppercase">Status Kredensial</p><p class="text-sm font-bold" id="dash_status_kredensial">-</p></div>
@@ -1951,6 +2077,8 @@
 
             let currentUser = null;
             let slideInterval;
+            let slideIndex = 0;
+            let isSlidePaused = false;
             let autoSyncInterval = null;
             let slideshowImages = [];
             let slideshowGridItems = [];
@@ -2015,7 +2143,7 @@
                     addressCache = JSON.parse(cacheStr);
                 }
             } catch(e) {
-                console.error("Cache reset.");
+                console.warn("Cache reset.");
                 localStorage.removeItem('komite_address_cache');
             }
 
@@ -2473,7 +2601,9 @@
             }
             window.scrollTo({ top: 0, behavior: 'instant' });
 
-            if (viewName === 'datakomper') {
+            if (viewName === 'beranda') {
+                updateBerandaUI();
+            } else if (viewName === 'datakomper') {
                 loadDataKomper();
             } else if (viewName === 'dashboard') {
                 loadDashboardData();
@@ -2849,6 +2979,62 @@
             }).exportKredensial(currentUser.nip, currentUser ? currentUser.nip : '');
         }
 
+        function pauseSlideshow() { isSlidePaused = true; }
+        function resumeSlideshow() { isSlidePaused = false; }
+
+        function renderSlideshowDots(count) {
+            const dotsEl = document.getElementById('slideshowDots');
+            if (!dotsEl) return;
+            dotsEl.innerHTML = '';
+            if (count <= 1) return;
+            for (let i = 0; i < count; i++) {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all focus:outline-none ' + (i === slideIndex ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/80');
+                dot.setAttribute('aria-label', 'Lihat slide ' + (i + 1));
+                dot.onclick = function(e) {
+                    e.stopPropagation();
+                    goToSlide(i);
+                };
+                dotsEl.appendChild(dot);
+            }
+        }
+
+        function updateSlideshowDotsUI() {
+            const dotsEl = document.getElementById('slideshowDots');
+            if (!dotsEl) return;
+            const dots = dotsEl.querySelectorAll('button');
+            dots.forEach(function(dot, i) {
+                if (i === slideIndex) {
+                    dot.className = 'w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all focus:outline-none bg-white scale-125';
+                } else {
+                    dot.className = 'w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all focus:outline-none bg-white/50 hover:bg-white/80';
+                }
+            });
+        }
+
+        function goToSlide(targetIdx) {
+            const imgEl = document.getElementById('slideshowImage');
+            if (!imgEl || !slideshowImages || slideshowImages.length === 0) return;
+            slideIndex = (targetIdx + slideshowImages.length) % slideshowImages.length;
+            imgEl.style.transition = 'opacity 0.3s ease-in-out';
+            imgEl.style.opacity = '0';
+            setTimeout(function() {
+                imgEl.src = slideshowImages[slideIndex];
+                imgEl.style.opacity = '1';
+                updateSlideshowDotsUI();
+            }, 300);
+        }
+
+        function nextSlide() { goToSlide(slideIndex + 1); }
+        function prevSlide() { goToSlide(slideIndex - 1); }
+
+        function handleSlideshowError(img) {
+            if (!img || img.dataset.fallbackApplied) return;
+            img.dataset.fallbackApplied = 'true';
+            img.src = 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80';
+        }
+
         function initSlideshow() {
             clearInterval(slideInterval);
             google.script.run.withSuccessHandler(function(images) {
@@ -2857,9 +3043,9 @@
                 
                 if (!images || images.length === 0) {
                     images = [
-                        'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=800&q=80',
-                        'https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=800&q=80',
-                        'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80'
+                        'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80',
+                        'https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=1200&q=80',
+                        'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80'
                     ];
                 }
 
@@ -2875,30 +3061,15 @@
                     if(loadEl) loadEl.classList.add('hidden');
                     if(imgEl) {
                         imgEl.classList.remove('hidden');
-                        let idx = 0;
-                        imgEl.src = slideshowImages[idx];
-                        
-                        imgEl.style.transition = 'transform 1s ease-in-out, opacity 1s ease-in-out';
+                        slideIndex = 0;
+                        imgEl.src = slideshowImages[slideIndex];
+                        renderSlideshowDots(slideshowImages.length);
                         
                         if (slideshowImages.length > 1) {
                             slideInterval = setInterval(function() {
-                                imgEl.style.transform = 'translateX(-100%)';
-                                imgEl.style.opacity = '0';
-                                
-                                setTimeout(function() { 
-                                    imgEl.style.transition = 'none';
-                                    imgEl.style.transform = 'translateX(100%)';
-                                    
-                                    idx = (idx + 1) % slideshowImages.length;
-                                    imgEl.src = slideshowImages[idx]; 
-                                    
-                                    setTimeout(function() {
-                                        imgEl.style.transition = 'transform 1s ease-in-out, opacity 1s ease-in-out';
-                                        imgEl.style.transform = 'translateX(0)';
-                                        imgEl.style.opacity = '1'; 
-                                    }, 50);
-                                }, 1000); 
-                            }, 3000); 
+                                if (isSlidePaused) return;
+                                nextSlide();
+                            }, 4500);
                         }
                     }
                 }
@@ -2941,14 +3112,21 @@
                         }
                         applyMenuAccess();
                         // Perbarui UI secara otomatis hanya pada menu yang sedang dibuka
-                        if (activeView === 'profil') {
+                        if (activeView === 'beranda') {
+                            updateBerandaUI();
+                            const timeEl = document.getElementById('beranda_last_sync_time');
+                            if (timeEl) {
+                                const now = new Date();
+                                timeEl.innerText = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' WIB';
+                            }
+                        } else if (activeView === 'profil') {
                             updateBiodataUI();
                             updateKepegawaianUI();
                             updateUnitRuanganUI();
                             updatePendidikanUI();
                             updateKompetensiUI();
                         }
-                        else if (activeView === 'beranda' || activeView === 'biodata') updateBiodataUI();
+                        else if (activeView === 'biodata') updateBiodataUI();
                         else if (activeView === 'kepegawaian') updateKepegawaianUI();
                         else if (activeView === 'ruangan') updateUnitRuanganUI();
                         else if (activeView === 'pendidikan') updatePendidikanUI();
@@ -3066,8 +3244,12 @@
                 if(el) {
                     el.innerText = val || '-'; 
                     if (targetView) {
-                        el.classList.add('cursor-pointer', 'hover:underline', 'text-teal-700');
+                        el.classList.add('cursor-pointer', 'hover:underline', 'text-teal-700', 'focus:outline-none', 'focus:ring-2', 'focus:ring-teal-400', 'rounded');
+                        el.setAttribute('role', 'button');
+                        el.setAttribute('tabindex', '0');
+                        el.setAttribute('aria-label', 'Buka menu ' + targetView);
                         el.onclick = function() { navigate(targetView); };
+                        el.onkeydown = function(e) { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); navigate(targetView); } };
                     }
                 }
             };
@@ -3079,16 +3261,47 @@
             if (dashVerifEl) {
                 if (verifStatus === 'Belum Ter Verifikasi') {
                     dashVerifEl.innerHTML = '<i class="fas fa-exclamation-circle mr-1"></i>' + verifStatus;
-                    dashVerifEl.className = 'text-sm font-bold text-red-600 cursor-pointer hover:underline';
+                    dashVerifEl.className = 'text-sm font-bold text-red-600 cursor-pointer hover:underline focus:outline-none focus:ring-2 focus:ring-red-400 rounded';
+                    dashVerifEl.title = 'Klik untuk mengajukan verifikasi via WhatsApp';
+                    dashVerifEl.setAttribute('role', 'button');
+                    dashVerifEl.setAttribute('tabindex', '0');
+                    dashVerifEl.setAttribute('aria-label', 'Ajukan verifikasi via WhatsApp');
                     dashVerifEl.onclick = function() { kirimWA(); };
+                    dashVerifEl.onkeydown = function(e) { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); kirimWA(); } };
                 } else if (verifStatus === 'Verifikasi OK') {
                     dashVerifEl.innerHTML = '<i class="fas fa-check-circle mr-1"></i>' + verifStatus;
                     dashVerifEl.className = 'text-sm font-bold text-green-600';
+                    dashVerifEl.title = 'Data Anda telah diverifikasi oleh Komite Keperawatan';
+                    dashVerifEl.removeAttribute('role');
+                    dashVerifEl.removeAttribute('tabindex');
+                    dashVerifEl.removeAttribute('aria-label');
                     dashVerifEl.onclick = null;
+                    dashVerifEl.onkeydown = null;
+                } else if (verifStatus.toLowerCase().includes('proses') || verifStatus.toLowerCase().includes('pending')) {
+                    // B5: Status verifikasi dalam proses peninjauan
+                    dashVerifEl.innerHTML = '<i class="fas fa-hourglass-half mr-1 text-amber-500"></i>' + verifStatus;
+                    dashVerifEl.className = 'text-sm font-bold text-amber-600 dark:text-amber-400 cursor-pointer hover:underline focus:outline-none focus:ring-2 focus:ring-amber-400 rounded';
+                    dashVerifEl.title = 'Pengajuan verifikasi sedang ditinjau oleh Admin Komite Keperawatan';
+                    dashVerifEl.setAttribute('role', 'button');
+                    dashVerifEl.setAttribute('tabindex', '0');
+                    dashVerifEl.setAttribute('aria-label', 'Status pengajuan verifikasi sedang diproses');
+                    dashVerifEl.onclick = function() {
+                        Swal.fire({
+                            title: 'Status: ' + verifStatus,
+                            text: 'Pengajuan data Anda saat ini sedang dalam proses peninjauan dan verifikasi oleh Admin/Super Admin Komite Keperawatan RSUD Subang.',
+                            icon: 'info',
+                            confirmButtonColor: '#0d9488'
+                        });
+                    };
+                    dashVerifEl.onkeydown = function(e) { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); this.click(); } };
                 } else {
-                    dashVerifEl.innerHTML = verifStatus;
-                    dashVerifEl.className = 'text-sm font-bold text-gray-800';
+                    dashVerifEl.innerHTML = escapeHtml(verifStatus);
+                    dashVerifEl.className = 'text-sm font-bold text-gray-700 dark:text-gray-300';
+                    dashVerifEl.removeAttribute('role');
+                    dashVerifEl.removeAttribute('tabindex');
+                    dashVerifEl.removeAttribute('aria-label');
                     dashVerifEl.onclick = null;
+                    dashVerifEl.onkeydown = null;
                 }
             }
 
@@ -3232,8 +3445,12 @@
             }
             if(dashStatusKred) {
                 dashStatusKred.innerHTML = (status === 'Aktif' ? '<i class="fas fa-check-circle mr-1"></i>' : (isHabisKred ? '<i class="fas fa-exclamation-circle mr-1"></i>' : '')) + status;
-                dashStatusKred.className = 'text-sm font-bold cursor-pointer hover:underline ' + (status === 'Aktif' ? 'text-green-600' : (isHabisKred ? 'text-red-600' : 'text-gray-800'));
+                dashStatusKred.className = 'text-sm font-bold cursor-pointer hover:underline focus:outline-none focus:ring-2 focus:ring-teal-400 rounded ' + (status === 'Aktif' ? 'text-green-600' : (isHabisKred ? 'text-red-600' : 'text-gray-800'));
+                dashStatusKred.setAttribute('role', 'button');
+                dashStatusKred.setAttribute('tabindex', '0');
+                dashStatusKred.setAttribute('aria-label', 'Status Kredensial: ' + status + '. Klik untuk melihat detail di Unit Ruangan.');
                 dashStatusKred.onclick = function() { navigate('ruangan'); };
+                dashStatusKred.onkeydown = function(e) { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); navigate('ruangan'); } };
             }
 
             renderSafeLinkPreview('card_link_sertifikat', currentUser.link_sertifikat_jenjang_karir, 'Sertifikat');
@@ -3276,8 +3493,12 @@
                 }
                 if (dashEl) {
                     dashEl.innerHTML = iconHtml + displayStatus;
-                    dashEl.className = 'text-sm font-bold cursor-pointer hover:underline ' + (displayStatus === 'Aktif' ? 'text-green-600' : (isHabis ? 'text-red-600' : 'text-gray-800'));
+                    dashEl.className = 'text-sm font-bold cursor-pointer hover:underline focus:outline-none focus:ring-2 focus:ring-teal-400 rounded ' + (displayStatus === 'Aktif' ? 'text-green-600' : (isHabis ? 'text-red-600' : 'text-gray-800'));
+                    dashEl.setAttribute('role', 'button');
+                    dashEl.setAttribute('tabindex', '0');
+                    dashEl.setAttribute('aria-label', 'Status Dokumen: ' + displayStatus + '. Klik untuk melihat detail di Kompetensi.');
                     dashEl.onclick = function() { navigate('kompetensi'); };
+                    dashEl.onkeydown = function(e) { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); navigate('kompetensi'); } };
                 }
             };
 
@@ -3340,6 +3561,286 @@
             setT('card_masa_berlaku_mu', formatTanggalIndo(currentUser.masa_berlaku_pelatihan_midwife_update));
             renderStatus('card_status_mu', calculateRealtimeStatus(currentUser.masa_berlaku_pelatihan_midwife_update, currentUser.status_pelatihan_mu), 'dash_status_mu');
             renderSafeLinkPreview('card_link_mu', currentUser.link_pelatihan_mu, 'Midwife Update');
+        }
+
+        // ==========================================
+        // FITUR PENDUKUNG BERANDA (GREETING, ALERTS, & SYNC)
+        // ==========================================
+
+        function updateBerandaGreetingUI() {
+            if (!currentUser) return;
+            const greetEl = document.getElementById('beranda_greeting_text');
+            const subEl = document.getElementById('beranda_sub_greeting');
+            const nipEl = document.getElementById('beranda_nip_display');
+            const dateEl = document.getElementById('beranda_current_date');
+            const roleBadge = document.getElementById('beranda_user_role_badge');
+            const avatarImg = document.getElementById('beranda_user_avatar');
+            const avatarIcon = document.getElementById('beranda_user_avatar_icon');
+
+            const now = new Date();
+            const hour = now.getHours();
+            let greetingWord = 'Selamat Pagi';
+            if (hour >= 11 && hour < 15) greetingWord = 'Selamat Siang';
+            else if (hour >= 15 && hour < 18) greetingWord = 'Selamat Sore';
+            else if (hour >= 18 || hour < 4) greetingWord = 'Selamat Malam';
+
+            if (greetEl) {
+                const nama = currentUser.nama || 'Pegawai';
+                greetEl.innerText = greetingWord + ', ' + nama;
+            }
+            if (subEl) {
+                const unit = currentUser.ruangan_unit || 'Komite Keperawatan';
+                const jab = currentUser.jabatan ? ' • ' + currentUser.jabatan : '';
+                subEl.innerText = unit + jab;
+            }
+            if (nipEl) {
+                nipEl.innerText = currentUser.nip || '-';
+            }
+            if (dateEl) {
+                dateEl.innerText = formatTanggalIndo(now);
+            }
+            if (roleBadge) {
+                roleBadge.innerText = currentUser.role || 'User';
+            }
+            if (avatarImg && avatarIcon) {
+                const fotoUrl = currentUser.foto;
+                if (fotoUrl && String(fotoUrl).startsWith('http')) {
+                    let directUrl = fotoUrl;
+                    if (fotoUrl.indexOf('drive.google.com') !== -1 || fotoUrl.indexOf('googleusercontent.com') !== -1) {
+                        const m = fotoUrl.match(/[-\w]{25,}/);
+                        if (m) directUrl = "https://drive.google.com/thumbnail?id=" + m[0] + "&sz=w300";
+                    }
+                    avatarImg.src = directUrl;
+                    avatarImg.classList.remove('hidden');
+                    avatarIcon.classList.add('hidden');
+                } else {
+                    avatarImg.classList.add('hidden');
+                    avatarIcon.classList.remove('hidden');
+                }
+            }
+        }
+
+        function updateExpiryAlertsUI() {
+            if (!currentUser) return;
+            const container = document.getElementById('beranda_expiry_container');
+            const badgeCount = document.getElementById('expiry_badge_count');
+            const listEl = document.getElementById('expiry_items_list');
+            if (!container || !listEl) return;
+
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            const docConfigs = [
+                {
+                    label: 'STR (Surat Tanda Registrasi)',
+                    nomor: currentUser.nomor_str_aktif,
+                    dateStr: currentUser.masa_berlaku_str_aktif,
+                    tab: 'kompetensi'
+                },
+                {
+                    label: 'SIPP/SIPB (Surat Izin Praktik)',
+                    nomor: currentUser.nomor_sipp_sipb_aktif,
+                    dateStr: currentUser.masa_berlaku_sipp_sipb_aktif,
+                    tab: 'kompetensi'
+                },
+                {
+                    label: 'Sertifikat BTCLS',
+                    nomor: currentUser.nomor_btcls,
+                    dateStr: currentUser.masa_berlaku_btcls,
+                    tab: 'kompetensi'
+                },
+                {
+                    label: 'Pelatihan Kamar Operasi',
+                    nomor: currentUser.nomor_pelatihan_kamar_operasi,
+                    dateStr: currentUser.masa_berlaku_pelatihan_kamar_operasi,
+                    tab: 'kompetensi'
+                },
+                {
+                    label: 'Pelatihan Intensif',
+                    nomor: currentUser.nomor_pelatihan_intensif,
+                    dateStr: currentUser.masa_berlaku_pelatihan_intensif,
+                    tab: 'kompetensi'
+                },
+                {
+                    label: 'Pelatihan Hemodialisa (HD)',
+                    nomor: currentUser.nomor_pelatihan_hd,
+                    dateStr: currentUser.masa_berlaku_pelatihan_hd,
+                    tab: 'kompetensi'
+                },
+                {
+                    label: 'Pelatihan Midwife Update (MU)',
+                    nomor: currentUser.nomor_pelatihan_midwife_update,
+                    dateStr: currentUser.masa_berlaku_pelatihan_midwife_update,
+                    tab: 'kompetensi'
+                }
+            ];
+
+            // Kredensial berlaku 3 tahun dari tanggal kredensial
+            if (currentUser.tanggal_kredensial && currentUser.tanggal_kredensial !== '-' && String(currentUser.tanggal_kredensial).trim() !== '') {
+                const kd = new Date(currentUser.tanggal_kredensial);
+                if (!isNaN(kd.getTime())) {
+                    kd.setFullYear(kd.getFullYear() + 3);
+                    docConfigs.push({
+                        label: 'Kredensial Komite Keperawatan',
+                        nomor: currentUser.status_kredensial ? 'Status: ' + currentUser.status_kredensial : '',
+                        dateObj: kd,
+                        tab: 'ruangan'
+                    });
+                }
+            }
+
+            const alerts = [];
+
+            docConfigs.forEach(function(item) {
+                let expDate = null;
+                if (item.dateObj) {
+                    expDate = new Date(item.dateObj);
+                } else if (item.dateStr && item.dateStr !== '-' && String(item.dateStr).trim() !== '' && item.dateStr !== 'Seumur Hidup') {
+                    const parsed = new Date(item.dateStr);
+                    if (!isNaN(parsed.getTime())) expDate = parsed;
+                }
+
+                if (!expDate) return;
+
+                expDate.setHours(0,0,0,0);
+                const diffTime = expDate.getTime() - today.getTime();
+                const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                // Peringatkan jika sudah expired ATAU sisa <= 90 hari
+                if (daysLeft <= 90) {
+                    alerts.push({
+                        label: item.label,
+                        nomor: item.nomor,
+                        daysLeft: daysLeft,
+                        expDate: expDate,
+                        tab: item.tab
+                    });
+                }
+            });
+
+            alerts.sort(function(a, b) { return a.daysLeft - b.daysLeft; });
+
+            if (alerts.length === 0) {
+                container.className = 'relative z-10 bg-white rounded-2xl p-4 sm:p-6 border-l-4 border-green-500 mb-6 shadow-md transition-all';
+                if (badgeCount) {
+                    badgeCount.innerText = 'Semua Terpantau Aman';
+                    badgeCount.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-green-100 text-green-800';
+                }
+                listEl.innerHTML = '<div class="text-xs text-gray-500 italic py-1 flex items-center"><i class="fas fa-check-circle text-green-500 mr-2 text-sm shrink-0"></i>Semua masa berlaku dokumen & kredensial Anda terpantau aman dan aktif.</div>';
+                return;
+            }
+
+            const hasExpired = alerts.some(function(a) { return a.daysLeft <= 0; });
+            if (hasExpired) {
+                container.className = 'relative z-10 bg-white rounded-2xl p-4 sm:p-6 border-l-4 border-red-500 mb-6 shadow-md transition-all';
+                if (badgeCount) {
+                    badgeCount.innerText = alerts.length + ' Perlu Tindakan';
+                    badgeCount.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-red-100 text-red-800 animate-pulse';
+                }
+            } else {
+                container.className = 'relative z-10 bg-white rounded-2xl p-4 sm:p-6 border-l-4 border-amber-500 mb-6 shadow-md transition-all';
+                if (badgeCount) {
+                    badgeCount.innerText = alerts.length + ' Mendekati Jatuh Tempo';
+                    badgeCount.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800';
+                }
+            }
+
+            let html = '';
+            alerts.forEach(function(item) {
+                let badgeClass = '';
+                let statusText = '';
+                let iconClass = '';
+
+                if (item.daysLeft < 0) {
+                    badgeClass = 'bg-red-100 text-red-700 border-red-200';
+                    statusText = 'Kedaluwarsa ' + Math.abs(item.daysLeft) + ' hari yang lalu';
+                    iconClass = 'fa-exclamation-triangle text-red-600';
+                } else if (item.daysLeft === 0) {
+                    badgeClass = 'bg-red-100 text-red-700 border-red-200';
+                    statusText = 'Kedaluwarsa Hari Ini';
+                    iconClass = 'fa-exclamation-circle text-red-600';
+                } else if (item.daysLeft <= 30) {
+                    badgeClass = 'bg-orange-100 text-orange-800 border-orange-200';
+                    statusText = 'Kedaluwarsa dalam ' + item.daysLeft + ' hari';
+                    iconClass = 'fa-clock text-orange-600';
+                } else {
+                    badgeClass = 'bg-amber-100 text-amber-800 border-amber-200';
+                    statusText = 'Jatuh tempo ' + item.daysLeft + ' hari lagi';
+                    iconClass = 'fa-info-circle text-amber-600';
+                }
+
+                html += '<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-100 gap-2 transition-colors">' +
+                    '<div class="flex items-start gap-2.5">' +
+                        '<i class="fas ' + iconClass + ' mt-0.5 shrink-0 text-sm"></i>' +
+                        '<div>' +
+                            '<p class="text-xs sm:text-sm font-bold text-gray-800">' + escapeHtml(item.label) + '</p>' +
+                            '<p class="text-[11px] text-gray-500">' + (item.nomor ? escapeHtml(item.nomor) + ' • ' : '') + 'Jatuh Tempo: ' + formatTanggalIndo(item.expDate) + '</p>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="flex items-center gap-2 self-end sm:self-center shrink-0">' +
+                        '<span class="text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full border ' + badgeClass + '">' + statusText + '</span>' +
+                        '<button type="button" onclick="navigate(\'' + item.tab + '\')" class="text-[11px] font-bold text-teal-700 hover:text-teal-900 bg-white hover:bg-teal-50 border border-teal-200 px-2.5 py-1 rounded-lg transition-colors focus:outline-none focus:ring-1 focus:ring-teal-400">' +
+                            'Perbarui <i class="fas fa-arrow-right text-[9px] ml-1"></i>' +
+                        '</button>' +
+                    '</div>' +
+                '</div>';
+            });
+
+            listEl.innerHTML = html;
+        }
+
+        function updateBerandaUI() {
+            if (!currentUser) return;
+            updateBiodataUI();
+            updateUnitRuanganUI();
+            updateKompetensiUI();
+            updateBerandaGreetingUI();
+            updateExpiryAlertsUI();
+        }
+
+        function manualSyncBeranda() {
+            if (!currentUser) return;
+            const icon = document.getElementById('iconSyncBeranda');
+            const btn = document.getElementById('btnSyncBeranda');
+            if (icon) icon.classList.add('fa-spin');
+            if (btn) btn.disabled = true;
+
+            google.script.run.withSuccessHandler(function(res) {
+                if (icon) icon.classList.remove('fa-spin');
+                if (btn) btn.disabled = false;
+                if (res && res.success && res.data) {
+                    currentUser = res.data;
+                    if (currentUser.role) {
+                        const r = currentUser.role.trim().toUpperCase();
+                        if (r === 'SUPER ADMIN') currentUser.role = 'Super Admin';
+                        else if (r === 'ADMIN') currentUser.role = 'Admin';
+                        else currentUser.role = 'User';
+                    }
+                    applyMenuAccess();
+                    updateBerandaUI();
+                    initRunningText();
+                    
+                    const timeEl = document.getElementById('beranda_last_sync_time');
+                    if (timeEl) {
+                        const now = new Date();
+                        timeEl.innerText = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' WIB';
+                    }
+                    
+                    Swal.fire({
+                        title: 'Tersinkronisasi',
+                        text: 'Data Beranda berhasil diperbarui dari server.',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                } else {
+                    Swal.fire('Gagal', (res && res.message) || 'Gagal menyinkronkan data.', 'error');
+                }
+            }).withFailureHandler(function(err) {
+                if (icon) icon.classList.remove('fa-spin');
+                if (btn) btn.disabled = false;
+                Swal.fire('Error', 'Terjadi kesalahan koneksi saat menyinkronkan data.', 'error');
+            }).prosesLogin(currentUser.nip, currentUser.password);
         }
 
         const setV = function(id, val) { const el = document.getElementById(id); if(el) el.value = val || ''; };
@@ -4687,6 +5188,7 @@
                     updateUnitRuanganUI();
                     updatePendidikanUI();
                     updateKompetensiUI();
+                    updateBerandaUI();
                     
                     const hashView = window.location.hash.replace(/^#\/?/, '').trim();
                     const savedView = hashView || localStorage.getItem('komite_active_view') || 'beranda';
