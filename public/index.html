@@ -1,9 +1,52 @@
 ﻿<!DOCTYPE html>
 <html lang="id">
 <head>
+    <base target="_top">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Komite Keperawatan</title>
+    <!-- Auto-Bridge: Jika dibuka di hosting publik (Firebase Hosting), hubungkan langsung ke Backend Produksi GAS asli -->
+    <script>
+      (function() {
+        var _enc = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J5NXZGZlAyVUVDU3pJR2g5ME5ucGNHalRoVGZ1alJ6cjFDbk9faExtUmRtTXkxLXZ6MTBkcGVPN3lvWXF0cWpaMC9leGVj";
+        var GAS_EXEC_URL = (typeof window !== 'undefined' && window.atob) ? window.atob(_enc) : "";
+        var isTopLevel = (window.self === window.top);
+        var isGas = (typeof window.google !== 'undefined' && typeof window.google.script !== 'undefined' && typeof window.google.script.run !== 'undefined');
+        var isLocalDev = (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+        if (isTopLevel && !isGas && !isLocalDev) {
+          document.addEventListener('DOMContentLoaded', function() {
+            var splash = document.createElement('div');
+            splash.id = 'firebase-loader-screen';
+            splash.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:linear-gradient(135deg,#f0fdfa 0%,#ccfbf1 50%,#99f6e4 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999999;font-family:Segoe UI,sans-serif;color:#0d9488;';
+            splash.innerHTML = '<div style="width:70px;height:70px;border-radius:50%;background:#0d9488;color:#fff;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:bold;margin-bottom:16px;box-shadow:0 4px 12px rgba(13,148,136,0.3);"><i class="fas fa-user-nurse"></i></div>' +
+              '<h3 style="margin:0 0 8px;font-weight:700;color:#115e59;font-size:18px;">Komite Keperawatan</h3>' +
+              '<p style="margin:0;font-size:13px;color:#0f766e;">Menghubungkan ke Database Spreadsheet...</p>';
+            document.body.appendChild(splash);
+
+            var iframe = document.createElement('iframe');
+            iframe.id = 'gas-production-frame';
+            iframe.src = GAS_EXEC_URL + (window.location.search || '') + (window.location.hash || '');
+            iframe.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;border:none;margin:0;padding:0;z-index:999998;opacity:0;transition:opacity 0.4s ease;';
+            iframe.setAttribute('allow', 'clipboard-write; fullscreen');
+            
+            iframe.onload = function() {
+              iframe.style.opacity = '1';
+              if (splash && splash.parentNode) {
+                setTimeout(function() {
+                  splash.style.transition = 'opacity 0.4s ease';
+                  splash.style.opacity = '0';
+                  setTimeout(function() {
+                    if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
+                  }, 400);
+                }, 300);
+              }
+            };
+            document.body.appendChild(iframe);
+          });
+        }
+      })();
+    </script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
