@@ -1,5 +1,14 @@
 {
   "projects": {
-    "default": "your-firebase-project-id"
+    "default": "khitandamai-9c7bf"
+  },
+  "targets": {
+    "khitandamai-9c7bf": {
+      "hosting": {
+        "komperrsudsubang": [
+          "komperrsudsubang"
+        ]
+      }
+    }
   }
 }

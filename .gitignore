@@ -2,3 +2,4 @@ node_modules/
 .DS_Store
 backend/.clasp.json
 test-results/
+.firebase/
