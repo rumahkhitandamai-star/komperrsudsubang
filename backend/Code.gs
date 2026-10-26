@@ -16,6 +16,7 @@ function setupPermissions() {
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('public/index')
     .setTitle('Komite Keperawatan')
+    .setFaviconUrl('https://komperrsudsubang.web.app/favicon.png')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
