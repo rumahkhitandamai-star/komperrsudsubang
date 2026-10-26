@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Komite Keperawatan</title>
     <!-- Favicon RSUD Subang -->
-    <link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
-    <link rel="shortcut icon" href="favicon.ico">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://komperrsudsubang.web.app/favicon.png">
+    <link rel="shortcut icon" href="https://komperrsudsubang.web.app/favicon.ico">
+    <link rel="apple-touch-icon" href="https://komperrsudsubang.web.app/apple-touch-icon.png">
     <!-- Auto-Bridge: Jika dibuka di hosting publik (Firebase Hosting), hubungkan langsung ke Backend Produksi GAS asli -->
     <script>
       (function() {
@@ -596,7 +596,7 @@
                 <div class="flex flex-wrap justify-between items-center gap-3 mb-6 shrink-0">
                     <h2 class="text-xl sm:text-2xl font-bold text-teal-800">Database Komper</h2>
                     <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-start sm:justify-end">
-                        <button onclick="openModalTambahData()" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-xs font-bold transition-colors shadow-md whitespace-nowrap">
+                        <button onclick="openModalTambahData()" id="btnOpenTambahData" class="hidden bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-xs font-bold transition-colors shadow-md whitespace-nowrap">
                             <i class="fas fa-plus mr-1"></i> Tambah Data
                         </button>
                         <!-- TOMBOL EXPORT EXCEL -->
@@ -2281,11 +2281,12 @@
             }
         }
 
-        let activeProfilTab = 'biodata';
+        let activeProfilTab = localStorage.getItem('komite_active_profil_tab') || 'biodata';
         function switchProfilTab(tabName) {
             const validTabs = ['biodata', 'kepegawaian', 'ruangan', 'pendidikan', 'kompetensi'];
             if (validTabs.indexOf(tabName) === -1) tabName = 'biodata';
             activeProfilTab = tabName;
+            localStorage.setItem('komite_active_profil_tab', tabName);
 
             validTabs.forEach(function(t) {
                 const pane = document.getElementById('pane_' + t);
@@ -2647,6 +2648,7 @@
                     localStorage.removeItem('komite_nip');
                     localStorage.removeItem('komite_pass');
                     localStorage.removeItem('komite_active_view');
+                    localStorage.removeItem('komite_active_profil_tab');
                     window.location.hash = '';
                     
                     document.body.classList.remove('rt-active');
@@ -5507,7 +5509,7 @@
         // ==========================================
         function loadSettingUsers() {
             const tbody = document.getElementById('tableBodyUsers');
-            tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center italic text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i> Memuat data...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center italic text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i> Memuat data...</td></tr>';
             
             const btnTambah = document.getElementById('btnOpenTambahDataUsers');
             if (currentUser && currentUser.role === 'Super Admin') {
