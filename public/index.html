@@ -50,6 +50,13 @@
           });
         }
       })();
+      function handleSlideshowError(img) {
+        if (!img || img.dataset.fallbackApplied) return;
+        img.dataset.fallbackApplied = 'true';
+        var fallbackUrl = 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80';
+        img.src = fallbackUrl;
+        if (typeof syncSlideshowBackdrop === 'function') syncSlideshowBackdrop(fallbackUrl);
+      }
     </script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -304,6 +311,7 @@
                         <li data-menu="setting_users"><button onclick="navigate('users')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-teal-50 text-gray-600 text-sm flex items-center gap-2"><i class="fas fa-users text-teal-600 w-4"></i> Users</button></li>
                         <li data-menu="setting_slideshow"><button onclick="navigate('slideshow')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-teal-50 text-gray-600 text-sm flex items-center gap-2"><i class="fas fa-images text-teal-600 w-4"></i> Slideshow Dashboard</button></li>
                         <li data-menu="setting_runningtext"><button onclick="navigate('runningtext')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-teal-50 text-gray-600 text-sm flex items-center gap-2"><i class="fas fa-bullhorn text-teal-600 w-4"></i> Running Text</button></li>
+                        <li data-menu="setting_backup"><button onclick="navigate('backup')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-teal-50 text-gray-600 text-sm flex items-center gap-2"><i class="fas fa-database text-teal-600 w-4"></i> Backup Database</button></li>
                     </ul>
                 </li>
             </ul>
@@ -947,6 +955,84 @@
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
+
+            <!-- SETTING: BACKUP DATABASE -->
+            <div id="view_backup" class="view-section hidden flex-col h-full">
+                <div class="flex flex-wrap justify-between items-center gap-3 mb-6 shrink-0">
+                    <h2 class="text-xl sm:text-2xl font-bold text-teal-800">Backup Database Spreadsheet</h2>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-4 sm:p-6 border-l-4 border-teal-500 mb-6 shadow-md">
+                    <h3 class="font-bold text-gray-800 mb-2 flex items-center gap-2">
+                        <i class="fas fa-database text-teal-600"></i>
+                        <span>Pencadangan Data Spreadsheet Komper</span>
+                    </h3>
+                    <p class="text-xs sm:text-sm text-gray-600 mb-4 leading-relaxed">
+                        Fitur ini berfungsi untuk menduplikasi seluruh data pada Spreadsheet utama (seluruh sheet/tab) secara utuh langsung ke folder Google Drive arsip dengan format nama file otomatis: <strong class="text-teal-700 font-mono">YY-MM-DD_backupkomper</strong>.
+                    </p>
+
+                    <!-- INFO CARDS -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="p-3.5 bg-gray-50 rounded-xl border border-gray-200">
+                            <span class="text-[10px] uppercase font-bold text-gray-500 tracking-wider block mb-1">
+                                <i class="fas fa-file-excel text-green-600 mr-1"></i> Sumber Database Asli
+                            </span>
+                            <div class="text-xs font-semibold text-gray-800 truncate" title="Spreadsheet DATA KOMPER">
+                                DATA KOMPER RSUD SUBANG
+                            </div>
+                            <a href="https://docs.google.com/spreadsheets/d/1fuuoaGFVBFqK3gOKHQFsB5Kr5dqUJSehlCdtnvyrOhA/edit?usp=drive_link" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[11px] text-teal-600 hover:text-teal-800 hover:underline mt-1 font-medium">
+                                <span>Buka Spreadsheet Sumber</span>
+                                <i class="fas fa-external-link-alt text-[9px]"></i>
+                            </a>
+                        </div>
+
+                        <div class="p-3.5 bg-gray-50 rounded-xl border border-gray-200">
+                            <span class="text-[10px] uppercase font-bold text-gray-500 tracking-wider block mb-1">
+                                <i class="fab fa-google-drive text-amber-500 mr-1"></i> Folder Tujuan Penyimpanan
+                            </span>
+                            <div class="text-xs font-semibold text-gray-800 truncate" title="Folder Backup Komper Drive">
+                                Google Drive: Backup Database Komper
+                            </div>
+                            <a href="https://drive.google.com/drive/folders/1DN1euHY_C_Tf6aaHJxxXrn8lrsY4THVD?usp=drive_link" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[11px] text-teal-600 hover:text-teal-800 hover:underline mt-1 font-medium">
+                                <span>Buka Folder Backup</span>
+                                <i class="fas fa-external-link-alt text-[9px]"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- ACTION BUTTON -->
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2 border-t border-gray-100">
+                        <div class="text-xs text-gray-500">
+                            <i class="fas fa-shield-alt text-teal-600 mr-1"></i>
+                            Tindakan ini aman dan tidak akan mengubah atau menghapus data asli.
+                        </div>
+                        <button type="button" id="btnBackupDatabase" onclick="runBackupDatabase()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-teal-400">
+                            <i class="fas fa-cloud-upload-alt text-base"></i>
+                            <span id="btnBackupDatabaseText">Backup Database</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RIWAYAT/HASIL TERAKHIR BACKUP -->
+                <div id="backupLastResultCard" class="hidden bg-emerald-50 border border-emerald-200 rounded-2xl p-4 sm:p-5 shadow-sm">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                            <i class="fas fa-check text-lg"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-sm font-bold text-emerald-900 mb-1">Backup Terakhir Berhasil</h4>
+                            <p class="text-xs text-emerald-800 mb-2" id="backupLastResultMessage">File berhasil disalin ke Google Drive.</p>
+                            <div class="flex flex-wrap items-center gap-3 text-xs">
+                                <span class="bg-white/80 border border-emerald-200 px-2.5 py-1 rounded-md text-emerald-900 font-mono font-semibold" id="backupLastFileName">-</span>
+                                <a id="backupLastFileLink" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-bold text-teal-700 hover:text-teal-900 hover:underline">
+                                    <span>Buka File Backup</span>
+                                    <i class="fas fa-external-link-alt text-[10px]"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -2053,6 +2139,20 @@
                     saveRunningText: function(teks, actorNip) {
                         mockRunningText = String(teks || '').trim();
                         return { success: true, message: 'Running Text berhasil disimpan (Simulasi Mock)' };
+                    },
+                    backupDatabase: function(actorNip) {
+                        const now = new Date();
+                        const yy = String(now.getFullYear()).slice(-2);
+                        const mm = String(now.getMonth() + 1).padStart(2, '0');
+                        const dd = String(now.getDate()).padStart(2, '0');
+                        const fileName = `${yy}-${mm}-${dd}_backupkomper`;
+                        return {
+                            success: true,
+                            message: 'Database spreadsheet berhasil dibackup ke Google Drive (Simulasi Mock).',
+                            fileName: fileName,
+                            fileId: 'mock_backup_id_' + Date.now(),
+                            fileUrl: 'https://drive.google.com/drive/folders/1DN1euHY_C_Tf6aaHJxxXrn8lrsY4THVD'
+                        };
                     }
                 };
 
@@ -2446,14 +2546,14 @@
 
         const ALL_MENU_KEYS = [
             'beranda', 'profil', 'verifikasi', 'kredensial', 'dashboard', 
-            'datakomper', 'setting_users', 'setting_slideshow', 'setting_runningtext'
+            'datakomper', 'setting_users', 'setting_slideshow', 'setting_runningtext', 'setting_backup'
         ];
 
         function getDefaultMenuKeys(role) {
             const r = (role || '').trim().toUpperCase();
             if (r === 'SUPER ADMIN') return ALL_MENU_KEYS.slice();
-            if (r === 'ADMIN') return ALL_MENU_KEYS.filter(k => k !== 'datakomper' && k !== 'setting_users' && k !== 'setting_slideshow' && k !== 'setting_runningtext');
-            return ALL_MENU_KEYS.filter(k => k !== 'dashboard' && k !== 'datakomper' && k !== 'setting_users' && k !== 'setting_slideshow' && k !== 'setting_runningtext');
+            if (r === 'ADMIN') return ALL_MENU_KEYS.filter(k => k !== 'datakomper' && k !== 'setting_users' && k !== 'setting_slideshow' && k !== 'setting_runningtext' && k !== 'setting_backup');
+            return ALL_MENU_KEYS.filter(k => k !== 'dashboard' && k !== 'datakomper' && k !== 'setting_users' && k !== 'setting_slideshow' && k !== 'setting_runningtext' && k !== 'setting_backup');
         }
 
         function isMenuAllowed(viewName) {
@@ -2464,6 +2564,7 @@
             if (viewName === 'users') key = 'setting_users';
             if (viewName === 'slideshow') key = 'setting_slideshow';
             if (viewName === 'runningtext') key = 'setting_runningtext';
+            if (viewName === 'backup') key = 'setting_backup';
 
             const legacyProfilKeys = ['biodata', 'kepegawaian', 'ruangan', 'pendidikan', 'kompetensi'];
             if (legacyProfilKeys.indexOf(key) !== -1) key = 'profil';
@@ -2561,7 +2662,7 @@
             }
 
             // Guard: Cegah akses jika bukan Super Admin
-            if (viewName === 'users' || viewName === 'slideshow' || viewName === 'runningtext') {
+            if (viewName === 'users' || viewName === 'slideshow' || viewName === 'runningtext' || viewName === 'backup') {
                 if (!currentUser || !currentUser.role) {
                     viewName = 'beranda';
                 } else {
@@ -2585,7 +2686,7 @@
             }
 
             // Buka submenu jika mengarah ke sub menu setting
-            if (viewName === 'users' || viewName === 'slideshow' || viewName === 'runningtext') {
+            if (viewName === 'users' || viewName === 'slideshow' || viewName === 'runningtext' || viewName === 'backup') {
                 const sub = document.getElementById('settingSubmenu');
                 const chev = document.getElementById('settingChevron');
                 if (sub) sub.classList.remove('hidden');
@@ -6896,6 +6997,96 @@
                 btn.innerHTML = '<i class="fas fa-save mr-1"></i> Simpan Pengaturan';
                 Swal.fire('Error Server', err ? err.message : 'Terjadi kesalahan sistem.', 'error');
             }).saveRunningText(teks, currentUser.nip);
+        }
+
+        // ==========================================
+        // PENGATURAN SISTEM (BACKUP DATABASE)
+        // ==========================================
+        function runBackupDatabase() {
+            if (!currentUser || (currentUser.role || '').trim().toUpperCase() !== 'SUPER ADMIN') {
+                return Swal.fire('Akses Ditolak', 'Hanya Super Admin yang dapat melakukan backup database.', 'error');
+            }
+
+            Swal.fire({
+                title: 'Konfirmasi Backup Database',
+                text: 'Apakah Anda yakin ingin membuat cadangan (backup) seluruh data spreadsheet ke folder Google Drive?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0d9488',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '<i class="fas fa-cloud-upload-alt mr-1"></i> Ya, Backup Sekarang',
+                cancelButtonText: 'Batal'
+            }).then(function(result) {
+                if (!result.isConfirmed) return;
+
+                const btn = document.getElementById('btnBackupDatabase');
+                const btnText = document.getElementById('btnBackupDatabaseText');
+                if (btn) btn.disabled = true;
+                if (btnText) btnText.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Memproses Backup...';
+
+                Swal.fire({
+                    title: 'Sedang Mencadangkan...',
+                    html: 'Menyalin seluruh data spreadsheet ke Google Drive.<br><span class="text-xs text-gray-500">Proses ini membutuhkan waktu beberapa detik...</span>',
+                    allowOutsideClick: false,
+                    didOpen: function() {
+                        Swal.showLoading();
+                    }
+                });
+
+                google.script.run.withSuccessHandler(function(res) {
+                    if (btn) btn.disabled = false;
+                    if (btnText) btnText.innerText = 'Backup Database';
+
+                    if (res && res.success) {
+                        const card = document.getElementById('backupLastResultCard');
+                        const msgEl = document.getElementById('backupLastResultMessage');
+                        const fnEl = document.getElementById('backupLastFileName');
+                        const linkEl = document.getElementById('backupLastFileLink');
+
+                        if (card) card.classList.remove('hidden');
+                        if (msgEl) msgEl.innerText = res.message || 'File berhasil disalin ke Google Drive.';
+                        if (fnEl) fnEl.innerText = res.fileName || '-';
+                        if (linkEl) {
+                            if (res.fileUrl) {
+                                linkEl.href = res.fileUrl;
+                                linkEl.classList.remove('hidden');
+                            } else {
+                                linkEl.classList.add('hidden');
+                            }
+                        }
+
+                        let htmlSuccess = '<p class="text-sm text-gray-600 mb-3">' + (res.message || 'Database spreadsheet berhasil dicadangkan.') + '</p>' +
+                            '<div class="bg-gray-100 p-2.5 rounded-lg text-xs font-mono font-bold text-teal-800 break-all mb-3">' + (res.fileName || '') + '</div>';
+                        if (res.fileUrl) {
+                            htmlSuccess += '<a href="' + res.fileUrl + '" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition-colors"><i class="fab fa-google-drive"></i> Buka File di Drive</a>';
+                        }
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Backup Berhasil!',
+                            html: htmlSuccess,
+                            confirmButtonColor: '#0d9488',
+                            confirmButtonText: 'Tutup'
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Backup Gagal',
+                            text: res ? res.message : 'Terjadi kesalahan saat memproses backup database.',
+                            confirmButtonColor: '#0d9488'
+                        });
+                    }
+                }).withFailureHandler(function(err) {
+                    if (btn) btn.disabled = false;
+                    if (btnText) btnText.innerText = 'Backup Database';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error Server',
+                        text: err ? err.message : 'Gagal menghubungi server Google Apps Script.',
+                        confirmButtonColor: '#0d9488'
+                    });
+                }).backupDatabase(currentUser.nip);
+            });
         }
     </script>
 </body>

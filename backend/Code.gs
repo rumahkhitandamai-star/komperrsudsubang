@@ -1580,3 +1580,39 @@ function saveRunningText(teks, actorNip) {
   }
 }
 
+// ==========================================
+// PENGATURAN SISTEM (BACKUP DATABASE)
+// ==========================================
+function backupDatabase(actorNip) {
+  if (!_isSuperAdmin(actorNip)) {
+    return { success: false, message: "Akses ditolak: Hanya Super Admin yang diizinkan." };
+  }
+  try {
+    const SPREADSHEET_ID = "1fuuoaGFVBFqK3gOKHQFsB5Kr5dqUJSehlCdtnvyrOhA";
+    const FOLDER_ID = "1DN1euHY_C_Tf6aaHJxxXrn8lrsY4THVD";
+
+    const sourceFile = DriveApp.getFileById(SPREADSHEET_ID);
+    const targetFolder = DriveApp.getFolderById(FOLDER_ID);
+
+    // Format file: "YY-MM-DD_backupkomper" (contoh: 26-10-27_backupkomper)
+    const formattedDate = Utilities.formatDate(new Date(), "Asia/Jakarta", "yy-MM-dd");
+    const fileName = formattedDate + "_backupkomper";
+
+    const backupFile = sourceFile.makeCopy(fileName, targetFolder);
+
+    return {
+      success: true,
+      message: "Database spreadsheet berhasil dibackup ke Google Drive.",
+      fileName: fileName,
+      fileId: backupFile.getId(),
+      fileUrl: backupFile.getUrl()
+    };
+  } catch (e) {
+    return {
+      success: false,
+      message: "Gagal melakukan backup database: " + e.message
+    };
+  }
+}
+
+
