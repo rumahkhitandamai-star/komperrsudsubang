@@ -1118,7 +1118,7 @@
             <form id="formBiodata" onsubmit="saveBiodata(event)" class="flex flex-col overflow-hidden flex-1">
                 <div class="p-4 overflow-y-auto flex-1 box-border">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div><label class="block text-xs font-bold text-gray-500">NIP</label><input type="text" id="edit_nip" class="w-full p-2 border rounded text-sm box-border"></div>
+                        <div><label class="block text-xs font-bold text-gray-500">NIP</label><input type="text" id="edit_nip" readonly title="NIP tidak dapat diubah" class="w-full p-2 border rounded text-sm box-border bg-gray-100 text-gray-600 cursor-not-allowed"></div>
                         <div>
                             <label class="block text-xs font-bold text-gray-500">Password</label>
                             <div class="relative">
@@ -1466,7 +1466,7 @@
                                     <div class="flex items-center gap-2 mt-1">
                                         <input type="date" id="edit_masa_berlaku_str" onchange="updateStatusKompetensi('edit_masa_berlaku_str', 'edit_status_str')" class="w-full p-2 border rounded text-sm box-border">
                                         <label class="flex items-center text-xs font-bold text-gray-600 whitespace-nowrap cursor-pointer">
-                                            <input type="checkbox" id="check_seumur_hidup_str" onchange="toggleSeumurHidupStr()" class="mr-1"> Seumur Hidup
+                                            <input type="checkbox" id="check_seumur_hidup_str" onchange="toggleSeumurHidup('check_seumur_hidup_str', 'edit_masa_berlaku_str', 'edit_status_str')" class="mr-1"> Seumur Hidup
                                         </label>
                                     </div>
                                 </div>
@@ -2268,6 +2268,11 @@
                     const driveIdMatch = photoUrl.match(/[-\w]{25,}/);
                     if (driveIdMatch) photoUrl = "https://drive.google.com/thumbnail?id=" + driveIdMatch[0] + "&sz=w500";
                 }
+                imgEl.onerror = function() {
+                    imgEl.src = '';
+                    imgEl.classList.add('hidden');
+                    iconEl.classList.remove('hidden');
+                };
                 imgEl.src = photoUrl;
                 imgEl.classList.remove('hidden');
                 iconEl.classList.add('hidden');
@@ -3638,6 +3643,7 @@
             setT('card_masa_berlaku_mu', formatTanggalIndo(currentUser.masa_berlaku_pelatihan_midwife_update));
             renderStatus('card_status_mu', calculateRealtimeStatus(currentUser.masa_berlaku_pelatihan_midwife_update, currentUser.status_pelatihan_mu), 'dash_status_mu');
             renderSafeLinkPreview('card_link_mu', currentUser.link_pelatihan_mu, 'Midwife Update');
+            updateProgressKelengkapan();
         }
 
         // ==========================================
@@ -3952,17 +3958,7 @@
             setV('edit_npwp', currentUser.npwp);
 
             setV('edit_link_ktp', currentUser.link_ktp);
-            const ktpStatus = document.getElementById('ktp_upload_status');
-            if (currentUser.link_ktp && ktpStatus) {
-                let ktpPreviewUrl = currentUser.link_ktp;
-                if (ktpPreviewUrl.indexOf('drive.google.com') !== -1 || ktpPreviewUrl.indexOf('googleusercontent.com') !== -1) {
-                    const driveIdMatch = ktpPreviewUrl.match(/[-\w]{25,}/);
-                    if (driveIdMatch) ktpPreviewUrl = "https://drive.google.com/thumbnail?id=" + driveIdMatch[0] + "&sz=w500";
-                }
-                ktpStatus.innerHTML = '<div class="mt-2 mb-1"><img src="' + ktpPreviewUrl + '" alt="KTP Preview" onerror="this.onerror=null;this.src=\'https://placehold.co/150x200/f3f4f6/0d9488?text=Gagal+Memuat\';" class="w-32 h-auto rounded border border-gray-300 shadow-sm"></div>';
-            } else if(ktpStatus) {
-                ktpStatus.innerText = '';
-            }
+            renderSafeUploadPreview(currentUser.link_ktp, 'ktp_upload_status');
 
             document.getElementById('edit_provinsi_name').value = currentUser.provinsi || '';
             document.getElementById('edit_kabupaten_name').value = currentUser.kabupaten || '';
@@ -3971,7 +3967,7 @@
 
             const setTempOption = function(id, val) {
                 const el = document.getElementById(id);
-                if (el && val) el.innerHTML = '<option value="'+val+'">'+val+'</option>';
+                if (el && val) el.innerHTML = '<option value="'+escapeHtml(val)+'">'+escapeHtml(val)+'</option>';
                 else if (el) el.innerHTML = '<option value="">Pilih...</option>';
             };
             
@@ -4039,11 +4035,11 @@
                 matchedVal = findDropdownMatch(data, selectedValue);
                 if (!matchedVal) {
                     matchedVal = selectedValue;
-                    html += '<option value="' + selectedValue + '">' + selectedValue + '</option>';
+                    html += '<option value="' + escapeHtml(selectedValue) + '">' + escapeHtml(selectedValue) + '</option>';
                 }
             }
 
-            data.forEach(function(p) { html += '<option value="' + p + '">' + p + '</option>'; });
+            data.forEach(function(p) { html += '<option value="' + escapeHtml(p) + '">' + escapeHtml(p) + '</option>'; });
             provSelect.innerHTML = html;
             
             if (matchedVal) { 
@@ -4094,11 +4090,11 @@
                 matchedVal = findDropdownMatch(data, selectedValue);
                 if (!matchedVal) {
                     matchedVal = selectedValue;
-                    html += '<option value="' + selectedValue + '">' + selectedValue + '</option>';
+                    html += '<option value="' + escapeHtml(selectedValue) + '">' + escapeHtml(selectedValue) + '</option>';
                 }
             }
 
-            data.forEach(function(p) { html += '<option value="' + p + '">' + p + '</option>'; });
+            data.forEach(function(p) { html += '<option value="' + escapeHtml(p) + '">' + escapeHtml(p) + '</option>'; });
             kabSelect.innerHTML = html;
             
             if(matchedVal) { 
@@ -4149,11 +4145,11 @@
                 matchedVal = findDropdownMatch(data, selectedValue);
                 if (!matchedVal) {
                     matchedVal = selectedValue;
-                    html += '<option value="' + selectedValue + '">' + selectedValue + '</option>';
+                    html += '<option value="' + escapeHtml(selectedValue) + '">' + escapeHtml(selectedValue) + '</option>';
                 }
             }
 
-            data.forEach(function(p) { html += '<option value="' + p + '">' + p + '</option>'; });
+            data.forEach(function(p) { html += '<option value="' + escapeHtml(p) + '">' + escapeHtml(p) + '</option>'; });
             kecSelect.innerHTML = html;
             
             if(matchedVal) { 
@@ -4203,11 +4199,11 @@
                 matchedVal = findDropdownMatch(data, selectedValue);
                 if (!matchedVal) {
                     matchedVal = selectedValue;
-                    html += '<option value="' + selectedValue + '">' + selectedValue + '</option>';
+                    html += '<option value="' + escapeHtml(selectedValue) + '">' + escapeHtml(selectedValue) + '</option>';
                 }
             }
 
-            data.forEach(function(p) { html += '<option value="' + p + '">' + p + '</option>'; });
+            data.forEach(function(p) { html += '<option value="' + escapeHtml(p) + '">' + escapeHtml(p) + '</option>'; });
             kelSelect.innerHTML = html;
             
             if(matchedVal) { 
@@ -4237,11 +4233,17 @@
             const selectJabfung = document.getElementById('edit_jabatan_fungsional');
             const renderJabfungDropdown = function() {
                 let html = '<option value="">Pilih...</option>';
+                const currentVal = currentUser.jabatan_fungsional || '';
+                let hasCurrent = false;
                 jabfungDataCache.forEach(function(j) {
-                    html += '<option value="'+j+'">'+j+'</option>';
+                    if (String(j).trim() === String(currentVal).trim()) hasCurrent = true;
+                    html += '<option value="' + escapeHtml(j) + '">' + escapeHtml(j) + '</option>';
                 });
+                if (currentVal && !hasCurrent) {
+                    html += '<option value="' + escapeHtml(currentVal) + '">' + escapeHtml(currentVal) + '</option>';
+                }
                 selectJabfung.innerHTML = html;
-                selectJabfung.value = currentUser.jabatan_fungsional || '';
+                selectJabfung.value = currentVal;
             };
 
             if (jabfungDataCache.length > 0) {
@@ -4317,11 +4319,18 @@
             const selectUnit = document.getElementById('edit_ruangan_unit');
             const renderUnitDropdown = function() {
                 let html = '<option value="">Pilih Ruangan Unit...</option>';
+                const currentVal = currentUser.ruangan_unit || '';
+                let hasCurrent = false;
                 unitDataCache.forEach(function(u) {
-                    html += '<option value="'+u.ruangan+'">'+u.ruangan+'</option>';
+                    const unitName = (typeof u === 'object' && u !== null) ? (u.ruangan || '') : String(u);
+                    if (String(unitName).trim() === String(currentVal).trim()) hasCurrent = true;
+                    html += '<option value="' + escapeHtml(unitName) + '">' + escapeHtml(unitName) + '</option>';
                 });
+                if (currentVal && !hasCurrent) {
+                    html += '<option value="' + escapeHtml(currentVal) + '">' + escapeHtml(currentVal) + '</option>';
+                }
                 selectUnit.innerHTML = html;
-                selectUnit.value = currentUser.ruangan_unit || '';
+                selectUnit.value = currentVal;
             };
 
             if (unitDataCache.length > 0) {
@@ -4356,28 +4365,10 @@
             renderSafeUploadPreview(currentUser.link_ijazah, 'ijazah_upload_status');
         }
 
-        function toggleSeumurHidupStr() {
-            const cb = document.getElementById('check_seumur_hidup_str');
-            const dt = document.getElementById('edit_masa_berlaku_str');
-            const statusEl = document.getElementById('edit_status_str');
-            if (cb.checked) {
-                dt.type = 'text';
-                dt.value = 'Seumur Hidup';
-                dt.readOnly = true;
-                dt.className = 'w-full p-2 border rounded text-sm box-border bg-gray-100 font-bold';
-            } else {
-                dt.type = 'date';
-                dt.value = '';
-                dt.readOnly = false;
-                dt.className = 'w-full p-2 border rounded text-sm box-border';
-            }
-            updateStatusKompetensi('edit_masa_berlaku_str', 'edit_status_str');
-        }
-        
         function toggleSeumurHidup(checkboxId, dateInputId, statusInputId) {
             const cb = document.getElementById(checkboxId);
             const dt = document.getElementById(dateInputId);
-            const statusEl = document.getElementById(statusInputId);
+            if (!cb || !dt) return;
             if (cb.checked) {
                 dt.type = 'text';
                 dt.value = 'Seumur Hidup';
@@ -5327,6 +5318,10 @@
             const file = fileInput.files[0];
             if(!file) return Swal.fire('Oops', 'Pilih file terlebih dahulu', 'warning');
             
+            if (file.size > 5 * 1024 * 1024) {
+                return Swal.fire('Ukuran Terlalu Besar', 'Maksimal ukuran foto adalah 5 MB. Silakan perkecil/kompres foto Anda.', 'error');
+            }
+
             const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
             if (allowedTypes.indexOf(file.type) === -1) {
                 return Swal.fire('Format Salah', 'Hanya diperbolehkan format JPG, JPEG, atau PNG', 'error');

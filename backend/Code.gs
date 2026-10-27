@@ -202,7 +202,11 @@ function prosesLogin(nip, password, options) {
           kelurahan: userObj["KELURAHAN"],
           hp: userObj["NOMOR HANDPHONE"],
           email: userObj["ALAMAT EMAIL"],
-          npwp: userObj["NOMOR NPWP"],
+          npwp: (function(val) {
+            if (!val) return "";
+            var s = String(val).trim();
+            return s.indexOf("'") === 0 ? s.substring(1) : s;
+          })(userObj["NOMOR NPWP"]),
           link_ktp: userObj["LINK KTP"],
           
           status_kepegawaian: userObj["STATUS KEPEGAWAIAN"],
@@ -591,7 +595,7 @@ function updateBiodata(d, actorNip) {
     "KELURAHAN": d.kelurahan_name,
     "NOMOR HANDPHONE": d.hp,
     "ALAMAT EMAIL": d.email,
-    "NOMOR NPWP": d.npwp ? "'" + String(d.npwp) : "",
+    "NOMOR NPWP": d.npwp ? String(d.npwp).trim() : "",
     "LINK KTP": d.link_ktp
   }, effectiveActor);
 }
