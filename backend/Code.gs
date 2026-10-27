@@ -1482,9 +1482,9 @@ function uploadSlideshowImage(base64Data, actorNip) {
     const byteCharacters = Utilities.base64Decode(base64String);
     const blob = Utilities.newBlob(byteCharacters, type, "temp");
     
-    // Validasi ukuran maksimal 3 MB
-    if (blob.getBytes().length > 3 * 1024 * 1024) {
-      return { success: false, message: "Ukuran file gambar melebihi batas maksimal 3 MB." };
+    // Validasi ukuran maksimal 5 MB
+    if (blob.getBytes().length > 5 * 1024 * 1024) {
+      return { success: false, message: "Ukuran file gambar melebihi batas maksimal 5 MB." };
     }
   } catch (e) {
     // Abaikan jika tipe bukan image atau gagal decode, biarkan genericUpload yang menangani errornya

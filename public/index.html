@@ -396,11 +396,11 @@
                     </button>
                 </div>
 
-                <!-- Slideshow (pause on hover, dots indicator, controls, onerror fallback, adaptif penuh) -->
+                <!-- Slideshow (pause on hover, dots indicator, controls, onerror fallback, rasio lanskap standar 3:2) -->
                 <div class="relative z-10 bg-white rounded-2xl shadow-sm overflow-hidden border border-teal-50 mb-6 group" id="slideshowContainer" onmouseenter="pauseSlideshow()" onmouseleave="resumeSlideshow()">
-                    <div id="slideshowStage" class="relative w-full bg-gray-100 flex items-center justify-center overflow-hidden transition-[height] duration-300 ease-out min-h-[160px] sm:min-h-[220px]">
+                    <div id="slideshowStage" class="relative w-full aspect-[3/2] max-h-[480px] bg-gray-100 flex items-center justify-center overflow-hidden shadow-inner">
                         <p class="text-gray-400 text-sm py-12" id="slideshowLoading"><i class="fas fa-spinner fa-spin mr-2"></i>Memuat gambar...</p>
-                        <img id="slideshowImage" src="" class="hidden w-full h-auto block transition-opacity duration-500" alt="Banner Komper" onerror="handleSlideshowError(this)">
+                        <img id="slideshowImage" src="" class="hidden w-full h-full object-cover transition-opacity duration-500" alt="Banner Komper" onerror="handleSlideshowError(this)">
                         
                         <!-- Nav buttons (visible on group-hover) -->
                         <button type="button" onclick="prevSlide()" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 focus:outline-none focus:opacity-100" aria-label="Gambar sebelumnya">
@@ -891,7 +891,7 @@
                 </div>
                 <div class="bg-white rounded-2xl p-4 sm:p-6 border-l-4 border-teal-500 mb-6 shadow-md">
                     <h3 class="font-bold text-gray-800 mb-2"><i class="fas fa-plus-circle text-teal-500 mr-2"></i>Tambah Gambar Baru</h3>
-                    <p class="text-xs text-gray-500 mb-3">Ukuran seragam: <strong>480 × 360 piksel (rasio 4:3)</strong> dengan ukuran file maksimal <strong>3 MB</strong>. Jika ukuran gambar tidak sesuai, fitur <strong>Crop Manual</strong> otomatis terbuka untuk menyesuaikan.</p>
+                    <p class="text-xs text-gray-500 mb-3">Ukuran seragam: <strong>Lanskap Standar Rasio 3:2 (720 × 480 piksel)</strong> dengan ukuran file maksimal <strong>5 MB</strong>. Jika aspek rasio tidak sesuai, fitur <strong>Crop Manual</strong> otomatis terbuka untuk menyesuaikan.</p>
                     <div class="flex flex-wrap gap-2 items-center">
                         <input type="file" id="inputSlideshowFile" accept="image/jpeg,image/jpg,image/png" class="flex-1 min-w-[180px] text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 cursor-pointer">
                         <button onclick="uploadSlideshowFile()" class="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 text-white py-2 px-6 rounded-lg text-sm font-bold transition-colors shadow-sm"><i class="fas fa-upload mr-1"></i> Unggah</button>
@@ -964,15 +964,15 @@
                 <div>
                     <h3 class="text-base sm:text-lg font-bold text-teal-800 flex items-center gap-2">
                         <i class="fas fa-crop-alt text-teal-600"></i>
-                        <span>Crop Manual Gambar (480 × 360 px)</span>
+                        <span>Crop Manual Gambar Lanskap (Rasio 3:2)</span>
                     </h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Ukuran gambar belum 480×360 px. Silakan geser atau atur zoom untuk menentukan area yang ingin dipotong.</p>
+                    <p class="text-xs text-gray-500 mt-0.5">Ukuran gambar belum sesuai rasio lanskap standar 3:2 (720 × 480 px). Silakan geser atau atur zoom untuk menentukan area gambar.</p>
                 </div>
                 <button type="button" onclick="cancelCropSlideshow()" class="text-gray-400 hover:text-gray-600 text-2xl transition-colors ml-2" aria-label="Tutup Crop"><i class="fas fa-times"></i></button>
             </div>
             
             <div class="flex-1 relative overflow-hidden bg-gray-900 flex items-center justify-center p-3 sm:p-4 min-h-[260px] sm:min-h-[320px]">
-                <div class="relative shadow-2xl rounded overflow-hidden border-2 border-teal-400/80 aspect-[4/3] max-w-[480px] w-full flex items-center justify-center bg-black">
+                <div class="relative shadow-2xl rounded overflow-hidden border-2 border-teal-400/80 aspect-[3/2] max-w-[600px] w-full flex items-center justify-center bg-black">
                     <canvas id="cropCanvas" class="w-full h-full cursor-grab active:cursor-grabbing touch-none select-none"></canvas>
                     <!-- Grid Guide Overlay (Rule of Thirds) -->
                     <div class="absolute inset-0 pointer-events-none grid grid-cols-3 grid-rows-3 border border-white/20">
@@ -986,7 +986,7 @@
                         <div class="border-r border-white/20"></div>
                         <div></div>
                     </div>
-                    <span class="absolute bottom-2 right-2 bg-black/70 text-teal-300 text-[10px] px-2 py-0.5 rounded font-mono pointer-events-none">480 × 360 px (4:3)</span>
+                    <span class="absolute bottom-2 right-2 bg-black/70 text-teal-300 text-[10px] px-2 py-0.5 rounded font-mono pointer-events-none">720 × 480 px (3:2)</span>
                 </div>
             </div>
 
@@ -6473,7 +6473,7 @@
 
                     html += '<div class="bg-gray-50 rounded-lg border border-teal-100 overflow-hidden shadow-sm flex flex-col relative group">';
                     html += '<div class="w-full relative cursor-pointer" onclick="openSlideshowViewer(' + idx + ')" title="Klik untuk melihat ukuran penuh">';
-                    html += '<img src="' + safeDisplay + '" onerror="this.onerror=null;this.src=\'https://placehold.co/600x400/f3f4f6/0d9488?text=Gagal+Memuat\';" class="w-full aspect-[4/3] object-cover transition-transform duration-300 group-hover:scale-[1.02] bg-gray-200">';
+                    html += '<img src="' + safeDisplay + '" onerror="this.onerror=null;this.src=\'https://placehold.co/600x400/f3f4f6/0d9488?text=Gagal+Memuat\';" class="w-full aspect-[3/2] object-cover transition-transform duration-300 group-hover:scale-[1.02] bg-gray-200">';
                     html += '<div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center"><i class="fas fa-search-plus text-white opacity-0 group-hover:opacity-100 text-3xl drop-shadow-md transition-opacity"></i></div>';
                     html += '</div>';
                     
@@ -6496,8 +6496,8 @@
         let cropState = { x: 0, y: 0, scale: 1, minScale: 1, originalWidth: 0, originalHeight: 0 };
         let isDraggingCrop = false;
         let dragStart = { mouseX: 0, mouseY: 0, origX: 0, origY: 0, factor: 1 };
-        const CROP_WIDTH = 480;
-        const CROP_HEIGHT = 360; // Rasio seragam 4:3
+        const CROP_WIDTH = 720;
+        const CROP_HEIGHT = 480; // Rasio lanskap standar 3:2
 
         function uploadSlideshowFile() {
             const fileInput = document.getElementById('inputSlideshowFile');
@@ -6510,15 +6510,15 @@
                 return Swal.fire('Format Salah', 'Hanya diperbolehkan format JPG, JPEG, atau PNG', 'error');
             }
 
-            // Validasi ukuran maksimal 3 MB
-            const maxFileSize = 3 * 1024 * 1024;
+            // Validasi ukuran maksimal 5 MB
+            const maxFileSize = 5 * 1024 * 1024;
             if (file.size > maxFileSize) {
                 const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
                 fileInput.value = '';
                 return Swal.fire({
                     icon: 'warning',
                     title: 'Ukuran File Terlalu Besar',
-                    text: 'Ukuran foto maksimal yang diperbolehkan adalah 3 MB. File yang Anda pilih berukuran ' + sizeInMB + ' MB.'
+                    text: 'Ukuran foto maksimal yang diperbolehkan adalah 5 MB. File yang Anda pilih berukuran ' + sizeInMB + ' MB.'
                 });
             }
             
@@ -6529,8 +6529,12 @@
                     const w = img.naturalWidth;
                     const h = img.naturalHeight;
                     
-                    // Jika ukuran foto sudah persis 480 × 360 px, langsung normalisasi & unggah
-                    if (w === 480 && h === 360) {
+                    // Pengecekan aspek rasio lanskap standar 3:2 (toleransi 2%)
+                    const ratio = w / h;
+                    const is3by2 = Math.abs(ratio - (3 / 2)) < 0.03;
+                    
+                    if (is3by2 && w >= CROP_WIDTH) {
+                        // Jika sudah memenuhi rasio 3:2 dan resolusi cukup, langsung normalisasi & unggah
                         const tempCanvas = document.createElement('canvas');
                         tempCanvas.width = CROP_WIDTH;
                         tempCanvas.height = CROP_HEIGHT;
@@ -6539,7 +6543,7 @@
                         const base64Data = tempCanvas.toDataURL('image/jpeg', 0.90);
                         executeUploadSlideshow(base64Data);
                     } else {
-                        // Apabila ukuran tidak sesuai 480 × 360 px, buka fitur Crop Manual
+                        // Apabila aspek rasio tidak sesuai 3:2, otomatis buka fitur Crop Manual
                         cropImgObj = img;
                         openCropModal();
                     }
@@ -6555,14 +6559,14 @@
         function executeUploadSlideshow(base64Data) {
             Swal.fire({
                 title: 'Mengunggah...', 
-                text: 'Menyimpan foto 480 × 360 px ke Google Drive...', 
+                text: 'Menyimpan foto lanskap 3:2 ke Google Drive...', 
                 allowOutsideClick: false, 
                 didOpen: () => { Swal.showLoading(); }
             });
             google.script.run.withSuccessHandler(function(res) {
                 if(res && res.success) {
                     document.getElementById('inputSlideshowFile').value = '';
-                    Swal.fire('Berhasil', 'Foto berhasil diseragamkan (480 × 360 px) dan disimpan ke Google Drive.', 'success');
+                    Swal.fire('Berhasil', 'Foto berhasil diseragamkan (Lanskap 3:2) dan disimpan ke Google Drive.', 'success');
                     loadSettingSlideshow();
                     initSlideshow();
                 } else {
