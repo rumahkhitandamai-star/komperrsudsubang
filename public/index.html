@@ -396,11 +396,11 @@
                     </button>
                 </div>
 
-                <!-- Slideshow (pause on hover, dots indicator, controls, onerror fallback, adaptif height) -->
+                <!-- Slideshow (pause on hover, dots indicator, controls, onerror fallback, adaptif penuh) -->
                 <div class="relative z-10 bg-white rounded-2xl shadow-sm overflow-hidden border border-teal-50 mb-6 group" id="slideshowContainer" onmouseenter="pauseSlideshow()" onmouseleave="resumeSlideshow()">
-                    <div id="slideshowStage" class="relative w-full min-h-48 sm:min-h-64 md:min-h-72 max-h-[520px] bg-gray-100 flex items-center justify-center overflow-hidden transition-[height] duration-500 ease-out">
-                        <p class="text-gray-400 text-sm" id="slideshowLoading"><i class="fas fa-spinner fa-spin mr-2"></i>Memuat gambar...</p>
-                        <img id="slideshowImage" src="" class="hidden w-full h-full object-contain transition-all duration-700" alt="Banner Komper" onerror="handleSlideshowError(this)">
+                    <div id="slideshowStage" class="relative w-full bg-gray-100 flex items-center justify-center overflow-hidden transition-[height] duration-300 ease-out min-h-[160px] sm:min-h-[220px]">
+                        <p class="text-gray-400 text-sm py-12" id="slideshowLoading"><i class="fas fa-spinner fa-spin mr-2"></i>Memuat gambar...</p>
+                        <img id="slideshowImage" src="" class="hidden w-full h-auto block transition-opacity duration-500" alt="Banner Komper" onerror="handleSlideshowError(this)">
                         
                         <!-- Nav buttons (visible on group-hover) -->
                         <button type="button" onclick="prevSlide()" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 focus:outline-none focus:opacity-100" aria-label="Gambar sebelumnya">
@@ -3025,19 +3025,9 @@
 
         function applySlideshowSizing(imgEl) {
             const stage = document.getElementById('slideshowStage');
-            if (!stage || !imgEl || !imgEl.naturalWidth || !imgEl.naturalHeight) return;
-            const containerWidth = stage.clientWidth || stage.offsetWidth;
-            if (!containerWidth) return;
-
-            // Hitung tinggi proporsional berdasarkan rasio aspek asli gambar (tanpa terpotong)
-            const idealHeight = (containerWidth * imgEl.naturalHeight) / imgEl.naturalWidth;
-
-            // Batas minimal & maksimal agar estetis di mobile, tablet, dan desktop
-            const minHeight = window.innerWidth < 640 ? 192 : (window.innerWidth < 768 ? 256 : 288);
-            const maxHeight = 520;
-            const targetHeight = Math.max(minHeight, Math.min(maxHeight, Math.round(idealHeight)));
-
-            stage.style.height = targetHeight + 'px';
+            if (stage) {
+                stage.style.height = 'auto';
+            }
         }
 
         function attachSlideshowImageLoadListener() {
