@@ -396,11 +396,12 @@
                     </button>
                 </div>
 
-                <!-- Slideshow (pause on hover, dots indicator, controls, onerror fallback, rasio lanskap standar 3:2) -->
+                <!-- Slideshow (pause on hover, dots indicator, controls, onerror fallback, rasio lanskap standar 3:2 dengan foto utuh + latar blur) -->
                 <div class="relative z-10 bg-white rounded-2xl shadow-sm overflow-hidden border border-teal-50 mb-6 group" id="slideshowContainer" onmouseenter="pauseSlideshow()" onmouseleave="resumeSlideshow()">
-                    <div id="slideshowStage" class="relative w-full aspect-[3/2] max-h-[480px] bg-gray-100 flex items-center justify-center overflow-hidden shadow-inner">
-                        <p class="text-gray-400 text-sm py-12" id="slideshowLoading"><i class="fas fa-spinner fa-spin mr-2"></i>Memuat gambar...</p>
-                        <img id="slideshowImage" src="" class="hidden w-full h-full object-cover transition-opacity duration-500" alt="Banner Komper" onerror="handleSlideshowError(this)">
+                    <div id="slideshowStage" class="relative w-full aspect-[3/2] max-h-[480px] bg-gray-900 flex items-center justify-center overflow-hidden shadow-inner">
+                        <p class="text-gray-400 text-sm py-12 z-10" id="slideshowLoading"><i class="fas fa-spinner fa-spin mr-2"></i>Memuat gambar...</p>
+                        <img id="slideshowBackdrop" src="" alt="" aria-hidden="true" class="hidden absolute inset-0 w-full h-full object-cover blur-2xl scale-110 opacity-70 transition-opacity duration-500 pointer-events-none">
+                        <img id="slideshowImage" src="" class="hidden relative z-10 w-full h-full object-contain transition-opacity duration-500" alt="Banner Komper" onerror="handleSlideshowError(this)">
                         
                         <!-- Nav buttons (visible on group-hover) -->
                         <button type="button" onclick="prevSlide()" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 focus:outline-none focus:opacity-100" aria-label="Gambar sebelumnya">
@@ -3026,7 +3027,19 @@
         function applySlideshowSizing(imgEl) {
             const stage = document.getElementById('slideshowStage');
             if (stage) {
-                stage.style.height = 'auto';
+                stage.style.height = '';
+            }
+        }
+
+        function syncSlideshowBackdrop(url) {
+            const backEl = document.getElementById('slideshowBackdrop');
+            if (!backEl) return;
+            if (url) {
+                backEl.src = url;
+                backEl.classList.remove('hidden');
+            } else {
+                backEl.src = '';
+                backEl.classList.add('hidden');
             }
         }
 
@@ -3057,9 +3070,14 @@
             slideIndex = (targetIdx + slideshowImages.length) % slideshowImages.length;
             imgEl.style.transition = 'opacity 0.3s ease-in-out';
             imgEl.style.opacity = '0';
+            const backEl = document.getElementById('slideshowBackdrop');
+            if (backEl) { backEl.style.transition = 'opacity 0.3s ease-in-out'; backEl.style.opacity = '0'; }
             setTimeout(function() {
-                imgEl.src = slideshowImages[slideIndex];
+                const nextUrl = slideshowImages[slideIndex];
+                imgEl.src = nextUrl;
                 imgEl.style.opacity = '1';
+                syncSlideshowBackdrop(nextUrl);
+                if (backEl) backEl.style.opacity = '0.7';
                 updateSlideshowDotsUI();
                 if (imgEl.complete && imgEl.naturalWidth) {
                     applySlideshowSizing(imgEl);
@@ -3073,7 +3091,9 @@
         function handleSlideshowError(img) {
             if (!img || img.dataset.fallbackApplied) return;
             img.dataset.fallbackApplied = 'true';
-            img.src = 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80';
+            const fallbackUrl = 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80';
+            img.src = fallbackUrl;
+            syncSlideshowBackdrop(fallbackUrl);
         }
 
         function initSlideshow() {
@@ -3105,7 +3125,9 @@
                         attachSlideshowImageLoadListener();
                         imgEl.classList.remove('hidden');
                         slideIndex = 0;
-                        imgEl.src = slideshowImages[slideIndex];
+                        const firstUrl = slideshowImages[slideIndex];
+                        imgEl.src = firstUrl;
+                        syncSlideshowBackdrop(firstUrl);
                         renderSlideshowDots(slideshowImages.length);
                         if (imgEl.complete && imgEl.naturalWidth) {
                             applySlideshowSizing(imgEl);
