@@ -1,0 +1,3 @@
+# .graphifyrc
+language.gs=javascript
+language.html=.vue

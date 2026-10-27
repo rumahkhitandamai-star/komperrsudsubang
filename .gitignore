@@ -3,3 +3,5 @@ node_modules/
 backend/.clasp.json
 test-results/
 .firebase/
+graphify-out/
+.graphify_labels.json*
