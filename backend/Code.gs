@@ -108,8 +108,9 @@ function _canEditNip(targetNip, actorNip) {
 // ==========================================
 // FUNGSI LOGIN & LUPA PASSWORD
 // ==========================================
-function prosesLogin(nip, password) {
+function prosesLogin(nip, password, options) {
   try {
+    const isReadOnly = Boolean(options && options.readOnly);
     const sheet = SpreadsheetApp.openById("1fuuoaGFVBFqK3gOKHQFsB5Kr5dqUJSehlCdtnvyrOhA").getSheetByName("DATA KOMPER");
     if(!sheet) return { success: false, message: "Sheet DATA KOMPER tidak ditemukan." };
     
@@ -135,7 +136,7 @@ function prosesLogin(nip, password) {
       if (calculatedKredensialStatus !== "-" && calculatedKredensialStatus !== userObj["STATUS KREDENSIAL"]) {
           userObj["STATUS KREDENSIAL"] = calculatedKredensialStatus;
           let statusKredIdx = headers.indexOf("STATUS KREDENSIAL");
-          if (statusKredIdx !== -1) {
+          if (statusKredIdx !== -1 && !isReadOnly) {
               sheet.getRange(i + 1, statusKredIdx + 1).setValue(calculatedKredensialStatus);
           }
       }
@@ -144,7 +145,7 @@ function prosesLogin(nip, password) {
       if (calculatedStrStatus !== "-" && calculatedStrStatus !== userObj["STATUS STR"]) {
           userObj["STATUS STR"] = calculatedStrStatus;
           let statusStrIdx = headers.indexOf("STATUS STR");
-          if (statusStrIdx !== -1) {
+          if (statusStrIdx !== -1 && !isReadOnly) {
               sheet.getRange(i + 1, statusStrIdx + 1).setValue(calculatedStrStatus);
           }
       }
@@ -153,7 +154,7 @@ function prosesLogin(nip, password) {
       if (calculatedSippStatus !== "-" && calculatedSippStatus !== userObj["STATUS SIPP SIPB"]) {
           userObj["STATUS SIPP SIPB"] = calculatedSippStatus;
           let statusSippIdx = headers.indexOf("STATUS SIPP SIPB");
-          if (statusSippIdx !== -1) {
+          if (statusSippIdx !== -1 && !isReadOnly) {
               sheet.getRange(i + 1, statusSippIdx + 1).setValue(calculatedSippStatus);
           }
       }
@@ -162,7 +163,7 @@ function prosesLogin(nip, password) {
       if (calculatedBtclsStatus !== "-" && calculatedBtclsStatus !== userObj["STATUS BTCLS"]) {
           userObj["STATUS BTCLS"] = calculatedBtclsStatus;
           let statusBtclsIdx = headers.indexOf("STATUS BTCLS");
-          if (statusBtclsIdx !== -1) {
+          if (statusBtclsIdx !== -1 && !isReadOnly) {
               sheet.getRange(i + 1, statusBtclsIdx + 1).setValue(calculatedBtclsStatus);
           }
       }
@@ -171,7 +172,7 @@ function prosesLogin(nip, password) {
         if (calculatedMuStatus !== "-" && calculatedMuStatus !== userObj["STATUS PELATIHAN MU"]) {
             userObj["STATUS PELATIHAN MU"] = calculatedMuStatus;
             let statusMuIdx = headers.indexOf("STATUS PELATIHAN MU");
-            if (statusMuIdx !== -1) {
+            if (statusMuIdx !== -1 && !isReadOnly) {
                 sheet.getRange(i + 1, statusMuIdx + 1).setValue(calculatedMuStatus);
             }
         }

@@ -538,6 +538,7 @@
                                 <div><p class="text-[10px] text-teal-600 font-bold uppercase">RT</p><p class="text-sm font-medium" id="card_rt">-</p></div>
                                 <div><p class="text-[10px] text-teal-600 font-bold uppercase">RW</p><p class="text-sm font-medium" id="card_rw">-</p></div>
                                 <div><p class="text-[10px] text-teal-600 font-bold uppercase">Provinsi</p><p class="text-sm font-medium" id="card_provinsi">-</p></div>
+                                <div><p class="text-[10px] text-teal-600 font-bold uppercase">Kabupaten</p><p class="text-sm font-medium" id="card_kabupaten">-</p></div>
                                 <div><p class="text-[10px] text-teal-600 font-bold uppercase">Kecamatan</p><p class="text-sm font-medium" id="card_kecamatan">-</p></div>
                                 <div><p class="text-[10px] text-teal-600 font-bold uppercase">Kelurahan</p><p class="text-sm font-medium" id="card_kelurahan">-</p></div>
                                 <div><p class="text-[10px] text-teal-600 font-bold uppercase">Nomor Handphone</p><p class="text-sm font-medium break-words" id="card_hp">-</p></div>
@@ -3081,6 +3082,7 @@
             google.script.run.withSuccessHandler(function(images) {
                 const imgEl = document.getElementById('slideshowImage');
                 const loadEl = document.getElementById('slideshowLoading');
+                if (imgEl && imgEl.dataset) delete imgEl.dataset.fallbackApplied;
                 
                 if (!images || images.length === 0) {
                     images = [
@@ -3125,29 +3127,37 @@
         }
 
         // FUNGSI SINKRONISASI OTOMATIS (AUTO-SYNC)
+        let autoSyncTickCounter = 0;
+        let autoSyncAuthAlertShown = false;
         function startAutoSync() {
             if (autoSyncInterval) clearInterval(autoSyncInterval);
             autoSyncInterval = setInterval(function() {
                 if (!currentUser) return;
-                
-                const activeView = localStorage.getItem('komite_active_view');
+                autoSyncTickCounter++;
                 
                 // 1. Sinkronisasi Data Admin (Database & Dashboard) secara senyap di latar belakang
                 if (currentUser.role === 'Admin' || currentUser.role === 'Super Admin') {
-                    if (activeView === 'datakomper') {
+                    const currentViewBefore = localStorage.getItem('komite_active_view');
+                    if (currentViewBefore === 'datakomper') {
                         google.script.run.withSuccessHandler(function(data) {
-                            if (data) renderTableKomper(data);
+                            if (data) {
+                                globalDataKomper = data;
+                                if (localStorage.getItem('komite_active_view') === 'datakomper') renderTableKomper(data);
+                            }
                         }).withFailureHandler(function() {}).getAllDataKomper(currentUser.nip);
-                    } else if (activeView === 'dashboard') {
+                    } else if (currentViewBefore === 'dashboard') {
                         google.script.run.withSuccessHandler(function(dataRows) {
-                            if (dataRows) renderDashboardCards(dataRows);
+                            if (dataRows) {
+                                globalDataKomper = dataRows;
+                                if (localStorage.getItem('komite_active_view') === 'dashboard') renderDashboardCards(dataRows);
+                            }
                         }).withFailureHandler(function() {}).getAllDataKomper(currentUser.nip);
                     }
                 }
                 
                 // 2. Sinkronisasi Data Profil Pegawai secara senyap di latar belakang
                 google.script.run.withSuccessHandler(function(res) {
-                    if(res.success && res.data) {
+                    if(res && res.success && res.data) {
                         currentUser = res.data;
                         if (currentUser.role) {
                             const r = currentUser.role.trim().toUpperCase();
@@ -3156,31 +3166,51 @@
                             else currentUser.role = 'User';
                         }
                         applyMenuAccess();
-                        // Perbarui UI secara otomatis hanya pada menu yang sedang dibuka
-                        if (activeView === 'beranda') {
+
+                        // Perbarui waktu sinkronisasi terlepas dari menu apa pun yang sedang dibuka (B2)
+                        const timeEl = document.getElementById('beranda_last_sync_time');
+                        if (timeEl) {
+                            const now = new Date();
+                            timeEl.innerText = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' WIB';
+                        }
+
+                        // Perbarui UI secara dinamis pada menu yang aktif saat respons tiba (B3)
+                        const currentActiveView = localStorage.getItem('komite_active_view');
+                        if (currentActiveView === 'beranda') {
                             updateBerandaUI();
-                            const timeEl = document.getElementById('beranda_last_sync_time');
-                            if (timeEl) {
-                                const now = new Date();
-                                timeEl.innerText = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' WIB';
-                            }
-                        } else if (activeView === 'profil') {
+                        } else if (currentActiveView === 'profil') {
                             updateBiodataUI();
                             updateKepegawaianUI();
                             updateUnitRuanganUI();
                             updatePendidikanUI();
                             updateKompetensiUI();
                         }
-                        else if (activeView === 'biodata') updateBiodataUI();
-                        else if (activeView === 'kepegawaian') updateKepegawaianUI();
-                        else if (activeView === 'ruangan') updateUnitRuanganUI();
-                        else if (activeView === 'pendidikan') updatePendidikanUI();
-                        else if (activeView === 'kompetensi') updateKompetensiUI();
-                        initRunningText(); // Segarkan Running Text secara senyap
+                        else if (currentActiveView === 'biodata') updateBiodataUI();
+                        else if (currentActiveView === 'kepegawaian') updateKepegawaianUI();
+                        else if (currentActiveView === 'ruangan') updateUnitRuanganUI();
+                        else if (currentActiveView === 'pendidikan') updatePendidikanUI();
+                        else if (currentActiveView === 'kompetensi') updateKompetensiUI();
+                        
+                        // B10: Segarkan Running Text berkala setiap 3 siklus (15 menit)
+                        if (autoSyncTickCounter % 3 === 0) {
+                            initRunningText();
+                        }
+                    } else if (res && !res.success) {
+                        // B12: Notifikasi jika sesi akun/kredensial berubah dan hentikan interval
+                        if (!autoSyncAuthAlertShown) {
+                            autoSyncAuthAlertShown = true;
+                            if (autoSyncInterval) clearInterval(autoSyncInterval);
+                            Swal.fire({
+                                title: 'Sesi Diperbarui',
+                                text: res.message || 'Sesi akun Anda telah berakhir atau data otentikasi berubah. Silakan login kembali.',
+                                icon: 'warning',
+                                confirmButtonColor: '#0d9488'
+                            });
+                        }
                     }
                 }).withFailureHandler(function() {
                     // Abaikan kesalahan koneksi berkala pada sinkronisasi latar belakang
-                }).prosesLogin(currentUser.nip, currentUser.password);
+                }).prosesLogin(currentUser.nip, currentUser.password, { readOnly: true });
                 
             }, 300000); // 300.000 milidetik = 5 Menit
         }
@@ -3305,7 +3335,7 @@
             const dashVerifEl = document.getElementById('dash_verifikasi');
             if (dashVerifEl) {
                 if (verifStatus === 'Belum Ter Verifikasi') {
-                    dashVerifEl.innerHTML = '<i class="fas fa-exclamation-circle mr-1"></i>' + verifStatus;
+                    dashVerifEl.innerHTML = '<i class="fas fa-exclamation-circle mr-1"></i>' + escapeHtml(verifStatus);
                     dashVerifEl.className = 'text-sm font-bold text-red-600 cursor-pointer hover:underline focus:outline-none focus:ring-2 focus:ring-red-400 rounded';
                     dashVerifEl.title = 'Klik untuk mengajukan verifikasi via WhatsApp';
                     dashVerifEl.setAttribute('role', 'button');
@@ -3314,7 +3344,7 @@
                     dashVerifEl.onclick = function() { kirimWA(); };
                     dashVerifEl.onkeydown = function(e) { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); kirimWA(); } };
                 } else if (verifStatus === 'Verifikasi OK') {
-                    dashVerifEl.innerHTML = '<i class="fas fa-check-circle mr-1"></i>' + verifStatus;
+                    dashVerifEl.innerHTML = '<i class="fas fa-check-circle mr-1"></i>' + escapeHtml(verifStatus);
                     dashVerifEl.className = 'text-sm font-bold text-green-600';
                     dashVerifEl.title = 'Data Anda telah diverifikasi oleh Komite Keperawatan';
                     dashVerifEl.removeAttribute('role');
@@ -3324,7 +3354,7 @@
                     dashVerifEl.onkeydown = null;
                 } else if (verifStatus.toLowerCase().includes('proses') || verifStatus.toLowerCase().includes('pending')) {
                     // B5: Status verifikasi dalam proses peninjauan
-                    dashVerifEl.innerHTML = '<i class="fas fa-hourglass-half mr-1 text-amber-500"></i>' + verifStatus;
+                    dashVerifEl.innerHTML = '<i class="fas fa-hourglass-half mr-1 text-amber-500"></i>' + escapeHtml(verifStatus);
                     dashVerifEl.className = 'text-sm font-bold text-amber-600 dark:text-amber-400 cursor-pointer hover:underline focus:outline-none focus:ring-2 focus:ring-amber-400 rounded';
                     dashVerifEl.title = 'Pengajuan verifikasi sedang ditinjau oleh Admin Komite Keperawatan';
                     dashVerifEl.setAttribute('role', 'button');
@@ -3405,10 +3435,11 @@
         }
 
         function updateBiodataUI() {
+            if (!currentUser) return;
             const setT = function(id, val) { const el = document.getElementById(id); if(el) el.innerText = val || '-'; };
             
-            document.getElementById('navNama').innerText = currentUser.nama || '-';
-            document.getElementById('card_nama').innerText = currentUser.nama || '-';
+            setT('navNama', currentUser.nama);
+            setT('card_nama', currentUser.nama);
             
             setT('card_nip_detail', currentUser.nip);
             const cardPassEl = document.getElementById('card_password');
@@ -3425,6 +3456,7 @@
             setT('card_rt', currentUser.rt);
             setT('card_rw', currentUser.rw);
             setT('card_provinsi', currentUser.provinsi);
+            setT('card_kabupaten', currentUser.kabupaten);
             setT('card_kecamatan', currentUser.kecamatan);
             setT('card_kelurahan', currentUser.kelurahan);
             setT('card_hp', currentUser.hp);
@@ -3485,11 +3517,11 @@
             const isHabisKred = (status === 'Habis Masa Berlaku' || status === 'Masa Berlaku Habis');
 
             if(statusEl) {
-                statusEl.innerHTML = (status === 'Aktif' ? '<i class="fas fa-check-circle mr-1"></i>' : (isHabisKred ? '<i class="fas fa-exclamation-circle mr-1"></i>' : '')) + status;
+                statusEl.innerHTML = (status === 'Aktif' ? '<i class="fas fa-check-circle mr-1"></i>' : (isHabisKred ? '<i class="fas fa-exclamation-circle mr-1"></i>' : '')) + escapeHtml(status);
                 statusEl.className = 'text-sm font-bold ' + (status === 'Aktif' ? 'text-green-600' : (isHabisKred ? 'text-red-600' : 'text-gray-800'));
             }
             if(dashStatusKred) {
-                dashStatusKred.innerHTML = (status === 'Aktif' ? '<i class="fas fa-check-circle mr-1"></i>' : (isHabisKred ? '<i class="fas fa-exclamation-circle mr-1"></i>' : '')) + status;
+                dashStatusKred.innerHTML = (status === 'Aktif' ? '<i class="fas fa-check-circle mr-1"></i>' : (isHabisKred ? '<i class="fas fa-exclamation-circle mr-1"></i>' : '')) + escapeHtml(status);
                 dashStatusKred.className = 'text-sm font-bold cursor-pointer hover:underline focus:outline-none focus:ring-2 focus:ring-teal-400 rounded ' + (status === 'Aktif' ? 'text-green-600' : (isHabisKred ? 'text-red-600' : 'text-gray-800'));
                 dashStatusKred.setAttribute('role', 'button');
                 dashStatusKred.setAttribute('tabindex', '0');
@@ -3533,11 +3565,11 @@
                 const iconHtml = displayStatus === 'Aktif' ? '<i class="fas fa-check-circle mr-1"></i>' : (isHabis ? '<i class="fas fa-exclamation-circle mr-1"></i>' : '');
                 
                 if (el) {
-                    el.innerHTML = iconHtml + displayStatus;
+                    el.innerHTML = iconHtml + escapeHtml(displayStatus);
                     el.className = 'text-sm font-bold ' + (displayStatus === 'Aktif' ? 'text-green-600' : (isHabis ? 'text-red-600' : 'text-gray-800'));
                 }
                 if (dashEl) {
-                    dashEl.innerHTML = iconHtml + displayStatus;
+                    dashEl.innerHTML = iconHtml + escapeHtml(displayStatus);
                     dashEl.className = 'text-sm font-bold cursor-pointer hover:underline focus:outline-none focus:ring-2 focus:ring-teal-400 rounded ' + (displayStatus === 'Aktif' ? 'text-green-600' : (isHabis ? 'text-red-600' : 'text-gray-800'));
                     dashEl.setAttribute('role', 'button');
                     dashEl.setAttribute('tabindex', '0');
@@ -3864,6 +3896,7 @@
                     applyMenuAccess();
                     updateBerandaUI();
                     initRunningText();
+                    initSlideshow();
                     
                     const timeEl = document.getElementById('beranda_last_sync_time');
                     if (timeEl) {
@@ -5229,11 +5262,6 @@
                     }
 
                     updateBiodataUI();
-                    updateKepegawaianUI(); 
-                    updateUnitRuanganUI();
-                    updatePendidikanUI();
-                    updateKompetensiUI();
-                    updateBerandaUI();
                     
                     const hashView = window.location.hash.replace(/^#\/?/, '').trim();
                     const savedView = hashView || localStorage.getItem('komite_active_view') || 'beranda';
