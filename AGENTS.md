@@ -159,6 +159,9 @@ Setiap kali Anda selesai menulis, merangkai, atau memperbarui kode Frontend SPA 
    * **Jika LULUS (PASS):** Hapus file `qc-test.spec.js` dari workspace untuk mempertahankan struktur statis proyek, lalu laporkan kepada saya bahwa tes berhasil.
    * **Jika GAGAL (FAIL) / Ditemukan Bugs:** Analisis log terminal untuk mencari penyebab error. Selesaikan HANYA baris kode di `public/index.html` yang bermasalah tanpa merubah struktur kode yang sudah ada. Konfirmasi izin perbaikan kode kepada saya, lalu ulangi eksekusi pengujian.
 
+## 10. Rule Sinkronisasi Graph
+- Jika kamu selesai melakukan refactoring atau menambahkan modul/file baru, jalankan perintah terminal: `graphify .`
+- Pastikan perubahan node pada `graphify-out/graph.json` digunakan sebagai referensi untuk task berikutnya.
 
 ## Deploy & Backup Aturan Wajib (Dev to Prod Workflow)
 - **Alur Kerja Pembaruan (Dev -> Prod):**
