@@ -7,7 +7,7 @@
     "test": "npx playwright test qc-test.spec.js --headed",
     "push": "clasp push -f",
     "deploy-prod": "clasp deploy -i AKfycby5vFfP2UECSzIGh90NnpcGjThTfujRzr1CnO_hLmRdmMy1-vz10dpeO7yoYqtqjZ0 -d \"Auto Deploy Prod\"",
-    "gdrive": "rclone copy . \"gdrive:Aplikasi Web/Komper\" --update --exclude \".git/**\" --exclude \"graphify-out/**\" --exclude \"node_modules/**\" --exclude \"test-results/**\" --exclude \"package-lock.json\" --exclude \".clasp.json\""
+    "gdrive": "rclone copy . \"gdrive:\" --drive-root-folder-id 13qEmXWhOpPSR0pMH2Oxu3gS0YS9Q2Vcv --update --exclude \".git/**\" --exclude \"graphify-out/**\" --exclude \"node_modules/**\" --exclude \".firebase/**\" --exclude \"test-results/**\" --exclude \"package-lock.json\" --exclude \".clasp.json\""
   },
   "keywords": [],
   "author": "",

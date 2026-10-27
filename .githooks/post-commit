@@ -1,0 +1,15 @@
+#!/bin/sh
+echo "[gdrive-backup] Menyinkronkan perubahan lokal ke Google Drive..."
+rclone copy . "gdrive:" --drive-root-folder-id 13qEmXWhOpPSR0pMH2Oxu3gS0YS9Q2Vcv \
+  --update \
+  --fast-list \
+  --exclude ".git/**" \
+  --exclude ".githooks/**" \
+  --exclude "graphify-out/**" \
+  --exclude "node_modules/**" \
+  --exclude ".firebase/**" \
+  --exclude "test-results/**" \
+  --exclude "package-lock.json" \
+  --exclude ".clasp.json" \
+  --log-level ERROR
+echo "[gdrive-backup] Sinkronisasi selesai: https://drive.google.com/drive/folders/13qEmXWhOpPSR0pMH2Oxu3gS0YS9Q2Vcv"

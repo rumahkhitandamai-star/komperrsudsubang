@@ -169,5 +169,7 @@ Setiap kali Anda selesai menulis, merangkai, atau memperbarui kode Frontend SPA 
   2. **Link Dev:** Silakan uji kode terbaru Anda pada [Link Dev (@HEAD)](https://script.google.com/macros/s/AKfycbzjhwwmKmaJl24hh5EZZRp2sYBz19AtheBwzCycmQ/dev).
   3. **Deploy ke Prod:** Jika pengujian di Link Dev sudah berhasil dan stabil, barulah Anda jalankan `npm run deploy-prod`.
   4. **Link Prod:** [Link Production Live](https://script.google.com/macros/s/AKfycby5vFfP2UECSzIGh90NnpcGjThTfujRzr1CnO_hLmRdmMy1-vz10dpeO7yoYqtqjZ0/exec) (URL ini pantang berubah!).
-  5. **Backup ke Drive:** Setelah semuanya selesai, WAJIB jalankan `npm run gdrive` untuk membackup salinan kode sumber ini ke folder Google Drive Anda.
+  5. **Backup ke Drive:** Setiap commit akan otomatis memicu backup ke Google Drive via git hook `.githooks/post-commit`. Anda juga dapat menjalankan backup manual kapan saja dengan perintah `npm run gdrive`.
+     - **Folder Google Drive Target:** [Folder Backup Komper_Okt_2026](https://drive.google.com/drive/folders/13qEmXWhOpPSR0pMH2Oxu3gS0YS9Q2Vcv?usp=drive_link) (Folder ID: `13qEmXWhOpPSR0pMH2Oxu3gS0YS9Q2Vcv`).
+     - **Aktivasi Hook di Environment Baru:** `git config core.hooksPath .githooks`
 - **Peringatan Keras:** Dilarang keras menggunakan perintah `clasp deploy` secara langsung karena akan merusak URL Production. Selalu gunakan `npm run deploy-prod`.
