@@ -3009,60 +3009,708 @@
             document.getElementById('mutasi_nip_display').innerText = nip;
         }
 
+        // ==========================================
+        // EDIT DATA CEPAT (DATABASE KOMPER) - FORMAT SESUAI MENU PROFIL
+        // ==========================================
+        const EDIT_FIELD_CONFIG = {
+            'PASSWORD': { type: 'password', hint: 'Masukkan password baru pegawai' },
+            'NAMA': { type: 'nama', hint: 'Isi Dengan Nama Lengkap, Sesuai SK' },
+            'TANGGAL LAHIR': { type: 'date', min: '1940-01-01', hint: 'Format tanggal lahir pegawai (min 1940)' },
+            'JENIS KELAMIN': { type: 'select', options: ['', 'L', 'P'], labels: ['Pilih...', 'L (Laki-laki)', 'P (Perempuan)'] },
+            'AGAMA': { type: 'select', options: ['', 'Islam', 'Protestan', 'Katolik', 'Hindu', 'Budha'] },
+            'ALAMAT': { type: 'text-hint', hint: 'Isi Nama Jalan/Perumahan/Dusun/Kelurahan' },
+            'NOMOR HANDPHONE': { type: 'phone', hint: 'Format nomor seluler (+62...)' },
+            'STATUS KEPEGAWAIAN': { type: 'select', options: ['', 'PNS', 'PPPK', 'PPPK PW', 'Parttimer'] },
+            'GOLONGAN TERAKHIR': { 
+                type: 'select', 
+                options: ['', 'II/c: Pengatur', 'II/d: Pengatur Tingkat I', 'III/a: Penata Muda', 'III/b: Penata Muda Tingkat I', 'III/c: Penata', 'III/d: Penata Tingkat I', 'IV/a: Pembina', 'IV/b: Pembina Tingkat I', 'IV/c: Pembina Muda', 'IV/d: Pembina Madya', 'IV/e: Pembina Utama'] 
+            },
+            'TMT GOLONGAN TERAKHIR': { type: 'date', hint: 'Terhitung Mulai Tanggal Golongan Terakhir' },
+            'MASA KERJA SESUAI SK': { type: 'text-hint', hint: 'Contoh: 10 Tahun 09 Bulan' },
+            'GAJI POKOK': { type: 'rupiah', hint: 'Contoh: 3.500.000 (Otomatis format Rupiah)' },
+            'JABATAN FUNGSIONAL': { type: 'select-jabfung', hint: 'Pilih Jabatan Fungsional' },
+            'TMT JABATAN FUNGSIONAL': { type: 'date', hint: 'Terhitung Mulai Tanggal Jabatan Fungsional' },
+            'SK KGB': { type: 'text-hint', hint: 'Isi dengan Nomor SK KGB' },
+            'TMT SK KGB': { type: 'date', hint: 'Terhitung Mulai Tanggal SK KGB' },
+            'GAJI POKOK KGB': { type: 'rupiah', hint: 'Contoh: 3.500.000 (Otomatis format Rupiah)' },
+            'RUANGAN UNIT': { type: 'select-unit', hint: 'Pilih Ruangan Unit (Kelompok akan sinkron otomatis)' },
+            'KELOMPOK': { type: 'readonly-kelompok', hint: 'Kelompok otomatis terisi saat Ruangan Unit dipilih' },
+            'JABATAN': { type: 'select', options: ['', 'Kepala Instalasi', 'Kepala Ruangan', 'Kepala Unit', 'Ketua Tim', 'Pelaksana', 'Staf'] },
+            'JENJANG KARIR': { type: 'select', options: ['', 'Pra PK', 'PK 1', 'PK 2', 'PK 3', 'PK 4', 'PK 5'] },
+            'TANGGAL KREDENSIAL': { 
+                type: 'date-kredensial', 
+                pairedStatusCol: 'STATUS KREDENSIAL',
+                hint: 'Status Kredensial otomatis terhitung berlaku 3 tahun sejak tanggal ini'
+            },
+            'STATUS KREDENSIAL': { 
+                type: 'select-status', 
+                options: ['', 'Aktif', 'Habis Masa Berlaku', '-'],
+                hint: 'Pada Profil, dihitung otomatis 3 tahun sejak Tanggal Kredensial'
+            },
+            'INSTITUSI PENDIDIKAN TERAKHIR': { type: 'uppercase', hint: 'Nama instansi pendidikan terakhir (huruf kapital)' },
+            'JURUSAN': { type: 'select', options: ['', 'Keperawatan', 'Kebidanan'] },
+            'TAHUN LULUS PENDIDIKAN TERAKHIR': { type: 'tahun', hint: 'Hanya Tahun, Seperti "2020"' },
+            'JENJANG PENDIDIKAN TERAKHIR': { 
+                type: 'select', 
+                options: ['', 'Diploma III', 'Diploma IV', 'Strata 1', 'Profesi Ners', 'Profesi Bidan', 'Spesialis Keperawatan', 'Strata 2 Keperawatan', 'Strata 2 Kebidanan', 'Strata 3 Keperawatan'] 
+            },
+            'VERIFIKASI': { type: 'select', options: ['', 'Belum Ter Verifikasi', 'Verifikasi OK'] },
+            'ROLE': { type: 'select', options: ['', 'User', 'Admin', 'Super Admin'] },
+
+            // Tanggal Terbit Dokumen (Maksimal hari ini)
+            'TANGGAL TERBIT STR AKTIF': { type: 'date-terbit', hint: 'Tanggal terbit STR (maksimal hari ini)' },
+            'TANGGAL TERBIT SIPP SIPB AKTIF': { type: 'date-terbit', hint: 'Tanggal terbit SIPP/SIPB (maksimal hari ini)' },
+            'TANGGAL TERBIT BTCLS': { type: 'date-terbit', hint: 'Tanggal terbit BTCLS (maksimal hari ini)' },
+            'TANGGAL TERBIT PELATIHAN KAMAR OPERASI': { type: 'date-terbit', hint: 'Tanggal terbit Pelatihan Kamar Operasi' },
+            'TANGGAL TERBIT PELATIHAN INTENSIF': { type: 'date-terbit', hint: 'Tanggal terbit Pelatihan Intensif' },
+            'TANGGAL TERBIT PELATIHAN HD': { type: 'date-terbit', hint: 'Tanggal terbit Pelatihan HD' },
+            'TANGGAL TERBIT PELATIHAN MIDWIFE UPDATE': { type: 'date-terbit', hint: 'Tanggal terbit Pelatihan Midwife Update' },
+
+            // Masa Berlaku Dokumen (Paired dengan Status)
+            'MASA BERLAKU STR AKTIF': { type: 'date-masa', seumurHidup: true, pairedStatusCol: 'STATUS STR', hint: 'Status STR dihitung otomatis dari masa berlaku' },
+            'MASA BERLAKU SIPP SIPB AKTIF': { type: 'date-masa', seumurHidup: false, pairedStatusCol: 'STATUS SIPP SIPB', hint: 'Status SIPP dihitung otomatis dari masa berlaku' },
+            'MASA BERLAKU BTCLS': { type: 'date-masa', seumurHidup: false, pairedStatusCol: 'STATUS BTCLS', hint: 'Status BTCLS dihitung otomatis dari masa berlaku' },
+            'MASA BERLAKU PELATIHAN KAMAR OPERASI': { type: 'date-masa', seumurHidup: true, pairedStatusCol: 'STATUS PELATIHAN KAMAR OPERASI', hint: 'Status Kamar Operasi dihitung otomatis' },
+            'MASA BERLAKU PELATIHAN INTENSIF': { type: 'date-masa', seumurHidup: true, pairedStatusCol: 'STATUS PELATIHAN INTENSIF', hint: 'Status Intensif dihitung otomatis' },
+            'MASA BERLAKU PELATIHAN HD': { type: 'date-masa', seumurHidup: true, pairedStatusCol: 'STATUS PELATIHAN HD', hint: 'Status HD dihitung otomatis' },
+            'MASA BERLAKU PELATIHAN MIDWIFE UPDATE': { type: 'date-masa', seumurHidup: false, pairedStatusCol: 'STATUS PELATIHAN MU', hint: 'Status MU dihitung otomatis' },
+
+            // Status Dokumen Kompetensi (Bisa diedit manual dengan hint)
+            'STATUS STR': { type: 'select-status', options: ['', 'Aktif', 'Habis Masa Berlaku', '-'], hint: 'Pada Profil, dihitung otomatis dari Masa Berlaku STR' },
+            'STATUS SIPP SIPB': { type: 'select-status', options: ['', 'Aktif', 'Habis Masa Berlaku', '-'], hint: 'Pada Profil, dihitung otomatis dari Masa Berlaku SIPP' },
+            'STATUS BTCLS': { type: 'select-status', options: ['', 'Aktif', 'Habis Masa Berlaku', '-'], hint: 'Pada Profil, dihitung otomatis dari Masa Berlaku BTCLS' },
+            'STATUS PELATIHAN KAMAR OPERASI': { type: 'select-status', options: ['', 'Aktif', 'Habis Masa Berlaku', '-'], hint: 'Pada Profil, dihitung otomatis dari Masa Berlaku' },
+            'STATUS PELATIHAN INTENSIF': { type: 'select-status', options: ['', 'Aktif', 'Habis Masa Berlaku', '-'], hint: 'Pada Profil, dihitung otomatis dari Masa Berlaku' },
+            'STATUS PELATIHAN HD': { type: 'select-status', options: ['', 'Aktif', 'Habis Masa Berlaku', '-'], hint: 'Pada Profil, dihitung otomatis dari Masa Berlaku' },
+            'STATUS PELATIHAN MU': { type: 'select-status', options: ['', 'Aktif', 'Habis Masa Berlaku', '-'], hint: 'Pada Profil, dihitung otomatis dari Masa Berlaku' },
+
+            // File Upload & Dokumen Link
+            'FOTO': { type: 'upload', backendFn: 'uploadFoto', accept: '.jpg,.jpeg,.png', isImage: true },
+            'LINK KTP': { type: 'upload', backendFn: 'uploadKtpToDrive', accept: '.jpg,.jpeg,.png', isImage: true },
+            'LINK SK TERAKHIR': { type: 'upload', backendFn: 'uploadSkTerakhirToDrive', accept: '.jpg,.jpeg,.png', isImage: true },
+            'LINK JABATAN FUNGSIONAL': { type: 'upload', backendFn: 'uploadJabatanFungsionalToDrive', accept: '.jpg,.jpeg,.png', isImage: true },
+            'LINK SK KGB': { type: 'upload', backendFn: 'uploadSkKgbToDrive', accept: '.jpg,.jpeg,.png', isImage: true },
+            'LINK SERTIFIKAT JENJANG KARIR': { type: 'upload', backendFn: 'uploadSertifikatJenjangKarirToDrive', accept: '.jpg,.jpeg,.png', isImage: true },
+            'LINK IJAZAH': { type: 'upload', backendFn: 'uploadIjazahToDrive', accept: '.jpg,.jpeg,.png', isImage: true },
+            'LINK STR': { type: 'upload', backendFn: 'uploadStrToDrive', accept: '.jpg,.jpeg,.png,.pdf', isImage: false },
+            'LINK SIPP SIPB': { type: 'upload', backendFn: 'uploadSippToDrive', accept: '.jpg,.jpeg,.png,.pdf', isImage: false },
+            'LINK BTCLS': { type: 'upload', backendFn: 'uploadBtclsToDrive', accept: '.jpg,.jpeg,.png,.pdf', isImage: false },
+            'LINK PELATIHAN KAMAR OPERASI': { type: 'upload', backendFn: 'uploadKamarOperasiToDrive', accept: '.jpg,.jpeg,.png,.pdf', isImage: false },
+            'LINK PELATIHAN INTENSIF': { type: 'upload', backendFn: 'uploadIntensifToDrive', accept: '.jpg,.jpeg,.png,.pdf', isImage: false },
+            'LINK PELATIHAN HD': { type: 'upload', backendFn: 'uploadHdToDrive', accept: '.jpg,.jpeg,.png,.pdf', isImage: false },
+            'LINK PELATIHAN MU': { type: 'upload', backendFn: 'uploadMuToDrive', accept: '.jpg,.jpeg,.png,.pdf', isImage: false }
+        };
+
+        function calcKredensialStatus(dateStr) {
+            if (!dateStr || dateStr === '-') return '';
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return '';
+            d.setFullYear(d.getFullYear() + 3);
+            d.setHours(0, 0, 0, 0);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return (today >= d) ? 'Habis Masa Berlaku' : 'Aktif';
+        }
+
+        function calcKompetensiStatus(dateStr) {
+            if (dateStr === 'Seumur Hidup') return 'Aktif';
+            if (!dateStr || dateStr === '-') return '';
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return '';
+            const today = new Date();
+            d.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0);
+            return (d >= today) ? 'Aktif' : 'Habis Masa Berlaku';
+        }
+
+        function getSwalStatusBadgeHtml(status) {
+            if (status === 'Aktif') {
+                return '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-700 border border-green-200 inline-block"><i class="fas fa-check-circle mr-1"></i>Aktif</span>';
+            } else if (status === 'Habis Masa Berlaku') {
+                return '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-600 border border-red-200 inline-block"><i class="fas fa-exclamation-circle mr-1"></i>Habis Masa Berlaku</span>';
+            }
+            return '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-500 border border-gray-200 inline-block">-</span>';
+        }
+
+        function renderSwalUploadPreviewHtml(url) {
+            const safeUrl = sanitizeUrl(url);
+            if (safeUrl) {
+                let previewUrl = safeUrl;
+                if (previewUrl.indexOf('drive.google.com') !== -1 || previewUrl.indexOf('googleusercontent.com') !== -1) {
+                    const driveIdMatch = previewUrl.match(/[-\w]{25,}/);
+                    if (driveIdMatch) previewUrl = "https://drive.google.com/thumbnail?id=" + driveIdMatch[0] + "&sz=w500";
+                }
+                return '<div class="flex items-center gap-3">' +
+                    '<img src="' + escapeHtml(previewUrl) + '" alt="Preview" onerror="this.onerror=null;this.src=\'https://placehold.co/100x120/f3f4f6/0d9488?text=Dokumen\';" class="w-14 h-14 object-cover rounded-lg border border-gray-300 shadow-xs">' +
+                    '<div class="flex-1 truncate"><span class="text-[11px] text-gray-500 block font-medium">File terpasang saat ini</span><a href="' + escapeHtml(safeUrl) + '" target="_blank" rel="noopener noreferrer" class="text-teal-600 hover:underline text-xs font-bold inline-flex items-center mt-0.5"><i class="fas fa-external-link-alt mr-1"></i> Buka File</a></div>' +
+                    '</div>';
+            }
+            return '<span class="text-xs text-gray-400 italic flex items-center gap-1.5"><i class="fas fa-file"></i> Belum ada file yang terpasang</span>';
+        }
+
         function openModalEditSuperAdmin(nip) {
             let rowData = globalDataKomper.find(function(r) { return String(r['NIP']) === String(nip); });
-            if (!rowData) return Swal.fire('Error', 'Data tidak ditemukan', 'error');
+            if (!rowData) return Swal.fire('Error', 'Data pegawai tidak ditemukan', 'error');
 
-            let optionsHtml = '<div class="text-left"><label class="block text-xs font-bold text-gray-500 mb-1">Pilih Kolom (Data)</label><select id="swal-edit-col" class="w-full p-2 border border-gray-300 rounded mb-3 text-sm outline-none focus:border-teal-500 cursor-pointer">';
+            const todayObj = new Date();
+            const todayStr = todayObj.getFullYear() + '-' + String(todayObj.getMonth() + 1).padStart(2, '0') + '-' + String(todayObj.getDate()).padStart(2, '0');
+
+            let optionsHtml = '<div class="text-left font-sans">';
+            optionsHtml += '  <div class="mb-3 pb-2.5 border-b border-gray-100 flex items-center justify-between gap-2">';
+            optionsHtml += '    <div class="truncate">';
+            optionsHtml += '      <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Nama Pegawai</p>';
+            optionsHtml += '      <h4 class="text-sm font-bold text-gray-800 truncate">' + escapeHtml(rowData['NAMA'] || '-') + '</h4>';
+            optionsHtml += '    </div>';
+            optionsHtml += '    <div class="shrink-0 text-right">';
+            optionsHtml += '      <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">NIP</p>';
+            optionsHtml += '      <span class="font-mono text-xs font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded border border-teal-200 inline-block">' + escapeHtml(rowData['NIP'] || '-') + '</span>';
+            optionsHtml += '    </div>';
+            optionsHtml += '  </div>';
+
+            optionsHtml += '  <label class="block text-xs font-bold text-gray-600 mb-1">Pilih Kolom yang Ingin Diedit</label>';
+            optionsHtml += '  <select id="swal-edit-col" class="w-full p-2.5 border border-gray-300 rounded-lg mb-3 text-xs sm:text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 cursor-pointer bg-white shadow-xs">';
             headersKomper.forEach(function(h) {
-                if(h !== 'NIP') {
+                if (h !== 'NIP') {
                     optionsHtml += '<option value="' + escapeHtml(h) + '">' + escapeHtml(h) + '</option>';
                 }
             });
-            optionsHtml += '</select>';
-            optionsHtml += '<label class="block text-xs font-bold text-gray-500 mb-1">Nilai Baru</label><textarea id="swal-edit-val" rows="3" class="w-full p-2 border border-gray-300 rounded text-sm outline-none focus:border-teal-500 placeholder-gray-400"></textarea></div>';
+            optionsHtml += '  </select>';
+
+            optionsHtml += '  <div id="swal-edit-field-wrapper">';
+            optionsHtml += '    <!-- Konten field dinamis -->';
+            optionsHtml += '  </div>';
+            optionsHtml += '</div>';
+
+            function renderFieldForCol(colName) {
+                const wrapper = document.getElementById('swal-edit-field-wrapper');
+                if (!wrapper) return;
+
+                const cfg = EDIT_FIELD_CONFIG[colName] || { type: 'textarea' };
+                const rawVal = (rowData[colName] !== undefined && rowData[colName] !== null) ? String(rowData[colName]) : '';
+                let fieldHtml = '';
+
+                switch (cfg.type) {
+                    case 'password':
+                        fieldHtml = '<label class="block text-xs font-bold text-gray-600 mb-1">Password Baru</label>' +
+                            '<div class="relative">' +
+                            '  <input type="password" id="swal-edit-val" class="w-full p-2.5 pr-10 border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 bg-white" value="' + escapeHtml(rawVal) + '" placeholder="Masukkan password baru">' +
+                            '  <button type="button" id="swal-toggle-pw" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer" title="Lihat password"><i class="fas fa-eye"></i></button>' +
+                            '</div>' +
+                            '<p class="text-[10px] text-gray-500 mt-1 italic">' + (cfg.hint || '') + '</p>';
+                        wrapper.innerHTML = fieldHtml;
+
+                        const btnToggle = document.getElementById('swal-toggle-pw');
+                        const inputPw = document.getElementById('swal-edit-val');
+                        if (btnToggle && inputPw) {
+                            btnToggle.onclick = function() {
+                                if (inputPw.type === 'password') {
+                                    inputPw.type = 'text';
+                                    btnToggle.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                                } else {
+                                    inputPw.type = 'password';
+                                    btnToggle.innerHTML = '<i class="fas fa-eye"></i>';
+                                }
+                            };
+                        }
+                        break;
+
+                    case 'nama':
+                        fieldHtml = '<label class="block text-xs font-bold text-gray-600 mb-1">Nama Pegawai Sesuai SK</label>' +
+                            '<input type="text" id="swal-edit-val" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 bg-white" value="' + escapeHtml(rawVal) + '" placeholder="Isi Dengan Nama Lengkap, Sesuai SK">' +
+                            '<p class="text-[10px] text-gray-500 mt-1 italic">' + (cfg.hint || '') + '</p>';
+                        wrapper.innerHTML = fieldHtml;
+                        const inputNama = document.getElementById('swal-edit-val');
+                        if (inputNama) {
+                            inputNama.oninput = function() {
+                                if (typeof formatNamaSK === 'function') this.value = formatNamaSK(this.value);
+                            };
+                        }
+                        break;
+
+                    case 'date':
+                        fieldHtml = '<label class="block text-xs font-bold text-gray-600 mb-1">' + escapeHtml(colName) + '</label>' +
+                            '<input type="date" id="swal-edit-val" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 bg-white" value="' + (typeof formatDateInput === 'function' ? formatDateInput(rawVal) : rawVal) + '"' + (cfg.min ? ' min="' + cfg.min + '"' : '') + '>' +
+                            '<p class="text-[10px] text-gray-500 mt-1 italic">' + (cfg.hint || '') + '</p>';
+                        wrapper.innerHTML = fieldHtml;
+                        break;
+
+                    case 'date-terbit':
+                        fieldHtml = '<label class="block text-xs font-bold text-gray-600 mb-1">' + escapeHtml(colName) + '</label>' +
+                            '<input type="date" id="swal-edit-val" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 bg-white" value="' + (typeof formatDateInput === 'function' ? formatDateInput(rawVal) : rawVal) + '" max="' + todayStr + '">' +
+                            '<p class="text-[10px] text-gray-500 mt-1 italic">' + (cfg.hint || 'Tanggal terbit dokumen (maksimal hari ini)') + '</p>';
+                        wrapper.innerHTML = fieldHtml;
+                        break;
+
+                    case 'date-kredensial':
+                        const initDateKred = typeof formatDateInput === 'function' ? formatDateInput(rawVal) : rawVal;
+                        const initStatusKred = calcKredensialStatus(initDateKred);
+                        fieldHtml = '<label class="block text-xs font-bold text-gray-600 mb-1">Tanggal Kredensial</label>' +
+                            '<input type="date" id="swal-edit-val" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 bg-white" value="' + initDateKred + '">' +
+                            '<div class="mt-2.5 p-2.5 bg-teal-50/80 border border-teal-200 rounded-lg text-xs flex items-center justify-between">' +
+                            '  <span class="text-teal-900 font-semibold flex items-center gap-1.5"><i class="fas fa-magic text-teal-600"></i>Status Kredensial (Auto Sinkron):</span>' +
+                            '  <span id="swal-paired-status">' + getSwalStatusBadgeHtml(initStatusKred) + '</span>' +
+                            '</div>' +
+                            '<p class="text-[10px] text-gray-500 mt-1 italic">' + (cfg.hint || '') + '</p>';
+                        wrapper.innerHTML = fieldHtml;
+
+                        const inputKred = document.getElementById('swal-edit-val');
+                        if (inputKred) {
+                            const updateKredPreview = function() {
+                                const st = calcKredensialStatus(inputKred.value);
+                                const previewEl = document.getElementById('swal-paired-status');
+                                if (previewEl) previewEl.innerHTML = getSwalStatusBadgeHtml(st);
+                            };
+                            inputKred.onchange = updateKredPreview;
+                            inputKred.oninput = updateKredPreview;
+                        }
+                        break;
+
+                    case 'date-masa':
+                        const isSeumurHidup = (rawVal === 'Seumur Hidup');
+                        const initDateMasa = isSeumurHidup ? 'Seumur Hidup' : (typeof formatDateInput === 'function' ? formatDateInput(rawVal) : rawVal);
+                        const initStatusMasa = calcKompetensiStatus(initDateMasa);
+
+                        fieldHtml = '<label class="block text-xs font-bold text-gray-600 mb-1">' + escapeHtml(colName) + '</label>' +
+                            '<input type="' + (isSeumurHidup ? 'text' : 'date') + '" id="swal-edit-val" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 ' + (isSeumurHidup ? 'bg-gray-100 font-bold' : 'bg-white') + '" value="' + initDateMasa + '" ' + (isSeumurHidup ? 'readonly' : '') + '>';
+
+                        if (cfg.seumurHidup) {
+                            fieldHtml += '<label class="inline-flex items-center gap-2 mt-2 text-xs font-semibold text-gray-700 cursor-pointer select-none">' +
+                                '<input type="checkbox" id="swal-cb-seumur-hidup" ' + (isSeumurHidup ? 'checked' : '') + ' class="w-4 h-4 text-teal-600 rounded border-gray-300 cursor-pointer">' +
+                                '<span>Masa Berlaku Seumur Hidup</span>' +
+                                '</label>';
+                        }
+
+                        if (cfg.pairedStatusCol) {
+                            fieldHtml += '<div class="mt-2.5 p-2.5 bg-teal-50/80 border border-teal-200 rounded-lg text-xs flex items-center justify-between">' +
+                                '  <span class="text-teal-900 font-semibold flex items-center gap-1.5"><i class="fas fa-magic text-teal-600"></i>' + escapeHtml(cfg.pairedStatusCol) + ' (Auto Sinkron):</span>' +
+                                '  <span id="swal-paired-status">' + getSwalStatusBadgeHtml(initStatusMasa) + '</span>' +
+                                '</div>';
+                        }
+                        fieldHtml += '<p class="text-[10px] text-gray-500 mt-1 italic">' + (cfg.hint || '') + '</p>';
+                        wrapper.innerHTML = fieldHtml;
+
+                        const inputMasa = document.getElementById('swal-edit-val');
+                        const cbSH = document.getElementById('swal-cb-seumur-hidup');
+                        const previewStatusEl = document.getElementById('swal-paired-status');
+
+                        const updateMasaPreview = function() {
+                            const val = inputMasa ? inputMasa.value : '';
+                            const st = calcKompetensiStatus(val);
+                            if (previewStatusEl) previewStatusEl.innerHTML = getSwalStatusBadgeHtml(st);
+                        };
+
+                        if (inputMasa) {
+                            inputMasa.onchange = updateMasaPreview;
+                            inputMasa.oninput = updateMasaPreview;
+                        }
+
+                        if (cbSH && inputMasa) {
+                            cbSH.onchange = function() {
+                                if (this.checked) {
+                                    inputMasa.type = 'text';
+                                    inputMasa.value = 'Seumur Hidup';
+                                    inputMasa.readOnly = true;
+                                    inputMasa.className = 'w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none bg-gray-100 font-bold';
+                                } else {
+                                    inputMasa.type = 'date';
+                                    inputMasa.value = '';
+                                    inputMasa.readOnly = false;
+                                    inputMasa.className = 'w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 bg-white';
+                                }
+                                updateMasaPreview();
+                            };
+                        }
+                        break;
+
+                    case 'select':
+                        fieldHtml = '<label class="block text-xs font-bold text-gray-600 mb-1">' + escapeHtml(colName) + '</label>' +
+                            '<select id="swal-edit-val" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 bg-white cursor-pointer shadow-xs">';
+                        (cfg.options || []).forEach(function(opt, idx) {
+                            const label = (cfg.labels && cfg.labels[idx]) ? cfg.labels[idx] : (opt || 'Pilih...');
+                            const isSel = (String(opt).trim().toLowerCase() === String(rawVal).trim().toLowerCase());
+                            fieldHtml += '<option value="' + escapeHtml(opt) + '"' + (isSel ? ' selected' : '') + '>' + escapeHtml(label) + '</option>';
+                        });
+                        if (rawVal && !(cfg.options || []).some(o => String(o).trim().toLowerCase() === String(rawVal).trim().toLowerCase())) {
+                            fieldHtml += '<option value="' + escapeHtml(rawVal) + '" selected>' + escapeHtml(rawVal) + '</option>';
+                        }
+                        fieldHtml += '</select>' +
+                            '<p class="text-[10px] text-gray-500 mt-1 italic">' + (cfg.hint || '') + '</p>';
+                        wrapper.innerHTML = fieldHtml;
+                        break;
+
+                    case 'select-status':
+                        fieldHtml = '<label class="block text-xs font-bold text-gray-600 mb-1">' + escapeHtml(colName) + '</label>' +
+                            '<select id="swal-edit-val" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 bg-white cursor-pointer shadow-xs">';
+                        (cfg.options || ['', 'Aktif', 'Habis Masa Berlaku', '-']).forEach(function(opt) {
+                            const isSel = (String(opt).trim().toLowerCase() === String(rawVal).trim().toLowerCase());
+                            fieldHtml += '<option value="' + escapeHtml(opt) + '"' + (isSel ? ' selected' : '') + '>' + (opt ? escapeHtml(opt) : 'Pilih Status...') + '</option>';
+                        });
+                        fieldHtml += '</select>' +
+                            '<p class="text-[10px] text-teal-700 mt-1.5 italic flex items-center gap-1"><i class="fas fa-info-circle"></i>' + (cfg.hint || 'Pada Menu Profil, status dihitung otomatis dari tanggal/masa berlaku.') + '</p>';
+                        wrapper.innerHTML = fieldHtml;
+                        break;
+
+                    case 'select-unit':
+                        fieldHtml = '<label class="block text-xs font-bold text-gray-600 mb-1">Ruangan Unit</label>' +
+                            '<select id="swal-edit-val" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 bg-white cursor-pointer shadow-xs">' +
+                            '  <option value="">Memuat data unit...</option>' +
+                            '</select>' +
+                            '<div class="mt-2.5 p-2 bg-gray-50 border border-gray-200 rounded-lg text-xs flex items-center justify-between">' +
+                            '  <span class="text-gray-600 font-medium">Kelompok Ruangan (Auto Sinkron):</span>' +
+                            '  <span id="swal-kelompok-preview" class="font-bold text-teal-700">-</span>' +
+                            '</div>' +
+                            '<p class="text-[10px] text-gray-500 mt-1 italic">' + (cfg.hint || '') + '</p>';
+                        wrapper.innerHTML = fieldHtml;
+
+                        const selectUnit = document.getElementById('swal-edit-val');
+                        const kelompokPreviewEl = document.getElementById('swal-kelompok-preview');
+
+                        const populateUnitOptions = function() {
+                            if (!selectUnit) return;
+                            let html = '<option value="">Pilih Ruangan Unit...</option>';
+                            let hasCurrent = false;
+                            (unitDataCache || []).forEach(function(u) {
+                                const uName = (typeof u === 'object' && u !== null) ? (u.ruangan || '') : String(u);
+                                if (String(uName).trim() === String(rawVal).trim()) hasCurrent = true;
+                                html += '<option value="' + escapeHtml(uName) + '">' + escapeHtml(uName) + '</option>';
+                            });
+                            if (rawVal && !hasCurrent) {
+                                html += '<option value="' + escapeHtml(rawVal) + '" selected>' + escapeHtml(rawVal) + '</option>';
+                            }
+                            selectUnit.innerHTML = html;
+                            selectUnit.value = rawVal;
+
+                            const syncKelompok = function() {
+                                const selectedU = selectUnit.value;
+                                const found = (unitDataCache || []).find(function(u) {
+                                    const uName = (typeof u === 'object' && u !== null) ? (u.ruangan || '') : String(u);
+                                    return uName === selectedU;
+                                });
+                                if (kelompokPreviewEl) {
+                                    kelompokPreviewEl.innerText = (found && found.kelompok) ? found.kelompok : (rowData['KELOMPOK'] || '-');
+                                }
+                            };
+                            selectUnit.onchange = syncKelompok;
+                            syncKelompok();
+                        };
+
+                        if (unitDataCache && unitDataCache.length > 0) {
+                            populateUnitOptions();
+                        } else {
+                            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                                google.script.run.withSuccessHandler(function(data) {
+                                    unitDataCache = data || [];
+                                    populateUnitOptions();
+                                }).withFailureHandler(function() {
+                                    if (selectUnit) selectUnit.innerHTML = '<option value="' + escapeHtml(rawVal) + '">' + escapeHtml(rawVal || 'Gagal memuat daftar') + '</option>';
+                                }).getDropdownUnit();
+                            }
+                        }
+                        break;
+
+                    case 'readonly-kelompok':
+                        fieldHtml = '<label class="block text-xs font-bold text-gray-600 mb-1">Kelompok</label>' +
+                            '<input type="text" id="swal-edit-val" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none bg-gray-100 font-semibold text-gray-700" value="' + escapeHtml(rawVal) + '" readonly>' +
+                            '<p class="text-[10px] text-gray-500 mt-1 italic">' + (cfg.hint || '') + '</p>';
+                        wrapper.innerHTML = fieldHtml;
+                        break;
+
+                    case 'select-jabfung':
+                        fieldHtml = '<label class="block text-xs font-bold text-gray-600 mb-1">Jabatan Fungsional</label>' +
+                            '<select id="swal-edit-val" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 bg-white cursor-pointer shadow-xs">' +
+                            '  <option value="">Memuat data jabatan...</option>' +
+                            '</select>' +
+                            '<p class="text-[10px] text-gray-500 mt-1 italic">' + (cfg.hint || '') + '</p>';
+                        wrapper.innerHTML = fieldHtml;
+
+                        const selectJabfung = document.getElementById('swal-edit-val');
+                        const populateJabfungOptions = function() {
+                            if (!selectJabfung) return;
+                            let html = '<option value="">Pilih Jabatan Fungsional...</option>';
+                            let hasCurrent = false;
+                            (jabfungDataCache || []).forEach(function(j) {
+                                if (String(j).trim() === String(rawVal).trim()) hasCurrent = true;
+                                html += '<option value="' + escapeHtml(j) + '">' + escapeHtml(j) + '</option>';
+                            });
+                            if (rawVal && !hasCurrent) {
+                                html += '<option value="' + escapeHtml(rawVal) + '" selected>' + escapeHtml(rawVal) + '</option>';
+                            }
+                            selectJabfung.innerHTML = html;
+                            selectJabfung.value = rawVal;
+                        };
+
+                        if (jabfungDataCache && jabfungDataCache.length > 0) {
+                            populateJabfungOptions();
+                        } else {
+                            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                                google.script.run.withSuccessHandler(function(data) {
+                                    jabfungDataCache = data || [];
+                                    populateJabfungOptions();
+                                }).withFailureHandler(function() {
+                                    if (selectJabfung) selectJabfung.innerHTML = '<option value="' + escapeHtml(rawVal) + '">' + escapeHtml(rawVal || 'Gagal memuat daftar') + '</option>';
+                                }).getDropdownJabfung();
+                            }
+                        }
+                        break;
+
+                    case 'rupiah':
+                        const cleanRupiah = rawVal ? String(rawVal).replace(/[^\d]/g, '') : '';
+                        const formattedRupiah = (cleanRupiah && typeof formatRupiahRealtime === 'function') ? formatRupiahRealtime(cleanRupiah) : rawVal;
+                        fieldHtml = '<label class="block text-xs font-bold text-gray-600 mb-1">' + escapeHtml(colName) + '</label>' +
+                            '<div class="relative">' +
+                            '  <span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-gray-400 text-xs">Rp</span>' +
+                            '  <input type="text" id="swal-edit-val" class="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 bg-white" value="' + escapeHtml(formattedRupiah) + '" placeholder="Contoh: 3.500.000">' +
+                            '</div>' +
+                            '<p class="text-[10px] text-gray-500 mt-1 italic">' + (cfg.hint || 'Format Rupiah terpasang otomatis') + '</p>';
+                        wrapper.innerHTML = fieldHtml;
+
+                        const inputRupiah = document.getElementById('swal-edit-val');
+                        if (inputRupiah) {
+                            inputRupiah.oninput = function() {
+                                if (typeof formatRupiahRealtime === 'function') this.value = formatRupiahRealtime(this.value);
+                            };
+                        }
+                        break;
+
+                    case 'phone':
+                        fieldHtml = '<label class="block text-xs font-bold text-gray-600 mb-1">Nomor Handphone</label>' +
+                            '<input type="text" id="swal-edit-val" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 bg-white" value="' + escapeHtml(rawVal || '+62') + '" placeholder="+628123456789">' +
+                            '<p class="text-[10px] text-gray-500 mt-1 italic">' + (cfg.hint || 'Format nomor seluler (+62...)') + '</p>';
+                        wrapper.innerHTML = fieldHtml;
+
+                        const inputHp = document.getElementById('swal-edit-val');
+                        if (inputHp) {
+                            inputHp.oninput = function() {
+                                let val = this.value;
+                                if (val.startsWith('0')) {
+                                    this.value = '+62' + val.substring(1);
+                                }
+                            };
+                        }
+                        break;
+
+                    case 'tahun':
+                        fieldHtml = '<label class="block text-xs font-bold text-gray-600 mb-1">Tahun Lulus</label>' +
+                            '<input type="text" id="swal-edit-val" maxlength="4" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 bg-white" value="' + escapeHtml(rawVal) + '" placeholder="Contoh: 2020">' +
+                            '<p class="text-[10px] text-gray-500 mt-1 italic">' + (cfg.hint || 'Hanya Tahun, Seperti "2020"') + '</p>';
+                        wrapper.innerHTML = fieldHtml;
+
+                        const inputTahun = document.getElementById('swal-edit-val');
+                        if (inputTahun) {
+                            inputTahun.oninput = function() {
+                                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);
+                            };
+                        }
+                        break;
+
+                    case 'uppercase':
+                        fieldHtml = '<label class="block text-xs font-bold text-gray-600 mb-1">' + escapeHtml(colName) + '</label>' +
+                            '<input type="text" id="swal-edit-val" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 uppercase bg-white" value="' + escapeHtml(rawVal.toUpperCase()) + '" placeholder="Nama Institusi Pendidikan">' +
+                            '<p class="text-[10px] text-gray-500 mt-1 italic">' + (cfg.hint || '') + '</p>';
+                        wrapper.innerHTML = fieldHtml;
+
+                        const inputUpper = document.getElementById('swal-edit-val');
+                        if (inputUpper) {
+                            inputUpper.oninput = function() {
+                                this.value = this.value.toUpperCase();
+                            };
+                        }
+                        break;
+
+                    case 'upload':
+                        fieldHtml = '<div class="space-y-2">' +
+                            '  <label class="block text-xs font-bold text-gray-600 mb-1">' + escapeHtml(colName) + '</label>' +
+                            '  <div id="swal-upload-preview-area" class="p-2.5 bg-gray-50 border border-gray-200 rounded-lg">' +
+                            renderSwalUploadPreviewHtml(rawVal) +
+                            '  </div>' +
+                            '  <div class="flex gap-2 items-center">' +
+                            '    <input type="file" id="swal-upload-file" accept="' + (cfg.accept || '.jpg,.jpeg,.png,.pdf') + '" class="w-full text-xs border border-gray-300 rounded-lg p-1.5 box-border bg-white cursor-pointer">' +
+                            '    <button type="button" id="swal-btn-upload" class="bg-teal-600 hover:bg-teal-700 active:scale-95 text-white px-3.5 py-2 rounded-lg text-xs font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1 shadow-sm">' +
+                            '      <i class="fas fa-upload"></i><span>Unggah</span>' +
+                            '    </button>' +
+                            '  </div>' +
+                            '  <input type="text" id="swal-edit-val" class="w-full p-2 border border-gray-200 rounded-lg text-xs text-gray-600 bg-gray-100 outline-none" value="' + escapeHtml(rawVal) + '" placeholder="URL Google Drive hasil upload..." readonly>' +
+                            '  <p id="swal-upload-status" class="text-[11px] text-gray-500"></p>' +
+                            '</div>';
+                        wrapper.innerHTML = fieldHtml;
+
+                        const btnUpload = document.getElementById('swal-btn-upload');
+                        const fileInput = document.getElementById('swal-upload-file');
+                        const uploadStatusEl = document.getElementById('swal-upload-status');
+                        const valUrlInput = document.getElementById('swal-edit-val');
+                        const previewArea = document.getElementById('swal-upload-preview-area');
+
+                        if (btnUpload && fileInput) {
+                            btnUpload.onclick = function() {
+                                const file = fileInput.files[0];
+                                if (!file) {
+                                    if (uploadStatusEl) uploadStatusEl.innerHTML = '<span class="text-rose-500 font-semibold"><i class="fas fa-exclamation-triangle mr-1"></i>Pilih file terlebih dahulu sebelum klik Unggah.</span>';
+                                    return;
+                                }
+                                if (file.size > 5 * 1024 * 1024) {
+                                    if (uploadStatusEl) uploadStatusEl.innerHTML = '<span class="text-rose-500 font-semibold"><i class="fas fa-exclamation-triangle mr-1"></i>Ukuran file melebihi batas maksimal 5 MB.</span>';
+                                    return;
+                                }
+
+                                btnUpload.disabled = true;
+                                btnUpload.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Mengunggah...';
+                                if (uploadStatusEl) uploadStatusEl.innerHTML = '<span class="text-teal-600 font-medium"><i class="fas fa-spinner fa-spin mr-1"></i>Sedang mengunggah berkas ke Google Drive...</span>';
+
+                                const reader = new FileReader();
+                                reader.onload = function(e) {
+                                    const base64Data = e.target.result;
+                                    const backendFn = cfg.backendFn || 'uploadStrToDrive';
+                                    const actorNip = currentUser ? currentUser.nip : '';
+
+                                    if (typeof google !== 'undefined' && google.script && google.script.run && typeof google.script.run[backendFn] === 'function') {
+                                        google.script.run.withSuccessHandler(function(res) {
+                                            btnUpload.disabled = false;
+                                            btnUpload.innerHTML = '<i class="fas fa-upload mr-1"></i>Unggah';
+                                            if (res && res.success) {
+                                                if (valUrlInput) valUrlInput.value = res.url;
+                                                if (previewArea) previewArea.innerHTML = renderSwalUploadPreviewHtml(res.url);
+                                                if (uploadStatusEl) uploadStatusEl.innerHTML = '<span class="text-green-600 font-bold"><i class="fas fa-check-circle mr-1"></i>Berkas berhasil diunggah! Klik Simpan untuk memperbarui data.</span>';
+                                            } else {
+                                                if (uploadStatusEl) uploadStatusEl.innerHTML = '<span class="text-rose-600 font-bold"><i class="fas fa-times-circle mr-1"></i>' + escapeHtml((res && res.message) || 'Gagal mengunggah berkas') + '</span>';
+                                            }
+                                        }).withFailureHandler(function(err) {
+                                            btnUpload.disabled = false;
+                                            btnUpload.innerHTML = '<i class="fas fa-upload mr-1"></i>Unggah';
+                                            if (uploadStatusEl) uploadStatusEl.innerHTML = '<span class="text-rose-600 font-bold"><i class="fas fa-times-circle mr-1"></i>Terjadi kesalahan sistem saat menghubungi server.</span>';
+                                        })[backendFn](base64Data, nip, actorNip);
+                                    } else {
+                                        // Mock fallback
+                                        btnUpload.disabled = false;
+                                        btnUpload.innerHTML = '<i class="fas fa-upload mr-1"></i>Unggah';
+                                        const mockUrl = 'https://drive.google.com/file/d/mock_' + Date.now();
+                                        if (valUrlInput) valUrlInput.value = mockUrl;
+                                        if (previewArea) previewArea.innerHTML = renderSwalUploadPreviewHtml(mockUrl);
+                                        if (uploadStatusEl) uploadStatusEl.innerHTML = '<span class="text-green-600 font-bold"><i class="fas fa-check-circle mr-1"></i>Berkas berhasil diunggah (Simulasi Mock)! Klik Simpan untuk memperbarui.</span>';
+                                    }
+                                };
+                                reader.readAsDataURL(file);
+                            };
+                        }
+                        break;
+
+                    case 'text-hint':
+                        if (colName === 'ALAMAT') {
+                            fieldHtml = '<label class="block text-xs font-bold text-gray-600 mb-1">Alamat Domisili</label>' +
+                                '<textarea id="swal-edit-val" rows="3" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 bg-white placeholder-gray-400">' + escapeHtml(rawVal) + '</textarea>' +
+                                '<p class="text-[10px] text-gray-500 mt-1 italic">' + (cfg.hint || '') + '</p>';
+                        } else {
+                            fieldHtml = '<label class="block text-xs font-bold text-gray-600 mb-1">' + escapeHtml(colName) + '</label>' +
+                                '<input type="text" id="swal-edit-val" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 bg-white" value="' + escapeHtml(rawVal) + '" placeholder="' + (cfg.hint || '') + '">' +
+                                '<p class="text-[10px] text-gray-500 mt-1 italic">' + (cfg.hint || '') + '</p>';
+                        }
+                        wrapper.innerHTML = fieldHtml;
+                        break;
+
+                    default:
+                        fieldHtml = '<label class="block text-xs font-bold text-gray-600 mb-1">' + escapeHtml(colName) + '</label>' +
+                            '<textarea id="swal-edit-val" rows="3" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 placeholder-gray-400 bg-white">' + escapeHtml(rawVal) + '</textarea>';
+                        wrapper.innerHTML = fieldHtml;
+                        break;
+                }
+            }
 
             Swal.fire({
-                title: 'Edit Data Cepat',
+                title: 'Edit Data Pegawai',
                 html: optionsHtml,
+                width: '560px',
                 showCancelButton: true,
-                confirmButtonText: '<i class="fas fa-save mr-1"></i> Simpan',
+                confirmButtonText: '<i class="fas fa-save mr-1"></i> Simpan Perubahan',
                 cancelButtonText: 'Batal',
                 confirmButtonColor: '#0d9488',
+                focusConfirm: false,
                 didOpen: function() {
                     const colSelect = document.getElementById('swal-edit-col');
-                    const valInput = document.getElementById('swal-edit-val');
-                    if (colSelect && valInput) {
-                        valInput.value = rowData[colSelect.value] || '';
+                    if (colSelect) {
+                        renderFieldForCol(colSelect.value);
                         colSelect.addEventListener('change', function() {
-                            valInput.value = rowData[colSelect.value] || '';
+                            renderFieldForCol(this.value);
                         });
                     }
                 },
                 preConfirm: function() {
+                    const colSelect = document.getElementById('swal-edit-col');
+                    const valInput = document.getElementById('swal-edit-val');
+                    if (!colSelect || !valInput) return false;
+
+                    const col = colSelect.value;
+                    const val = valInput.value.trim();
+                    const cfg = EDIT_FIELD_CONFIG[col] || {};
+
+                    const updateMap = {};
+                    updateMap[col] = val;
+
+                    // Sinkronisasi otomatis Status Kredensial
+                    if (cfg.type === 'date-kredensial') {
+                        const autoStatus = calcKredensialStatus(val);
+                        updateMap['STATUS KREDENSIAL'] = autoStatus;
+                    } 
+                    // Sinkronisasi otomatis Status Kompetensi dari Masa Berlaku
+                    else if (cfg.type === 'date-masa' && cfg.pairedStatusCol) {
+                        const autoStatus = calcKompetensiStatus(val);
+                        updateMap[cfg.pairedStatusCol] = autoStatus;
+                    } 
+                    // Sinkronisasi otomatis Kelompok dari Ruangan Unit
+                    else if (cfg.type === 'select-unit') {
+                        if (unitDataCache && unitDataCache.length > 0) {
+                            const found = unitDataCache.find(function(u) {
+                                const uName = (typeof u === 'object' && u !== null) ? (u.ruangan || '') : String(u);
+                                return uName === val;
+                            });
+                            if (found && found.kelompok) {
+                                updateMap['KELOMPOK'] = found.kelompok;
+                            }
+                        }
+                    }
+
                     return {
-                        col: document.getElementById('swal-edit-col').value,
-                        val: document.getElementById('swal-edit-val').value
+                        col: col,
+                        val: val,
+                        updateMap: updateMap
                     };
                 }
             }).then(function(result) {
-                if(result.isConfirmed) {
-                    let updateMap = {};
-                    updateMap[result.value.col] = result.value.val;
-                    
-                    Swal.fire({title: 'Menyimpan...', allowOutsideClick: false, didOpen: function() { Swal.showLoading(); }});
-                    
-                    google.script.run.withSuccessHandler(function(res) {
-                        if(res.success) {
-                            updateLocalCacheRow(nip, updateMap);
-                            applyFiltersToArray(); // Update tampilan tabel seketika
-                            Swal.fire('Sukses', 'Data berhasil diperbarui', 'success');
-                        } else {
-                            Swal.fire('Error', res.message, 'error');
-                        }
-                    }).withFailureHandler(function(err) {
-                        Swal.fire('Error', 'Terjadi kesalahan sistem saat menghubungi server.', 'error');
-                    }).updateDataByNip(nip, updateMap, currentUser ? currentUser.nip : '');
+                if (result.isConfirmed && result.value) {
+                    const updateMap = result.value.updateMap;
+                    const colName = result.value.col;
+
+                    Swal.fire({
+                        title: 'Menyimpan...',
+                        allowOutsideClick: false,
+                        didOpen: function() { Swal.showLoading(); }
+                    });
+
+                    google.script.run
+                        .withSuccessHandler(function(res) {
+                            if (res && res.success) {
+                                updateLocalCacheRow(nip, updateMap);
+                                applyFiltersToArray(); // Update tabel seketika
+
+                                const updatedKeys = Object.keys(updateMap);
+                                let successMsg = 'Kolom <b>' + escapeHtml(colName) + '</b> berhasil diperbarui.';
+                                if (updatedKeys.length > 1) {
+                                    const extraKeys = updatedKeys.filter(k => k !== colName);
+                                    successMsg += '<br><span class="text-xs text-gray-500 mt-1 inline-block"><i class="fas fa-magic text-teal-600 mr-1"></i>Sinkronisasi otomatis: ' + extraKeys.map(k => escapeHtml(k)).join(', ') + '</span>';
+                                }
+
+                                Swal.fire({
+                                    title: 'Berhasil!',
+                                    html: successMsg,
+                                    icon: 'success',
+                                    confirmButtonColor: '#0d9488'
+                                });
+                            } else {
+                                Swal.fire('Error', (res && res.message) ? res.message : 'Gagal memperbarui data', 'error');
+                            }
+                        })
+                        .withFailureHandler(function(err) {
+                            Swal.fire('Error', 'Terjadi kesalahan sistem saat menghubungi server.', 'error');
+                        })
+                        .updateDataByNip(nip, updateMap, currentUser ? currentUser.nip : '');
                 }
             });
         }
