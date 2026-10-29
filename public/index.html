@@ -1766,11 +1766,19 @@
                     <table class="w-full text-left border-collapse text-xs">
                         <thead class="bg-teal-100/70 text-teal-800 font-bold uppercase text-[10px] tracking-wide sticky top-0 z-10 border-b border-teal-200">
                             <tr>
-                                <th class="py-2.5 px-3 text-center w-12">No</th>
-                                <th class="py-2.5 px-3">NIP</th>
-                                <th class="py-2.5 px-3">Nama Pegawai</th>
-                                <th class="py-2.5 px-3" id="thKadaluarsaMasa">Masa Berlaku</th>
-                                <th class="py-2.5 px-3">Ruangan / Unit</th>
+                                <th class="py-2.5 px-3 text-center w-12 align-top pt-2.5">No</th>
+                                <th class="py-2.5 px-3 align-top pt-2.5">NIP</th>
+                                <th class="py-2.5 px-3 align-top pt-2.5">Nama Pegawai</th>
+                                <th class="py-2.5 px-3 align-top pt-2.5" id="thKadaluarsaMasa">Masa Berlaku</th>
+                                <th class="py-2 px-3 align-top min-w-[170px]">
+                                    <div class="flex items-center justify-between gap-1 mb-1">
+                                        <span>Ruangan / Unit</span>
+                                        <i class="fas fa-filter text-[10px] text-teal-600/70" title="Filter Ruangan / Unit"></i>
+                                    </div>
+                                    <select id="filterKadaluarsaUnit" onchange="filterModalKadaluarsaData()" aria-label="Filter Ruangan atau Unit" class="w-full text-[10px] font-normal normal-case py-1 px-1.5 border border-teal-300 rounded bg-white text-gray-700 outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 cursor-pointer shadow-xs transition-colors">
+                                        <option value="">Semua Ruangan / Unit</option>
+                                    </select>
+                                </th>
                             </tr>
                         </thead>
                         <tbody id="tbodyDataKadaluarsa" class="divide-y divide-gray-100 bg-white">
@@ -5446,8 +5454,39 @@
             }
 
             if (badgeEl) badgeEl.innerText = currentKadaluarsaList.length + ' Pegawai';
+            populateModalKadaluarsaUnitOptions();
             renderModalKadaluarsaTable(currentKadaluarsaList);
             openModal('modalDataKadaluarsa');
+        }
+
+        function populateModalKadaluarsaUnitOptions() {
+            const select = document.getElementById('filterKadaluarsaUnit');
+            if (!select) return;
+
+            select.innerHTML = '<option value="">Semua Ruangan / Unit</option>';
+
+            const unitCounts = {};
+            currentKadaluarsaList.forEach(function(row) {
+                const u = String(row['RUANGAN UNIT'] || '').trim();
+                const key = (u && u !== '-') ? u : '-';
+                unitCounts[key] = (unitCounts[key] || 0) + 1;
+            });
+
+            const sortedKeys = Object.keys(unitCounts).sort(function(a, b) {
+                if (a === '-') return 1;
+                if (b === '-') return -1;
+                return a.localeCompare(b, undefined, { sensitivity: 'base' });
+            });
+
+            sortedKeys.forEach(function(key) {
+                const opt = document.createElement('option');
+                opt.value = key;
+                const label = (key === '-') ? 'Lainnya / Tanpa Ruangan' : key;
+                opt.textContent = label + ' (' + unitCounts[key] + ')';
+                select.appendChild(opt);
+            });
+
+            select.value = '';
         }
 
         function renderModalKadaluarsaTable(items) {
@@ -5491,24 +5530,42 @@
         }
 
         function filterModalKadaluarsaData() {
-            const query = (document.getElementById('searchKadaluarsaInput').value || '').toLowerCase().trim();
-            if (!query) {
-                renderModalKadaluarsaTable(currentKadaluarsaList);
-                return;
-            }
+            const query = (document.getElementById('searchKadaluarsaInput')?.value || '').toLowerCase().trim();
+            const selectedUnit = (document.getElementById('filterKadaluarsaUnit')?.value || '').trim();
+
             const filtered = currentKadaluarsaList.filter(function(row) {
                 const nip = String(row['NIP'] || '').toLowerCase();
                 const nama = String(row['NAMA'] || '').toLowerCase();
-                const unit = String(row['RUANGAN UNIT'] || '').toLowerCase();
-                return nip.includes(query) || nama.includes(query) || unit.includes(query);
+                const unitRaw = String(row['RUANGAN UNIT'] || '').trim();
+                const unitLower = unitRaw.toLowerCase();
+
+                if (selectedUnit) {
+                    if (selectedUnit === '-') {
+                        if (unitRaw && unitRaw !== '-') return false;
+                    } else {
+                        if (unitLower !== selectedUnit.toLowerCase()) return false;
+                    }
+                }
+
+                if (query) {
+                    const matchNip = nip.includes(query);
+                    const matchNama = nama.includes(query);
+                    const matchUnit = unitLower.includes(query);
+                    if (!matchNip && !matchNama && !matchUnit) return false;
+                }
+
+                return true;
             });
+
             renderModalKadaluarsaTable(filtered);
         }
 
         function clearModalKadaluarsaSearch() {
             const input = document.getElementById('searchKadaluarsaInput');
             if (input) input.value = '';
-            renderModalKadaluarsaTable(currentKadaluarsaList);
+            const unitFilter = document.getElementById('filterKadaluarsaUnit');
+            if (unitFilter) unitFilter.value = '';
+            filterModalKadaluarsaData();
         }
 
         function copyNipToClipboard(nip) {
@@ -5534,9 +5591,7 @@
         }
 
         function exportKadaluarsaToExcel() {
-            const listToExport = (currentKadaluarsaRenderedList && currentKadaluarsaRenderedList.length > 0)
-                ? currentKadaluarsaRenderedList
-                : currentKadaluarsaList;
+            const listToExport = currentKadaluarsaRenderedList || [];
 
             if (!listToExport || listToExport.length === 0) {
                 Swal.fire('Info', 'Tidak ada data untuk diexport.', 'info');
