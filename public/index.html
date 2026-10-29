@@ -1813,6 +1813,94 @@
         </div>
     </div>
 
+    <!-- MODAL DATA KREDENSIAL (AKTIF / KADALUARSA / KOSONG) -->
+    <div id="modalDataKredensial" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4" onclick="if(event.target===this)closeModal('modalDataKredensial')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl relative flex flex-col max-h-[95vh] sm:max-h-[90vh] overflow-hidden">
+            <!-- Header -->
+            <div class="p-4 sm:p-5 border-b flex justify-between items-center bg-teal-50 rounded-t-2xl shrink-0">
+                <div class="flex items-center gap-3">
+                    <div id="iconKredensialModal" class="w-10 h-10 rounded-xl flex items-center justify-center text-white bg-emerald-500 shadow-sm shrink-0">
+                        <i class="fas fa-certificate text-lg"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-base sm:text-lg font-bold text-gray-800" id="titleKredensialModal">Data Kredensial</h3>
+                            <span id="badgeKredensialModal" class="bg-emerald-100 text-emerald-700 font-bold text-xs px-2.5 py-0.5 rounded-full">0 Pegawai</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-0.5" id="subtitleKredensialModal">Daftar pegawai berdasarkan status kredensial</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeModal('modalDataKredensial')" aria-label="Tutup Modal" class="text-gray-400 hover:text-gray-600 text-2xl transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-200">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Search bar -->
+            <div class="p-3 sm:px-5 bg-gray-50 border-b flex items-center gap-2 shrink-0">
+                <div class="relative flex-1">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                    <input type="text" id="searchKredensialInput" oninput="filterModalKredensialData()" placeholder="Cari berdasarkan NIP, Nama pegawai, atau Jenjang Karir..." class="w-full pl-8 pr-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white">
+                </div>
+                <button type="button" onclick="clearModalKredensialSearch()" class="px-3 py-1.5 text-xs text-gray-600 hover:text-gray-800 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 whitespace-nowrap transition-colors">
+                    <i class="fas fa-undo-alt mr-1"></i>Reset
+                </button>
+            </div>
+
+            <!-- Body: Table / List -->
+            <div class="p-4 sm:p-5 overflow-y-auto flex-1 custom-scrollbar">
+                <div class="overflow-x-auto rounded-xl border border-gray-200">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead class="bg-teal-100/70 text-teal-800 font-bold uppercase text-[10px] tracking-wide sticky top-0 z-10 border-b border-teal-200">
+                            <tr>
+                                <th class="py-2.5 px-3 text-center w-12 align-top pt-2.5">No</th>
+                                <th class="py-2.5 px-3 align-top pt-2.5">NIP</th>
+                                <th class="py-2.5 px-3 align-top pt-2.5">Nama Pegawai</th>
+                                <th class="py-2.5 px-3 align-top pt-2.5">Jenjang Karir</th>
+                                <th class="py-2.5 px-3 align-top pt-2.5" id="thKredensialTanggal">Tanggal Kredensial</th>
+                                <th class="py-2.5 px-3 align-top pt-2.5">Status Kredensial</th>
+                                <th class="py-2 px-3 align-top min-w-[170px]">
+                                    <div class="flex items-center justify-between gap-1 mb-1">
+                                        <span>Ruangan / Unit</span>
+                                        <i class="fas fa-filter text-[10px] text-teal-600/70" title="Filter Ruangan / Unit"></i>
+                                    </div>
+                                    <select id="filterKredensialUnit" onchange="filterModalKredensialData()" aria-label="Filter Ruangan atau Unit" class="w-full text-[10px] font-normal normal-case py-1 px-1.5 border border-teal-300 rounded bg-white text-gray-700 outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 cursor-pointer shadow-xs transition-colors">
+                                        <option value="">Semua Ruangan / Unit</option>
+                                    </select>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyDataKredensial" class="divide-y divide-gray-100 bg-white">
+                            <!-- Diisi secara dinamis -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyKredensialMessage" class="hidden py-10 text-center">
+                    <div class="w-14 h-14 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl border border-green-100">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <p class="font-bold text-sm text-gray-700">Tidak Ada Data</p>
+                    <p class="text-xs text-gray-500 mt-1" id="emptyKredensialSubtext">Tidak ditemukan pegawai dengan data kredensial terkait.</p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-3 sm:p-4 border-t bg-gray-50 rounded-b-2xl flex flex-wrap items-center justify-between gap-2 shrink-0 text-xs">
+                <span class="text-gray-500 font-medium truncate" id="footerKredensialSummary">Menampilkan 0 pegawai</span>
+                <div class="flex items-center gap-2">
+                    <button type="button" id="btnExportExcelKredensial" onclick="exportKredensialToExcel()" class="bg-green-600 hover:bg-green-700 active:scale-95 text-white px-3.5 py-2 rounded-lg font-bold transition-all shadow-sm flex items-center gap-1.5 whitespace-nowrap cursor-pointer" title="Export data ke file Excel (.xlsx)" aria-label="Export ke Excel">
+                        <i class="fas fa-file-excel text-sm"></i>
+                        <span>Export Excel</span>
+                    </button>
+                    <button type="button" onclick="closeModal('modalDataKredensial')" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 active:scale-95 text-gray-800 rounded-lg text-xs font-bold transition-colors">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ==========================================
         // MOCKUP DATA SYSTEM (AGENTS.md Section 2.4)
@@ -2036,7 +2124,9 @@
                 'NOMOR STR AKTIF': 'STR-EXP-112233',
                 'MASA BERLAKU STR AKTIF': '2023-01-15',
                 'STATUS STR': 'Habis Masa Berlaku',
-                'RUANGAN UNIT': 'Mawar'
+                'RUANGAN UNIT': 'Mawar',
+                'STATUS KREDENSIAL': 'Habis Masa Berlaku',
+                'TANGGAL KREDENSIAL': '2020-01-15'
             });
             const mockKomperRow3 = Object.assign({}, mockKomperRow, {
                 'NIP': '199203032018032003',
@@ -2044,7 +2134,9 @@
                 'NOMOR SIPP SIPB AKTIF': 'SIPP-EXP-445566',
                 'MASA BERLAKU SIPP SIPB AKTIF': '2023-08-20',
                 'STATUS SIPP SIPB': 'Habis Masa Berlaku',
-                'RUANGAN UNIT': 'ICU'
+                'RUANGAN UNIT': 'ICU',
+                'STATUS KREDENSIAL': '-',
+                'TANGGAL KREDENSIAL': '-'
             });
 
             function createMockRunner() {
@@ -5311,6 +5403,9 @@
             // --- KARTU HIGHLIGHT (RINGKASAN UTAMA) ---
             let totalPegawai = data.length;
             let totalVerifOK = 0;
+            let totalKredensialAktif = 0;
+            let totalKredensialExpired = 0;
+            let totalKredensialKosong = 0;
             let totalStrExpired = 0;
             let totalSippExpired = 0;
 
@@ -5318,12 +5413,44 @@
                 if (row['VERIFIKASI'] === 'Verifikasi OK') totalVerifOK++;
                 if (isExpiredDoc(row['STATUS STR'], row['MASA BERLAKU STR AKTIF'])) totalStrExpired++;
                 if (isExpiredDoc(row['STATUS SIPP SIPB'], row['MASA BERLAKU SIPP SIPB AKTIF'])) totalSippExpired++;
+
+                const cat = getKredensialCategory(row);
+                if (cat === 'AKTIF') totalKredensialAktif++;
+                else if (cat === 'KADALUARSA') totalKredensialExpired++;
+                else totalKredensialKosong++;
             });
 
-            let html = '<div class="col-span-full grid grid-cols-2 sm:grid-cols-4 gap-4 mb-2">';
+            let html = '<div class="col-span-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 sm:gap-4 mb-2">';
             html += '<div class="bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl p-4 text-white shadow-md flex flex-col justify-between"><p class="text-[10px] font-bold uppercase opacity-80 mb-1">Total Pegawai</p><h3 class="text-2xl sm:text-3xl font-bold">' + totalPegawai + '</h3></div>';
             html += '<div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-4 text-white shadow-md flex flex-col justify-between"><p class="text-[10px] font-bold uppercase opacity-80 mb-1">Verifikasi OK</p><h3 class="text-2xl sm:text-3xl font-bold">' + totalVerifOK + '</h3></div>';
-            
+
+            // Card Kredensial Aktif
+            html += '<div class="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-4 text-white shadow-md flex flex-col justify-between">';
+            html += '  <p class="text-[10px] font-bold uppercase opacity-80 mb-1">Kredensial Aktif</p>';
+            html += '  <div class="flex items-center justify-between gap-2">';
+            html += '    <h3 class="text-2xl sm:text-3xl font-bold">' + totalKredensialAktif + '</h3>';
+            html += '    <button type="button" id="btnViewKredensialAktif" onclick="openModalKredensialData(\'AKTIF\')" title="Lihat Data Kredensial Aktif" aria-label="Lihat Data Kredensial Aktif" class="bg-white/20 hover:bg-white text-white hover:text-emerald-700 active:scale-95 text-xs font-bold px-2.5 py-1 rounded-lg border border-white/40 transition-all flex items-center shadow-sm cursor-pointer whitespace-nowrap"><i class="fas fa-eye mr-1"></i>View</button>';
+            html += '  </div>';
+            html += '</div>';
+
+            // Card Kredensial Kadaluarsa
+            html += '<div class="bg-gradient-to-br from-rose-500 to-rose-600 rounded-2xl p-4 text-white shadow-md flex flex-col justify-between">';
+            html += '  <p class="text-[10px] font-bold uppercase opacity-80 mb-1">Kredensial Kadaluarsa</p>';
+            html += '  <div class="flex items-center justify-between gap-2">';
+            html += '    <h3 class="text-2xl sm:text-3xl font-bold">' + totalKredensialExpired + '</h3>';
+            html += '    <button type="button" id="btnViewKredensialKadaluarsa" onclick="openModalKredensialData(\'KADALUARSA\')" title="Lihat Data Kredensial Kadaluarsa" aria-label="Lihat Data Kredensial Kadaluarsa" class="bg-white/20 hover:bg-white text-white hover:text-rose-700 active:scale-95 text-xs font-bold px-2.5 py-1 rounded-lg border border-white/40 transition-all flex items-center shadow-sm cursor-pointer whitespace-nowrap"><i class="fas fa-eye mr-1"></i>View</button>';
+            html += '  </div>';
+            html += '</div>';
+
+            // Card Kredensial (Kosong/Tidak Ada)
+            html += '<div class="bg-gradient-to-br from-slate-500 to-slate-600 rounded-2xl p-4 text-white shadow-md flex flex-col justify-between">';
+            html += '  <p class="text-[10px] font-bold uppercase opacity-80 mb-1">Kredensial (Kosong)</p>';
+            html += '  <div class="flex items-center justify-between gap-2">';
+            html += '    <h3 class="text-2xl sm:text-3xl font-bold">' + totalKredensialKosong + '</h3>';
+            html += '    <button type="button" id="btnViewKredensialKosong" onclick="openModalKredensialData(\'KOSONG\')" title="Lihat Data Kredensial Kosong" aria-label="Lihat Data Kredensial Kosong" class="bg-white/20 hover:bg-white text-white hover:text-slate-700 active:scale-95 text-xs font-bold px-2.5 py-1 rounded-lg border border-white/40 transition-all flex items-center shadow-sm cursor-pointer whitespace-nowrap"><i class="fas fa-eye mr-1"></i>View</button>';
+            html += '  </div>';
+            html += '</div>';
+
             // Card STR Kadaluarsa
             html += '<div class="bg-gradient-to-br from-red-500 to-red-600 rounded-2xl p-4 text-white shadow-md flex flex-col justify-between">';
             html += '  <p class="text-[10px] font-bold uppercase opacity-80 mb-1">STR Kadaluarsa</p>';
@@ -5389,6 +5516,37 @@
             });
 
             container.innerHTML = html;
+        }
+
+        function getKredensialCategory(row) {
+            const status = String(row['STATUS KREDENSIAL'] || '').trim().toLowerCase();
+            const tgl = String(row['TANGGAL KREDENSIAL'] || '').trim();
+
+            if ((!status || status === '-' || status === 'kosong / tidak ada' || status === 'kosong') && (!tgl || tgl === '-')) {
+                return 'KOSONG';
+            }
+
+            if (status.includes('habis') || status.includes('kadaluarsa')) {
+                return 'KADALUARSA';
+            }
+
+            if (tgl && tgl !== '-') {
+                const d = new Date(tgl);
+                if (!isNaN(d.getTime())) {
+                    d.setFullYear(d.getFullYear() + 3);
+                    d.setHours(0, 0, 0, 0);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    if (today >= d) return 'KADALUARSA';
+                    return 'AKTIF';
+                }
+            }
+
+            if (status === 'aktif') {
+                return 'AKTIF';
+            }
+
+            return 'KOSONG';
         }
 
         let currentKadaluarsaType = 'STR';
@@ -5710,6 +5868,319 @@
                 Swal.fire({
                     title: 'Berhasil!',
                     text: `Data ${docLabel} Kadaluarsa berhasil diekspor ke Excel.`,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } catch (err) {
+                Swal.fire('Error', 'Gagal mengekspor data: ' + err.message, 'error');
+            }
+        }
+
+        // ==========================================
+        // MODAL DATA KREDENSIAL
+        // ==========================================
+        let currentKredensialType = 'AKTIF';
+        let currentKredensialList = [];
+        let currentKredensialRenderedList = [];
+
+        function openModalKredensialData(type) {
+            currentKredensialType = type;
+            const titleEl = document.getElementById('titleKredensialModal');
+            const subtitleEl = document.getElementById('subtitleKredensialModal');
+            const badgeEl = document.getElementById('badgeKredensialModal');
+            const iconEl = document.getElementById('iconKredensialModal');
+            const emptySubtextEl = document.getElementById('emptyKredensialSubtext');
+            const searchInput = document.getElementById('searchKredensialInput');
+            if (searchInput) searchInput.value = '';
+
+            const sourceData = (globalDataKomper && globalDataKomper.length > 0) ? globalDataKomper : [];
+
+            if (type === 'AKTIF') {
+                if (titleEl) titleEl.innerText = 'Data Kredensial Aktif';
+                if (subtitleEl) subtitleEl.innerText = 'Daftar pegawai dengan status kredensial aktif';
+                if (emptySubtextEl) emptySubtextEl.innerText = 'Tidak ditemukan pegawai dengan kredensial aktif.';
+                if (iconEl) {
+                    iconEl.className = 'w-10 h-10 rounded-xl flex items-center justify-center text-white bg-emerald-500 shadow-sm shrink-0';
+                    iconEl.innerHTML = '<i class="fas fa-check-circle text-lg"></i>';
+                }
+                if (badgeEl) badgeEl.className = 'bg-emerald-100 text-emerald-700 font-bold text-xs px-2.5 py-0.5 rounded-full';
+            } else if (type === 'KADALUARSA') {
+                if (titleEl) titleEl.innerText = 'Data Kredensial Kadaluarsa';
+                if (subtitleEl) subtitleEl.innerText = 'Daftar pegawai dengan kredensial habis masa berlaku';
+                if (emptySubtextEl) emptySubtextEl.innerText = 'Tidak ditemukan pegawai dengan kredensial kadaluarsa.';
+                if (iconEl) {
+                    iconEl.className = 'w-10 h-10 rounded-xl flex items-center justify-center text-white bg-rose-500 shadow-sm shrink-0';
+                    iconEl.innerHTML = '<i class="fas fa-times-circle text-lg"></i>';
+                }
+                if (badgeEl) badgeEl.className = 'bg-rose-100 text-rose-700 font-bold text-xs px-2.5 py-0.5 rounded-full';
+            } else {
+                if (titleEl) titleEl.innerText = 'Data Kredensial (Kosong / Tidak Ada)';
+                if (subtitleEl) subtitleEl.innerText = 'Daftar pegawai yang belum memiliki atau mengisi data kredensial';
+                if (emptySubtextEl) emptySubtextEl.innerText = 'Tidak ditemukan pegawai dengan data kredensial kosong.';
+                if (iconEl) {
+                    iconEl.className = 'w-10 h-10 rounded-xl flex items-center justify-center text-white bg-slate-500 shadow-sm shrink-0';
+                    iconEl.innerHTML = '<i class="fas fa-question-circle text-lg"></i>';
+                }
+                if (badgeEl) badgeEl.className = 'bg-slate-100 text-slate-700 font-bold text-xs px-2.5 py-0.5 rounded-full';
+            }
+
+            currentKredensialList = sourceData.filter(function(row) {
+                return getKredensialCategory(row) === type;
+            });
+
+            if (badgeEl) badgeEl.innerText = currentKredensialList.length + ' Pegawai';
+            populateModalKredensialUnitOptions();
+            renderModalKredensialTable(currentKredensialList);
+            openModal('modalDataKredensial');
+        }
+
+        function populateModalKredensialUnitOptions() {
+            const select = document.getElementById('filterKredensialUnit');
+            if (!select) return;
+
+            select.innerHTML = '<option value="">Semua Ruangan / Unit</option>';
+
+            const unitCounts = {};
+            currentKredensialList.forEach(function(row) {
+                const u = String(row['RUANGAN UNIT'] || '').trim();
+                const key = (u && u !== '-') ? u : '-';
+                unitCounts[key] = (unitCounts[key] || 0) + 1;
+            });
+
+            const sortedKeys = Object.keys(unitCounts).sort(function(a, b) {
+                if (a === '-') return 1;
+                if (b === '-') return -1;
+                return a.localeCompare(b, undefined, { sensitivity: 'base' });
+            });
+
+            sortedKeys.forEach(function(key) {
+                const opt = document.createElement('option');
+                opt.value = key;
+                const label = (key === '-') ? 'Lainnya / Tanpa Ruangan' : key;
+                opt.textContent = label + ' (' + unitCounts[key] + ')';
+                select.appendChild(opt);
+            });
+
+            select.value = '';
+        }
+
+        function renderModalKredensialTable(items) {
+            currentKredensialRenderedList = items || [];
+            const tbody = document.getElementById('tbodyDataKredensial');
+            const emptyMsg = document.getElementById('emptyKredensialMessage');
+            const summary = document.getElementById('footerKredensialSummary');
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+            if (!items || items.length === 0) {
+                if (emptyMsg) emptyMsg.classList.remove('hidden');
+                if (summary) summary.innerText = 'Menampilkan 0 pegawai';
+                return;
+            }
+
+            if (emptyMsg) emptyMsg.classList.add('hidden');
+            if (summary) summary.innerText = 'Menampilkan ' + items.length + ' pegawai';
+
+            let rowsHtml = '';
+            items.forEach(function(item, idx) {
+                let nipRaw = String(item['NIP'] || '-');
+                let nip = escapeHtml(nipRaw);
+                let nama = escapeHtml(item['NAMA'] || '-');
+                let unit = escapeHtml(item['RUANGAN UNIT'] || '-');
+                let jenjang = escapeHtml(item['JENJANG KARIR'] || '-');
+                let tglKred = item['TANGGAL KREDENSIAL'] || '-';
+                let tglFormatted = (tglKred && tglKred !== '-' && typeof formatTanggalIndo === 'function') ? formatTanggalIndo(tglKred) : tglKred;
+
+                let cat = getKredensialCategory(item);
+                let statusBadge = '';
+                if (cat === 'AKTIF') {
+                    statusBadge = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-700 border border-green-200 inline-block">Aktif</span>';
+                } else if (cat === 'KADALUARSA') {
+                    statusBadge = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-600 border border-red-200 inline-block">Habis Masa Berlaku</span>';
+                } else {
+                    statusBadge = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-500 border border-gray-200 inline-block">Belum Diisi</span>';
+                }
+
+                rowsHtml += '<tr class="hover:bg-teal-50/50 transition-colors border-b border-gray-100">';
+                rowsHtml += '  <td class="py-2.5 px-3 text-center text-gray-500 font-medium">' + (idx + 1) + '</td>';
+                rowsHtml += '  <td class="py-2.5 px-3 whitespace-nowrap"><div class="flex items-center gap-1.5"><span class="font-mono font-bold text-teal-700">' + nip + '</span><button type="button" onclick="copyNipToClipboard(\'' + nipRaw.replace(/'/g, "\\'") + '\')" title="Salin NIP" aria-label="Salin NIP" class="text-gray-400 hover:text-teal-600 transition-colors cursor-pointer"><i class="far fa-copy text-xs"></i></button></div></td>';
+                rowsHtml += '  <td class="py-2.5 px-3 font-semibold text-gray-800">' + nama + '</td>';
+                rowsHtml += '  <td class="py-2.5 px-3 text-gray-600 whitespace-nowrap">' + jenjang + '</td>';
+                rowsHtml += '  <td class="py-2.5 px-3 text-gray-600 whitespace-nowrap">' + escapeHtml(tglFormatted) + '</td>';
+                rowsHtml += '  <td class="py-2.5 px-3 whitespace-nowrap">' + statusBadge + '</td>';
+                rowsHtml += '  <td class="py-2.5 px-3 text-gray-600 whitespace-nowrap">' + unit + '</td>';
+                rowsHtml += '</tr>';
+            });
+
+            tbody.innerHTML = rowsHtml;
+        }
+
+        function filterModalKredensialData() {
+            const query = (document.getElementById('searchKredensialInput')?.value || '').toLowerCase().trim();
+            const selectedUnit = (document.getElementById('filterKredensialUnit')?.value || '').trim();
+
+            const filtered = currentKredensialList.filter(function(row) {
+                const nip = String(row['NIP'] || '').toLowerCase();
+                const nama = String(row['NAMA'] || '').toLowerCase();
+                const jenjang = String(row['JENJANG KARIR'] || '').toLowerCase();
+                const unitRaw = String(row['RUANGAN UNIT'] || '').trim();
+                const unitLower = unitRaw.toLowerCase();
+
+                if (selectedUnit) {
+                    if (selectedUnit === '-') {
+                        if (unitRaw && unitRaw !== '-') return false;
+                    } else {
+                        if (unitLower !== selectedUnit.toLowerCase()) return false;
+                    }
+                }
+
+                if (query) {
+                    const matchNip = nip.includes(query);
+                    const matchNama = nama.includes(query);
+                    const matchJenjang = jenjang.includes(query);
+                    const matchUnit = unitLower.includes(query);
+                    if (!matchNip && !matchNama && !matchJenjang && !matchUnit) return false;
+                }
+
+                return true;
+            });
+
+            renderModalKredensialTable(filtered);
+        }
+
+        function clearModalKredensialSearch() {
+            const input = document.getElementById('searchKredensialInput');
+            if (input) input.value = '';
+            const unitFilter = document.getElementById('filterKredensialUnit');
+            if (unitFilter) unitFilter.value = '';
+            filterModalKredensialData();
+        }
+
+        function exportKredensialToExcel() {
+            const listToExport = currentKredensialRenderedList || [];
+
+            if (!listToExport || listToExport.length === 0) {
+                Swal.fire('Info', 'Tidak ada data untuk diexport.', 'info');
+                return;
+            }
+
+            if (typeof XLSX === 'undefined') {
+                Swal.fire('Error', 'Library SheetJS (XLSX) tidak tersedia.', 'error');
+                return;
+            }
+
+            Swal.fire({
+                title: 'Menyiapkan File...',
+                text: 'Sedang mengekspor data ke Excel (.xlsx)',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            try {
+                let docLabel = 'Aktif';
+                if (currentKredensialType === 'KADALUARSA') docLabel = 'Kadaluarsa';
+                else if (currentKredensialType === 'KOSONG') docLabel = 'Kosong';
+
+                const exportHeaders = [
+                    'NO',
+                    'NIP',
+                    'NAMA PEGAWAI',
+                    'STATUS KREDENSIAL',
+                    'TANGGAL KREDENSIAL',
+                    'JENJANG KARIR',
+                    'RUANGAN UNIT',
+                    'KELOMPOK',
+                    'JABATAN',
+                    'STATUS KEPEGAWAIAN',
+                    'NOMOR HANDPHONE'
+                ];
+
+                const formatTgl = function(tgl) {
+                    if (!tgl || tgl === '-' || tgl === 'Seumur Hidup') return tgl || '-';
+                    let d = new Date(tgl);
+                    if (!isNaN(d.getTime())) {
+                        const y = d.getFullYear();
+                        const m = String(d.getMonth() + 1).padStart(2, '0');
+                        const day = String(d.getDate()).padStart(2, '0');
+                        return `${day}-${m}-${y}`;
+                    }
+                    return String(tgl);
+                };
+
+                const exportData = listToExport.map(function(row, idx) {
+                    const nip = String(row['NIP'] || '');
+                    const nama = String(row['NAMA'] || '');
+                    const cat = getKredensialCategory(row);
+                    let status = 'Aktif';
+                    if (cat === 'KADALUARSA') status = 'Habis Masa Berlaku';
+                    else if (cat === 'KOSONG') status = 'Kosong / Belum Diisi';
+
+                    const tglKred = row['TANGGAL KREDENSIAL'] || '-';
+                    const jenjang = String(row['JENJANG KARIR'] || '-');
+                    const unit = String(row['RUANGAN UNIT'] || '-');
+                    const kelompok = String(row['KELOMPOK'] || '-');
+                    const jabatan = String(row['JABATAN'] || '-');
+                    const kepegawaian = String(row['STATUS KEPEGAWAIAN'] || '-');
+                    const noHp = String(row['NOMOR HANDPHONE'] || '-');
+
+                    return [
+                        idx + 1,
+                        nip,
+                        nama,
+                        status,
+                        formatTgl(tglKred),
+                        jenjang,
+                        unit,
+                        kelompok,
+                        jabatan,
+                        kepegawaian,
+                        noHp
+                    ];
+                });
+
+                exportData.unshift(exportHeaders);
+
+                const worksheet = XLSX.utils.aoa_to_sheet(exportData);
+
+                // Format string cell untuk NIP, NOMOR HANDPHONE
+                const stringCols = [1, 10];
+                stringCols.forEach(function(colIdx) {
+                    for (let R = 1; R <= listToExport.length; R++) {
+                        const cellRef = XLSX.utils.encode_cell({ c: colIdx, r: R });
+                        if (worksheet[cellRef]) {
+                            worksheet[cellRef].t = 's';
+                            worksheet[cellRef].z = '@';
+                        }
+                    }
+                });
+
+                worksheet['!cols'] = [
+                    { wch: 6 },  // NO
+                    { wch: 22 }, // NIP
+                    { wch: 32 }, // NAMA PEGAWAI
+                    { wch: 20 }, // STATUS KREDENSIAL
+                    { wch: 18 }, // TANGGAL KREDENSIAL
+                    { wch: 18 }, // JENJANG KARIR
+                    { wch: 22 }, // RUANGAN UNIT
+                    { wch: 25 }, // KELOMPOK
+                    { wch: 20 }, // JABATAN
+                    { wch: 20 }, // STATUS KEPEGAWAIAN
+                    { wch: 18 }  // NOMOR HANDPHONE
+                ];
+
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, `Kredensial_${docLabel}`);
+
+                const now = new Date();
+                const dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+                const fileName = `Data_Kredensial_${docLabel}_RSUD_Subang_${dateStr}.xlsx`;
+
+                XLSX.writeFile(workbook, fileName);
+
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: `Data Kredensial ${docLabel} berhasil diekspor ke Excel.`,
                     icon: 'success',
                     timer: 2000,
                     showConfirmButton: false
