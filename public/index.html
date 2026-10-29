@@ -1790,11 +1790,17 @@
             </div>
 
             <!-- Footer -->
-            <div class="p-3 sm:p-4 border-t bg-gray-50 rounded-b-2xl flex items-center justify-between shrink-0 text-xs">
-                <span class="text-gray-500 font-medium" id="footerKadaluarsaSummary">Menampilkan 0 pegawai</span>
-                <button type="button" onclick="closeModal('modalDataKadaluarsa')" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg text-xs font-bold transition-colors">
-                    Tutup
-                </button>
+            <div class="p-3 sm:p-4 border-t bg-gray-50 rounded-b-2xl flex flex-wrap items-center justify-between gap-2 shrink-0 text-xs">
+                <span class="text-gray-500 font-medium truncate" id="footerKadaluarsaSummary">Menampilkan 0 pegawai</span>
+                <div class="flex items-center gap-2">
+                    <button type="button" id="btnExportExcelKadaluarsa" onclick="exportKadaluarsaToExcel()" class="bg-green-600 hover:bg-green-700 active:scale-95 text-white px-3.5 py-2 rounded-lg font-bold transition-all shadow-sm flex items-center gap-1.5 whitespace-nowrap cursor-pointer" title="Export data ke file Excel (.xlsx)" aria-label="Export ke Excel">
+                        <i class="fas fa-file-excel text-sm"></i>
+                        <span>Export Excel</span>
+                    </button>
+                    <button type="button" onclick="closeModal('modalDataKadaluarsa')" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 active:scale-95 text-gray-800 rounded-lg text-xs font-bold transition-colors">
+                        Tutup
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -5379,6 +5385,7 @@
 
         let currentKadaluarsaType = 'STR';
         let currentKadaluarsaList = [];
+        let currentKadaluarsaRenderedList = [];
 
         function isExpiredDoc(status, masa) {
             const s = String(status || '').trim().toLowerCase();
@@ -5444,6 +5451,7 @@
         }
 
         function renderModalKadaluarsaTable(items) {
+            currentKadaluarsaRenderedList = items || [];
             const tbody = document.getElementById('tbodyDataKadaluarsa');
             const emptyMsg = document.getElementById('emptyKadaluarsaMessage');
             const summary = document.getElementById('footerKadaluarsaSummary');
@@ -5522,6 +5530,137 @@
                 });
             } else {
                 prompt('Salin NIP:', nip);
+            }
+        }
+
+        function exportKadaluarsaToExcel() {
+            const listToExport = (currentKadaluarsaRenderedList && currentKadaluarsaRenderedList.length > 0)
+                ? currentKadaluarsaRenderedList
+                : currentKadaluarsaList;
+
+            if (!listToExport || listToExport.length === 0) {
+                Swal.fire('Info', 'Tidak ada data untuk diexport.', 'info');
+                return;
+            }
+
+            if (typeof XLSX === 'undefined') {
+                Swal.fire('Error', 'Library SheetJS (XLSX) tidak tersedia.', 'error');
+                return;
+            }
+
+            Swal.fire({
+                title: 'Menyiapkan File...',
+                text: 'Sedang mengekspor data ke Excel (.xlsx)',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            try {
+                const isSTR = (currentKadaluarsaType === 'STR');
+                const docLabel = isSTR ? 'STR' : 'SIPP';
+                
+                const exportHeaders = [
+                    'NO',
+                    'NIP',
+                    'NAMA PEGAWAI',
+                    'STATUS ' + docLabel,
+                    'NOMOR ' + docLabel,
+                    'TANGGAL TERBIT ' + docLabel,
+                    'MASA BERLAKU ' + docLabel,
+                    'RUANGAN UNIT',
+                    'JABATAN',
+                    'STATUS KEPEGAWAIAN',
+                    'NOMOR HANDPHONE'
+                ];
+
+                const formatTgl = function(tgl) {
+                    if (!tgl || tgl === '-' || tgl === 'Seumur Hidup') return tgl || '-';
+                    let d = new Date(tgl);
+                    if (!isNaN(d.getTime())) {
+                        const y = d.getFullYear();
+                        const m = String(d.getMonth() + 1).padStart(2, '0');
+                        const day = String(d.getDate()).padStart(2, '0');
+                        return `${day}-${m}-${y}`;
+                    }
+                    return String(tgl);
+                };
+
+                const exportData = listToExport.map(function(row, idx) {
+                    const nip = String(row['NIP'] || '');
+                    const nama = String(row['NAMA'] || '');
+                    const status = String(isSTR ? (row['STATUS STR'] || 'Habis Masa Berlaku') : (row['STATUS SIPP SIPB'] || 'Habis Masa Berlaku'));
+                    const nomor = String(isSTR ? (row['NOMOR STR AKTIF'] || '-') : (row['NOMOR SIPP SIPB AKTIF'] || '-'));
+                    let tglTerbit = isSTR ? row['TANGGAL TERBIT STR AKTIF'] : row['TANGGAL TERBIT SIPP SIPB AKTIF'];
+                    let masaBerlaku = isSTR ? row['MASA BERLAKU STR AKTIF'] : row['MASA BERLAKU SIPP SIPB AKTIF'];
+                    const unit = String(row['RUANGAN UNIT'] || '-');
+                    const jabatan = String(row['JABATAN'] || '-');
+                    const kepegawaian = String(row['STATUS KEPEGAWAIAN'] || '-');
+                    const noHp = String(row['NOMOR HANDPHONE'] || '-');
+
+                    return [
+                        idx + 1,
+                        nip,
+                        nama,
+                        status,
+                        nomor,
+                        formatTgl(tglTerbit),
+                        formatTgl(masaBerlaku),
+                        unit,
+                        jabatan,
+                        kepegawaian,
+                        noHp
+                    ];
+                });
+
+                exportData.unshift(exportHeaders);
+
+                const worksheet = XLSX.utils.aoa_to_sheet(exportData);
+
+                // Format string cell untuk NIP, NOMOR, NO HANDPHONE
+                const stringCols = [1, 4, 10];
+                stringCols.forEach(function(colIdx) {
+                    for (let R = 1; R <= listToExport.length; R++) {
+                        const cellRef = XLSX.utils.encode_cell({ c: colIdx, r: R });
+                        if (worksheet[cellRef]) {
+                            worksheet[cellRef].t = 's';
+                            worksheet[cellRef].z = '@';
+                        }
+                    }
+                });
+
+                worksheet['!cols'] = [
+                    { wch: 6 },  // NO
+                    { wch: 22 }, // NIP
+                    { wch: 32 }, // NAMA PEGAWAI
+                    { wch: 20 }, // STATUS
+                    { wch: 22 }, // NOMOR
+                    { wch: 18 }, // TANGGAL TERBIT
+                    { wch: 18 }, // MASA BERLAKU
+                    { wch: 22 }, // RUANGAN UNIT
+                    { wch: 22 }, // JABATAN
+                    { wch: 22 }, // STATUS KEPEGAWAIAN
+                    { wch: 18 }  // NOMOR HANDPHONE
+                ];
+
+                const workbook = XLSX.utils.book_new();
+                const sheetName = isSTR ? "STR KADALUARSA" : "SIPP KADALUARSA";
+                XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+
+                const now = new Date();
+                const dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+                const fileName = `Data_${docLabel}_Kadaluarsa_RSUD_Subang_${dateStr}.xlsx`;
+
+                XLSX.writeFile(workbook, fileName);
+
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: `Data ${docLabel} Kadaluarsa berhasil diekspor ke Excel.`,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } catch (err) {
+                Swal.fire('Error', 'Gagal mengekspor data: ' + err.message, 'error');
             }
         }
 
