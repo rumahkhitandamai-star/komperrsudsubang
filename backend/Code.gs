@@ -230,6 +230,7 @@ function prosesLogin(nip, password, options) {
           jenjang_karir: userObj["JENJANG KARIR"],
           tanggal_kredensial: userObj["TANGGAL KREDENSIAL"],
           link_sertifikat_jenjang_karir: userObj["LINK SERTIFIKAT JENJANG KARIR"],
+          link_spk_rkk: userObj["LINK SPK & RKK"],
           status_kredensial: userObj["STATUS KREDENSIAL"],
           
           institusi_pendidikan_terakhir: userObj["INSTITUSI PENDIDIKAN TERAKHIR"],
@@ -513,6 +514,44 @@ function getDropdownJabfung() {
 // ==========================================
 // FUNGSI UPDATE DATA KE SPREADSHEET (MENU PROFIL)
 // ==========================================
+function ensureKomperColumns_(sheet, keys) {
+  try {
+    if (!sheet || !keys || !keys.length) return;
+    const upperKeys = keys.map(function(k) { return String(k).trim().toUpperCase(); });
+    if (upperKeys.indexOf("LINK SPK & RKK") === -1) return;
+
+    const dataRange = sheet.getDataRange();
+    if (dataRange.getNumRows() < 1) return;
+    const headerRow = dataRange.getValues()[0];
+    const headers = headerRow.map(function(h) { return String(h).trim().toUpperCase(); });
+
+    if (headers.indexOf("LINK SPK & RKK") !== -1) return; // Sudah ada
+
+    // Sisipkan tepat setelah "LINK SERTIFIKAT JENJANG KARIR" bila ada, atau di akhir
+    const anchorIdx = headers.indexOf("LINK SERTIFIKAT JENJANG KARIR");
+    if (anchorIdx !== -1) {
+      sheet.insertColumnAfter(anchorIdx + 1); // 1-based index di Google Sheets
+      SpreadsheetApp.flush();
+      sheet.getRange(1, anchorIdx + 2).setValue("LINK SPK & RKK");
+    } else {
+      const lastCol = sheet.getLastColumn();
+      sheet.insertColumnAfter(lastCol);
+      SpreadsheetApp.flush();
+      sheet.getRange(1, lastCol + 1).setValue("LINK SPK & RKK");
+    }
+    SpreadsheetApp.flush();
+  } catch (err) {
+    Logger.log("ensureKomperColumns_ error: " + err.message);
+  }
+}
+
+function ensureColumnLinkSpkRkk() {
+  const ss = SpreadsheetApp.openById("1fuuoaGFVBFqK3gOKHQFsB5Kr5dqUJSehlCdtnvyrOhA");
+  const sheet = ss.getSheetByName("DATA KOMPER");
+  ensureKomperColumns_(sheet, ["LINK SPK & RKK"]);
+  return { success: true, message: "Pemeriksaan kolom LINK SPK & RKK selesai." };
+}
+
 function updateDataByNip(nip, updateMap, actorNip) {
   const effectiveActor = actorNip || nip;
   if (!_canEditNip(nip, effectiveActor)) {
@@ -528,6 +567,9 @@ function updateDataByNip(nip, updateMap, actorNip) {
     const sheet = SpreadsheetApp.openById("1fuuoaGFVBFqK3gOKHQFsB5Kr5dqUJSehlCdtnvyrOhA").getSheetByName("DATA KOMPER");
     if(!sheet) return { success: false, message: "Sheet DATA KOMPER tidak ditemukan." };
     
+    // Pastikan kolom baru yang dipersyaratkan sudah tersedia di Sheet
+    ensureKomperColumns_(sheet, Object.keys(updateMap || {}));
+
     const data = sheet.getDataRange().getValues();
     const headersRaw = data[0];
     const headers = headersRaw.map(function(h) { return String(h).trim().toUpperCase(); });
@@ -631,6 +673,7 @@ function updateUnitRuangan(d, actorNip) {
     "JENJANG KARIR": d.jenjang_karir,
     "TANGGAL KREDENSIAL": d.tanggal_kredensial,
     "LINK SERTIFIKAT JENJANG KARIR": d.link_sertifikat_jenjang_karir,
+    "LINK SPK & RKK": d.link_spk_rkk,
     "STATUS KREDENSIAL": d.status_kredensial
   }, effectiveActor);
 }
@@ -761,6 +804,40 @@ function uploadJabatanFungsionalToDrive(b, nip, actorNip) { return genericUpload
 function uploadSkKgbToDrive(b, nip, actorNip) { return genericUpload(b, nip, '1Wm9B7NTkmud-W4Fcr1fQlumWz5xGfL1P', 'SK_KGB', null, actorNip); }
 
 function uploadSertifikatJenjangKarirToDrive(b, nip, actorNip) { return genericUpload(b, nip, '1_DdPyavY-_lJuf8iDmUvMFw3m8751ASY', 'Sertifikat_Karir', null, actorNip); }
+
+function getOrCreateSpkRkkFolder_() {
+  const propKey = "SPK_RKK_FOLDER_ID";
+  try {
+    const props = PropertiesService.getScriptProperties();
+    let folderId = props.getProperty(propKey);
+    if (folderId) {
+      try {
+        const existing = DriveApp.getFolderById(folderId);
+        if (existing && !existing.isTrashed()) return folderId;
+      } catch (fErr) {}
+    }
+    const folders = DriveApp.getFoldersByName("SPK_RKK");
+    if (folders.hasNext()) {
+      folderId = folders.next().getId();
+    } else {
+      const created = DriveApp.createFolder("SPK_RKK");
+      try {
+        created.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      } catch (sErr) {}
+      folderId = created.getId();
+    }
+    if (folderId) props.setProperty(propKey, folderId);
+    return folderId;
+  } catch (e) {
+    Logger.log("getOrCreateSpkRkkFolder_ error: " + e.message);
+    return null;
+  }
+}
+
+function uploadSpkRkkToDrive(b, nip, actorNip) {
+  const folderId = getOrCreateSpkRkkFolder_();
+  return genericUpload(b, nip, folderId, 'SPK_RKK', null, actorNip);
+}
 function uploadIjazahToDrive(b, nip, actorNip) { return genericUpload(b, nip, '11MrcbHnlU-f4kZ2RjHzip03LiHwqhVtq', 'Ijazah', null, actorNip); }
 
 function uploadStrToDrive(b, nip, actorNip) { return genericUpload(b, nip, '1kKMCh9HE-hZui1I3PS4eZIt9eks-oVNb', 'STR', null, actorNip); }

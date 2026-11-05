@@ -604,6 +604,7 @@
                         <div><p class="text-[10px] text-teal-600 font-bold uppercase">Tanggal Kredensial</p><p class="text-sm font-medium" id="card_tanggal_kredensial">-</p></div>
                         <div><p class="text-[10px] text-teal-600 font-bold uppercase">Status Kredensial</p><p class="text-sm font-bold" id="card_status_kredensial">-</p></div>
                         <div class="sm:col-span-2 lg:col-span-3 pt-2 border-t"><p class="text-[10px] text-teal-600 font-bold uppercase">Link Sertifikat Jenjang Karir</p><div class="text-sm break-words mt-1" id="card_link_sertifikat">-</div></div>
+                        <div class="sm:col-span-2 lg:col-span-3 pt-2 border-t"><p class="text-[10px] text-teal-600 font-bold uppercase">Link SPK &amp; RKK</p><div class="text-sm break-words mt-1" id="card_link_spk_rkk">-</div></div>
                     </div>
                 </div>
 
@@ -761,7 +762,7 @@
                                 </tr>
                             </thead>
                             <tbody id="tableBodyKomper" class="text-gray-700 bg-white">
-                                <tr><td colspan="82" class="p-4 text-center italic text-gray-500">Silakan klik "Refresh Data" untuk memuat...</td></tr>
+                                <tr><td colspan="84" class="p-4 text-center italic text-gray-500">Silakan klik "Refresh Data" untuk memuat...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -1465,6 +1466,15 @@
                             <input type="hidden" id="edit_link_sertifikat">
                             <p id="sertifikat_upload_status" class="text-[10px] text-gray-500 mt-1 break-words"></p>
                         </div>
+                        <div class="sm:col-span-2 pt-2 border-t">
+                            <label class="block text-xs font-bold text-gray-500 mb-1">Upload Foto SPK &amp; RKK (JPG, JPEG, PNG)</label>
+                            <div class="flex gap-2">
+                                <input type="file" id="inputSpkRkk" accept=".jpg,.jpeg,.png" class="w-full text-xs border rounded p-1 box-border">
+                                <button type="button" onclick="handleUploadSpkRkk()" class="bg-teal-600 text-white px-3 rounded text-xs font-bold">Upload</button>
+                            </div>
+                            <input type="hidden" id="edit_link_spk_rkk">
+                            <p id="spk_rkk_upload_status" class="text-[10px] text-gray-500 mt-1 break-words"></p>
+                        </div>
                     </div>
                 </div>
                 <div class="p-4 border-t bg-gray-50 rounded-b-xl flex justify-end gap-2 shrink-0">
@@ -1982,6 +1992,7 @@
                 tanggal_kredensial: '2024-01-15',
                 status_kredensial: 'Aktif',
                 link_sertifikat_jenjang_karir: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=300&q=80',
+                link_spk_rkk: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=300&q=80',
                 institusi_pendidikan_terakhir: 'Universitas Padjadjaran',
                 jurusan: 'Keperawatan',
                 tahun_lulus_pendidikan_terakhir: '2008',
@@ -2068,6 +2079,7 @@
                 'JENJANG KARIR': 'PK III',
                 'TANGGAL KREDENSIAL': '2024-01-15',
                 'LINK SERTIFIKAT JENJANG KARIR': 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=300&q=80',
+                'LINK SPK & RKK': 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=300&q=80',
                 'STATUS KREDENSIAL': 'Aktif',
                 'INSTITUSI PENDIDIKAN TERAKHIR': 'Universitas Padjadjaran',
                 'JURUSAN': 'Keperawatan',
@@ -2298,6 +2310,9 @@
                     },
                     uploadSertifikatJenjangKarirToDrive: function() {
                         return { success: true, url: mockUser.link_sertifikat_jenjang_karir };
+                    },
+                    uploadSpkRkkToDrive: function() {
+                        return { success: true, url: mockUser.link_spk_rkk };
                     },
                     exportKredensial: function() {
                         return { success: true, url: '#' };
@@ -3091,6 +3106,7 @@
             'LINK JABATAN FUNGSIONAL': { type: 'upload', backendFn: 'uploadJabatanFungsionalToDrive', accept: '.jpg,.jpeg,.png', isImage: true },
             'LINK SK KGB': { type: 'upload', backendFn: 'uploadSkKgbToDrive', accept: '.jpg,.jpeg,.png', isImage: true },
             'LINK SERTIFIKAT JENJANG KARIR': { type: 'upload', backendFn: 'uploadSertifikatJenjangKarirToDrive', accept: '.jpg,.jpeg,.png', isImage: true },
+            'LINK SPK & RKK': { type: 'upload', backendFn: 'uploadSpkRkkToDrive', accept: '.jpg,.jpeg,.png', isImage: true },
             'LINK IJAZAH': { type: 'upload', backendFn: 'uploadIjazahToDrive', accept: '.jpg,.jpeg,.png', isImage: true },
             'LINK STR': { type: 'upload', backendFn: 'uploadStrToDrive', accept: '.jpg,.jpeg,.png,.pdf', isImage: false },
             'LINK SIPP SIPB': { type: 'upload', backendFn: 'uploadSippToDrive', accept: '.jpg,.jpeg,.png,.pdf', isImage: false },
@@ -3793,7 +3809,7 @@
             }
 
             // 3. Pengecekan Menu Unit Ruangan (Seluruh Kolom Harus Diisi)
-            if (isEmpty(currentUser.ruangan_unit) || isEmpty(currentUser.kelompok) || isEmpty(currentUser.jabatan) || isEmpty(currentUser.jenjang_karir) || isEmpty(currentUser.tanggal_kredensial) || isEmpty(currentUser.status_kredensial) || isInvalidLink(currentUser.link_sertifikat_jenjang_karir)) {
+            if (isEmpty(currentUser.ruangan_unit) || isEmpty(currentUser.kelompok) || isEmpty(currentUser.jabatan) || isEmpty(currentUser.jenjang_karir) || isEmpty(currentUser.tanggal_kredensial) || isEmpty(currentUser.status_kredensial) || isInvalidLink(currentUser.link_sertifikat_jenjang_karir) || isInvalidLink(currentUser.link_spk_rkk)) {
                 missingMenus.push("Unit Ruangan");
             }
 
@@ -4188,7 +4204,7 @@
             if (!currentUser) return;
             
             let filled = 0;
-            let total = 42; // Total 42 kolom wajib sesuai kesepakatan kirimWA()
+            let total = 43; // Total 43 kolom wajib sesuai kesepakatan kirimWA() (termasuk Link SPK & RKK)
             globalMissingFields = []; // Reset ulang array setiap kalkulasi
 
             const isEmptyStr = function(val) {
@@ -4224,7 +4240,7 @@
             if (!isEmptyStr(currentUser.status_kepegawaian)) filled++; else globalMissingFields.push('Status Kepegawaian (Kepegawaian)');
             if (!isEmptyStr(currentUser.gaji_pokok)) filled++; else globalMissingFields.push('Gaji Pokok (Kepegawaian)');
 
-            // 3. Unit Ruangan (7 Wajib)
+            // 3. Unit Ruangan (8 Wajib)
             if (!isEmptyStr(currentUser.ruangan_unit)) filled++; else globalMissingFields.push('Ruangan Unit (Unit Ruangan)');
             if (!isEmptyStr(currentUser.kelompok)) filled++; else globalMissingFields.push('Kelompok (Unit Ruangan)');
             if (!isEmptyStr(currentUser.jabatan)) filled++; else globalMissingFields.push('Jabatan (Unit Ruangan)');
@@ -4232,6 +4248,7 @@
             if (!isEmptyStr(currentUser.tanggal_kredensial)) filled++; else globalMissingFields.push('Tanggal Kredensial (Unit Ruangan)');
             if (!isEmptyStr(currentUser.status_kredensial)) filled++; else globalMissingFields.push('Status Kredensial (Unit Ruangan)');
             if (!isInvalidLinkStr(currentUser.link_sertifikat_jenjang_karir)) filled++; else globalMissingFields.push('Link Sertifikat Jenjang Karir (Unit Ruangan)');
+            if (!isInvalidLinkStr(currentUser.link_spk_rkk)) filled++; else globalMissingFields.push('Link SPK & RKK (Unit Ruangan)');
 
             // 4. Pendidikan (5 Wajib)
             if (!isEmptyStr(currentUser.institusi_pendidikan_terakhir)) filled++; else globalMissingFields.push('Institusi Pendidikan Terakhir (Pendidikan)');
@@ -4496,6 +4513,7 @@
             }
 
             renderSafeLinkPreview('card_link_sertifikat', currentUser.link_sertifikat_jenjang_karir, 'Sertifikat');
+            renderSafeLinkPreview('card_link_spk_rkk', currentUser.link_spk_rkk, 'SPK & RKK');
             updateProgressKelengkapan();
         }
 
@@ -5273,6 +5291,7 @@
             setV('edit_tanggal_kredensial', formatDateInput(currentUser.tanggal_kredensial));
             setV('edit_status_kredensial', currentUser.status_kredensial);
             setV('edit_link_sertifikat', currentUser.link_sertifikat_jenjang_karir);
+            setV('edit_link_spk_rkk', currentUser.link_spk_rkk);
 
             calculateStatusKredensial();
 
@@ -5306,6 +5325,7 @@
             }
 
             renderSafeUploadPreview(currentUser.link_sertifikat_jenjang_karir, 'sertifikat_upload_status');
+            renderSafeUploadPreview(currentUser.link_spk_rkk, 'spk_rkk_upload_status');
         }
 
         function fillFormEditPendidikan() {
@@ -5553,29 +5573,29 @@
         }
 
         const headersKomper = [
-            'NIP', 'PASSWORD', 'FOTO', 'NAMA', 'NOMOR KTP', 'TEMPAT LAHIR', 'TANGGAL LAHIR', 'JENIS KELAMIN', 'AGAMA', 'ALAMAT', 'RT', 'RW', 'PROVINSI', 'KABUPATEN', 'KECAMATAN', 'KELURAHAN', 'NOMOR HANDPHONE', 'ALAMAT EMAIL', 'NOMOR NPWP', 'LINK KTP', 'STATUS KEPEGAWAIAN', 'NOMOR KARPEG', 'GOLONGAN TERAKHIR', 'TMT GOLONGAN TERAKHIR', 'MASA KERJA SESUAI SK', 'GAJI POKOK', 'LINK SK TERAKHIR', 'JABATAN FUNGSIONAL', 'TMT JABATAN FUNGSIONAL', 'LINK JABATAN FUNGSIONAL', 'SK KGB', 'TMT SK KGB', 'GAJI POKOK KGB', 'LINK SK KGB', 'RUANGAN UNIT', 'KELOMPOK', 'JABATAN', 'JENJANG KARIR', 'TANGGAL KREDENSIAL', 'LINK SERTIFIKAT JENJANG KARIR', 'STATUS KREDENSIAL', 'INSTITUSI PENDIDIKAN TERAKHIR', 'JURUSAN', 'TAHUN LULUS PENDIDIKAN TERAKHIR', 'JENJANG PENDIDIKAN TERAKHIR', 'LINK IJAZAH', 'NOMOR STR AKTIF', 'TANGGAL TERBIT STR AKTIF', 'MASA BERLAKU STR AKTIF', 'LINK STR', 'STATUS STR', 'NOMOR SIPP SIPB AKTIF', 'TANGGAL TERBIT SIPP SIPB AKTIF', 'MASA BERLAKU SIPP SIPB AKTIF', 'LINK SIPP SIPB', 'STATUS SIPP SIPB', 'NOMOR BTCLS', 'TANGGAL TERBIT BTCLS', 'MASA BERLAKU BTCLS', 'LINK BTCLS', 'STATUS BTCLS', 'NOMOR PELATIHAN KAMAR OPERASI', 'TANGGAL TERBIT PELATIHAN KAMAR OPERASI', 'MASA BERLAKU PELATIHAN KAMAR OPERASI', 'LINK PELATIHAN KAMAR OPERASI', 'STATUS PELATIHAN KAMAR OPERASI', 'NOMOR PELATIHAN INTENSIF', 'TANGGAL TERBIT PELATIHAN INTENSIF', 'MASA BERLAKU PELATIHAN INTENSIF', 'LINK PELATIHAN INTENSIF', 'STATUS PELATIHAN INTENSIF', 'NOMOR PELATIHAN HD', 'TANGGAL TERBIT PELATIHAN HD', 'MASA BERLAKU PELATIHAN HD', 'LINK PELATIHAN HD', 'STATUS PELATIHAN HD', 'NOMOR PELATIHAN MIDWIFE UPDATE', 'TANGGAL TERBIT PELATIHAN MIDWIFE UPDATE', 'MASA BERLAKU PELATIHAN MIDWIFE UPDATE', 'LINK PELATIHAN MU', 'STATUS PELATIHAN MU', 'VERIFIKASI', 'ROLE'
+            'NIP', 'PASSWORD', 'FOTO', 'NAMA', 'NOMOR KTP', 'TEMPAT LAHIR', 'TANGGAL LAHIR', 'JENIS KELAMIN', 'AGAMA', 'ALAMAT', 'RT', 'RW', 'PROVINSI', 'KABUPATEN', 'KECAMATAN', 'KELURAHAN', 'NOMOR HANDPHONE', 'ALAMAT EMAIL', 'NOMOR NPWP', 'LINK KTP', 'STATUS KEPEGAWAIAN', 'NOMOR KARPEG', 'GOLONGAN TERAKHIR', 'TMT GOLONGAN TERAKHIR', 'MASA KERJA SESUAI SK', 'GAJI POKOK', 'LINK SK TERAKHIR', 'JABATAN FUNGSIONAL', 'TMT JABATAN FUNGSIONAL', 'LINK JABATAN FUNGSIONAL', 'SK KGB', 'TMT SK KGB', 'GAJI POKOK KGB', 'LINK SK KGB', 'RUANGAN UNIT', 'KELOMPOK', 'JABATAN', 'JENJANG KARIR', 'TANGGAL KREDENSIAL', 'LINK SERTIFIKAT JENJANG KARIR', 'LINK SPK & RKK', 'STATUS KREDENSIAL', 'INSTITUSI PENDIDIKAN TERAKHIR', 'JURUSAN', 'TAHUN LULUS PENDIDIKAN TERAKHIR', 'JENJANG PENDIDIKAN TERAKHIR', 'LINK IJAZAH', 'NOMOR STR AKTIF', 'TANGGAL TERBIT STR AKTIF', 'MASA BERLAKU STR AKTIF', 'LINK STR', 'STATUS STR', 'NOMOR SIPP SIPB AKTIF', 'TANGGAL TERBIT SIPP SIPB AKTIF', 'MASA BERLAKU SIPP SIPB AKTIF', 'LINK SIPP SIPB', 'STATUS SIPP SIPB', 'NOMOR BTCLS', 'TANGGAL TERBIT BTCLS', 'MASA BERLAKU BTCLS', 'LINK BTCLS', 'STATUS BTCLS', 'NOMOR PELATIHAN KAMAR OPERASI', 'TANGGAL TERBIT PELATIHAN KAMAR OPERASI', 'MASA BERLAKU PELATIHAN KAMAR OPERASI', 'LINK PELATIHAN KAMAR OPERASI', 'STATUS PELATIHAN KAMAR OPERASI', 'NOMOR PELATIHAN INTENSIF', 'TANGGAL TERBIT PELATIHAN INTENSIF', 'MASA BERLAKU PELATIHAN INTENSIF', 'LINK PELATIHAN INTENSIF', 'STATUS PELATIHAN INTENSIF', 'NOMOR PELATIHAN HD', 'TANGGAL TERBIT PELATIHAN HD', 'MASA BERLAKU PELATIHAN HD', 'LINK PELATIHAN HD', 'STATUS PELATIHAN HD', 'NOMOR PELATIHAN MIDWIFE UPDATE', 'TANGGAL TERBIT PELATIHAN MIDWIFE UPDATE', 'MASA BERLAKU PELATIHAN MIDWIFE UPDATE', 'LINK PELATIHAN MU', 'STATUS PELATIHAN MU', 'VERIFIKASI', 'ROLE'
         ];
 
         function loadDataKomper() {
             const tbody = document.getElementById('tableBodyKomper');
-            tbody.innerHTML = '<tr><td colspan="82" class="p-8 text-center text-teal-600 font-bold"><i class="fas fa-spinner fa-spin mr-2 text-xl"></i>Sedang memuat data komper...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="84" class="p-8 text-center text-teal-600 font-bold"><i class="fas fa-spinner fa-spin mr-2 text-xl"></i>Sedang memuat data komper...</td></tr>';
             
             if (typeof google.script.run.getAllDataKomper !== 'function') {
-                tbody.innerHTML = '<tr><td colspan="82" class="p-8 text-center text-red-500 font-bold"><i class="fas fa-exclamation-triangle mr-2"></i>Error: Fungsi getAllDataKomper() belum ada di backend (Code.gs).</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="84" class="p-8 text-center text-red-500 font-bold"><i class="fas fa-exclamation-triangle mr-2"></i>Error: Fungsi getAllDataKomper() belum ada di backend (Code.gs).</td></tr>';
                 return;
             }
 
             google.script.run.withSuccessHandler(function(data) {
                 renderTableKomper(data);
             }).withFailureHandler(function(err) {
-                tbody.innerHTML = '<tr><td colspan="82" class="p-8 text-center text-red-500 font-bold"><i class="fas fa-exclamation-triangle mr-2"></i>Gagal memuat data dari server.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="84" class="p-8 text-center text-red-500 font-bold"><i class="fas fa-exclamation-triangle mr-2"></i>Gagal memuat data dari server.</td></tr>';
                 Swal.fire('Error', 'Gagal memuat data komper.', 'error');
             }).getAllDataKomper(currentUser ? currentUser.nip : '');
         }
 
         function calculateRowProgress(row) {
             let filled = 0;
-            let total = 42; // Total 42 kolom wajib sesuai kesepakatan kirimWA()
+            let total = 43; // Total 43 kolom wajib sesuai kesepakatan kirimWA() (termasuk Link SPK & RKK)
             let missingFields = [];
 
             const isEmptyStr = function(val) {
@@ -5611,7 +5631,7 @@
             if (!isEmptyStr(row['STATUS KEPEGAWAIAN'])) filled++; else missingFields.push('Status Kepegawaian (Kepegawaian)');
             if (!isEmptyStr(row['GAJI POKOK'])) filled++; else missingFields.push('Gaji Pokok (Kepegawaian)');
 
-            // 3. Unit Ruangan (7 Wajib)
+            // 3. Unit Ruangan (8 Wajib)
             if (!isEmptyStr(row['RUANGAN UNIT'])) filled++; else missingFields.push('Ruangan Unit (Unit Ruangan)');
             if (!isEmptyStr(row['KELOMPOK'])) filled++; else missingFields.push('Kelompok (Unit Ruangan)');
             if (!isEmptyStr(row['JABATAN'])) filled++; else missingFields.push('Jabatan (Unit Ruangan)');
@@ -5619,6 +5639,7 @@
             if (!isEmptyStr(row['TANGGAL KREDENSIAL'])) filled++; else missingFields.push('Tanggal Kredensial (Unit Ruangan)');
             if (!isEmptyStr(row['STATUS KREDENSIAL'])) filled++; else missingFields.push('Status Kredensial (Unit Ruangan)');
             if (!isInvalidLinkStr(row['LINK SERTIFIKAT JENJANG KARIR'])) filled++; else missingFields.push('Link Sertifikat Jenjang Karir (Unit Ruangan)');
+            if (!isInvalidLinkStr(row['LINK SPK & RKK'])) filled++; else missingFields.push('Link SPK & RKK (Unit Ruangan)');
 
             // 4. Pendidikan (5 Wajib)
             if (!isEmptyStr(row['INSTITUSI PENDIDIKAN TERAKHIR'])) filled++; else missingFields.push('Institusi Pendidikan Terakhir (Pendidikan)');
@@ -5777,7 +5798,7 @@
             const tbody = document.getElementById('tableBodyKomper');
             
             if (komperFilteredData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="82" class="p-6 text-center text-gray-500 font-medium">Tidak ada data pegawai yang sesuai dengan pencarian Anda.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="84" class="p-6 text-center text-gray-500 font-medium">Tidak ada data pegawai yang sesuai dengan pencarian Anda.</td></tr>';
                 updatePaginationInfo(0, 0, 0);
                 return;
             }
@@ -7041,6 +7062,7 @@
         function handleUploadHd() { uploadHelper('inputHd', 'edit_link_hd', 'uploadHdToDrive', 'LINK PELATIHAN HD'); }
         function handleUploadMu() { uploadHelper('inputMu', 'edit_link_mu', 'uploadMuToDrive', 'LINK PELATIHAN MU'); }
         function handleUploadSertifikat() { uploadHelper('inputSertifikat', 'edit_link_sertifikat', 'uploadSertifikatJenjangKarirToDrive', 'LINK SERTIFIKAT JENJANG KARIR'); }
+        function handleUploadSpkRkk() { uploadHelper('inputSpkRkk', 'edit_link_spk_rkk', 'uploadSpkRkkToDrive', 'LINK SPK & RKK'); }
 
         function getV(id, fallbackVal) {
             const el = document.getElementById(id);
@@ -7259,7 +7281,8 @@
                 jenjang_karir: getV('edit_jenjang_karir', currentUser.jenjang_karir),
                 tanggal_kredensial: getV('edit_tanggal_kredensial', currentUser.tanggal_kredensial),
                 status_kredensial: getV('edit_status_kredensial', currentUser.status_kredensial),
-                link_sertifikat_jenjang_karir: getV('edit_link_sertifikat', currentUser.link_sertifikat_jenjang_karir)
+                link_sertifikat_jenjang_karir: getV('edit_link_sertifikat', currentUser.link_sertifikat_jenjang_karir),
+                link_spk_rkk: getV('edit_link_spk_rkk', currentUser.link_spk_rkk)
             };
 
             let isChanged = false;
@@ -7270,7 +7293,8 @@
                 String(data.jenjang_karir) !== String(currentUser.jenjang_karir || '') ||
                 data.tanggal_kredensial !== formatDateInput(currentUser.tanggal_kredensial) ||
                 String(data.status_kredensial) !== String(currentUser.status_kredensial || '') ||
-                String(data.link_sertifikat_jenjang_karir) !== String(currentUser.link_sertifikat_jenjang_karir || '')
+                String(data.link_sertifikat_jenjang_karir) !== String(currentUser.link_sertifikat_jenjang_karir || '') ||
+                String(data.link_spk_rkk) !== String(currentUser.link_spk_rkk || '')
             ) {
                 isChanged = true;
             }
@@ -7299,7 +7323,8 @@
                         "JENJANG KARIR": data.jenjang_karir,
                         "TANGGAL KREDENSIAL": data.tanggal_kredensial,
                         "STATUS KREDENSIAL": data.status_kredensial,
-                        "LINK SERTIFIKAT JENJANG KARIR": data.link_sertifikat_jenjang_karir
+                        "LINK SERTIFIKAT JENJANG KARIR": data.link_sertifikat_jenjang_karir,
+                        "LINK SPK & RKK": data.link_spk_rkk
                     });
                 } else { 
                     Swal.fire('Error', res.message, 'error'); 
