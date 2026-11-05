@@ -390,6 +390,15 @@
                         </div>
                         <p class="text-xs sm:text-sm font-bold text-gray-800">Lengkapi Data</p>
                         <p class="text-[11px] text-gray-500">Cek kolom kosong</p>
+                        <div class="mt-2.5">
+                            <div class="flex items-center justify-between mb-1">
+                                <span id="quick_progress_count" class="text-[10px] font-bold text-gray-500">0/43 kolom</span>
+                                <span id="quick_progress_pct" class="text-[10px] font-bold text-gray-500">0%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-1.5 sm:h-2 overflow-hidden border border-gray-200">
+                                <div id="quick_progress_bar" class="bg-amber-500 h-1.5 sm:h-2 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div>
+                            </div>
+                        </div>
                     </button>
 
                     <button type="button" onclick="navigate('biodata')" class="relative z-10 bg-white hover:bg-purple-50/50 border border-purple-100 rounded-2xl p-3.5 sm:p-4 text-left shadow-sm hover:shadow transition-all group focus:outline-none focus:ring-2 focus:ring-purple-400">
@@ -4292,6 +4301,30 @@
                     progressText.className = 'text-sm font-bold text-orange-600';
                     progressMessage.innerHTML = 'Data masih banyak yang kosong. Harap segera dilengkapi.';
                 }
+            }
+
+            const quickCount = document.getElementById('quick_progress_count');
+            const quickPct = document.getElementById('quick_progress_pct');
+            const quickBar = document.getElementById('quick_progress_bar');
+            if (quickCount && quickPct && quickBar) {
+                let barClass, textColor;
+                if (percentage === 100) {
+                    barClass = 'bg-green-500';
+                    textColor = 'text-green-600';
+                } else if (percentage > 50) {
+                    barClass = 'bg-blue-500';
+                    textColor = 'text-blue-600';
+                } else {
+                    barClass = 'bg-orange-500';
+                    textColor = 'text-orange-600';
+                }
+
+                quickCount.innerText = filled + '/' + total + ' kolom';
+                quickPct.innerText = percentage + '%';
+                quickBar.style.width = percentage + '%';
+                quickBar.className = barClass + ' h-1.5 sm:h-2 rounded-full transition-all duration-1000 ease-out';
+                quickCount.className = 'text-[10px] font-bold ' + textColor;
+                quickPct.className = 'text-[10px] font-bold ' + textColor;
             }
         }
 
