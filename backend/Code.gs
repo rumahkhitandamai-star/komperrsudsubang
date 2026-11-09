@@ -1831,27 +1831,54 @@ function getDokumenList(categoryOrNip, actorNip) {
       processDriveFile(files.next(), "");
     }
 
-    // 2. Ambil berkas di subfolder (kedalaman 1)
+    // 2. Ambil berkas di subfolder (kedalaman 1) dan data folder
+    const foldersList = [];
     try {
       const subfolders = folder.getFolders();
       while (subfolders.hasNext()) {
         const sub = subfolders.next();
         if (sub.isTrashed()) continue;
+        const subName = sub.getName();
+        const subId = sub.getId();
+        const subUrl = sub.getUrl();
+        let subCount = 0;
         const subFiles = sub.getFiles();
         while (subFiles.hasNext()) {
-          processDriveFile(subFiles.next(), sub.getName());
+          processDriveFile(subFiles.next(), subName);
+          subCount++;
         }
+        foldersList.push({
+          id: subId,
+          nama: subName,
+          url: subUrl,
+          berkasCount: subCount
+        });
       }
     } catch(eSub) {}
+
+    // Urutkan folders berdasarkan nama
+    foldersList.sort(function(a, b) {
+      return (a.nama || "").localeCompare(b.nama || "");
+    });
 
     // Urutkan dokumen terbaru di atas
     result.sort(function(a, b) {
       return (b.namaFile || "").localeCompare(a.namaFile || "");
     });
 
-    return result;
+    return {
+      success: true,
+      category: category,
+      folders: foldersList,
+      files: result
+    };
   } catch(e) {
-    return [];
+    return {
+      success: false,
+      category: "umum",
+      folders: [],
+      files: []
+    };
   }
 }
 

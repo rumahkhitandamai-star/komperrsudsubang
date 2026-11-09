@@ -183,6 +183,9 @@
         body.dark-mode .dokumen-tab-btn.border-teal-600 { border-color: #2dd4bf !important; color: #5eead4 !important; }
         body.dark-mode .dokumen-tab-btn.border-transparent { color: #9ca3af !important; }
         body.dark-mode .dokumen-tab-btn.border-transparent:hover { color: #5eead4 !important; }
+        body.dark-mode .folder-card.border-teal-600 { border-color: #2dd4bf !important; background-color: #134e4a !important; }
+        body.dark-mode #bannerActiveFolder { background-color: #134e4a !important; border-color: #0f766e !important; color: #ccfbf1 !important; }
+        body.dark-mode #bannerActiveFolder strong { color: #5eead4 !important; }
 
         /* ==========================================
            RUNNING TEXT (MARQUEE) STYLES
@@ -767,6 +770,34 @@
                     <button type="button" onclick="switchDokumenTab('spk_rkk')" id="tab_dokumen_spk_rkk" class="dokumen-tab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-teal-700 whitespace-nowrap transition-colors flex items-center gap-2 cursor-pointer">
                         <i class="fas fa-file-contract text-blue-600"></i>
                         <span>SPK & RKK</span>
+                    </button>
+                </div>
+
+                <!-- Bagian Folder / Direktori -->
+                <div id="sectionFolderDokumen" class="mb-6 hidden">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xs sm:text-sm font-bold text-gray-700 flex items-center gap-2">
+                            <i class="fas fa-folder-open text-amber-500"></i>
+                            <span id="labelFolderDokumen">Folder di Halaman Ini</span>
+                        </h3>
+                        <span id="countFolderDokumen" class="text-[11px] text-gray-500 font-medium">0 folder</span>
+                    </div>
+                    <div id="gridFolderDokumen" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                        <!-- Card Folder di-render secara dinamis -->
+                    </div>
+                </div>
+
+                <!-- Banner Filter Folder Aktif -->
+                <div id="bannerActiveFolder" class="hidden mb-4 p-3 bg-teal-50 border border-teal-200 rounded-xl flex items-center justify-between gap-3 text-xs">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <span class="w-6 h-6 rounded-lg bg-teal-600 text-white flex items-center justify-center shrink-0 text-[10px]">
+                            <i class="fas fa-folder"></i>
+                        </span>
+                        <span class="text-teal-900 font-medium truncate">Menampilkan berkas dalam folder: <strong id="nameActiveFolder" class="text-teal-700 font-bold">-</strong></span>
+                    </div>
+                    <button type="button" onclick="selectFolderFilter(null)" class="text-teal-700 hover:text-rose-600 font-bold inline-flex items-center gap-1 shrink-0 transition-colors cursor-pointer" title="Tampilkan Semua Berkas">
+                        <i class="fas fa-times-circle"></i>
+                        <span>Tampilkan Semua Berkas</span>
                     </button>
                 </div>
 
@@ -2465,80 +2496,220 @@
                             cat = categoryOrNip;
                         }
                         if (cat === 'sertifikat') {
-                            return [
-                                {
-                                    id: 'mock_cert_1',
-                                    namaAsli: 'Sertifikat_Pelatihan_BTCLS_2026.pdf',
-                                    namaFile: '198501012010011001_Sertifikat_Pelatihan_BTCLS_2026_1730000000000.pdf',
-                                    kategori: 'sertifikat',
-                                    subfolder: 'Pelatihan Keperawatan',
-                                    url: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
-                                    downloadUrl: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
-                                    ext: 'pdf',
-                                    ukuran: '1.8 MB',
-                                    tanggal: '05-11-2026 09:20',
-                                    nipPengunggah: '198501012010011001',
-                                    namaPengunggah: 'Ns. Siti Nurhaliza, S.Kep.',
-                                    bisaHapus: true
-                                },
-                                {
-                                    id: 'mock_cert_2',
-                                    namaAsli: 'Sertifikat_Keahlian_Kamar_Operasi.pdf',
-                                    namaFile: '199002022015022002_Sertifikat_Keahlian_Kamar_Operasi_1730100000000.pdf',
-                                    kategori: 'sertifikat',
-                                    subfolder: '',
-                                    url: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
-                                    downloadUrl: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
-                                    ext: 'pdf',
-                                    ukuran: '2.1 MB',
-                                    tanggal: '04-11-2026 11:45',
-                                    nipPengunggah: '199002022015022002',
-                                    namaPengunggah: 'Budi Santoso, A.Md.Kep.',
-                                    bisaHapus: false
-                                }
-                            ];
+                            return {
+                                success: true,
+                                category: 'sertifikat',
+                                folders: [
+                                    {
+                                        id: 'mock_sub_cert_1',
+                                        nama: 'Sertifikat Kredensial_Mei 2026',
+                                        url: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
+                                        berkasCount: 2
+                                    },
+                                    {
+                                        id: 'mock_sub_cert_2',
+                                        nama: 'Sertifikat Contoh',
+                                        url: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
+                                        berkasCount: 2
+                                    }
+                                ],
+                                files: [
+                                    {
+                                        id: 'mock_cert_kred_1',
+                                        namaAsli: 'Sertifikat_Kredensial_Perawat_Mei_2026.pdf',
+                                        namaFile: '198501012010011001_Sertifikat_Kredensial_Mei_2026_1730000000000.pdf',
+                                        kategori: 'sertifikat',
+                                        subfolder: 'Sertifikat Kredensial_Mei 2026',
+                                        url: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
+                                        downloadUrl: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
+                                        ext: 'pdf',
+                                        ukuran: '2.5 MB',
+                                        tanggal: '10-05-2026 10:15',
+                                        nipPengunggah: '198501012010011001',
+                                        namaPengunggah: 'Ns. Siti Nurhaliza, S.Kep.',
+                                        bisaHapus: true
+                                    },
+                                    {
+                                        id: 'mock_cert_kred_2',
+                                        namaAsli: 'Lampiran_Penilaian_Kredensial_Mei_2026.pdf',
+                                        namaFile: '198501012010011001_Lampiran_Penilaian_Mei_2026_1730000000000.pdf',
+                                        kategori: 'sertifikat',
+                                        subfolder: 'Sertifikat Kredensial_Mei 2026',
+                                        url: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
+                                        downloadUrl: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
+                                        ext: 'pdf',
+                                        ukuran: '1.2 MB',
+                                        tanggal: '11-05-2026 14:20',
+                                        nipPengunggah: '198501012010011001',
+                                        namaPengunggah: 'Ns. Siti Nurhaliza, S.Kep.',
+                                        bisaHapus: true
+                                    },
+                                    {
+                                        id: 'mock_cert_contoh_1',
+                                        namaAsli: 'Contoh_Sertifikat_Pelatihan_BTCLS.pdf',
+                                        namaFile: '199002022015022002_Contoh_Sertifikat_Pelatihan_BTCLS_1730100000000.pdf',
+                                        kategori: 'sertifikat',
+                                        subfolder: 'Sertifikat Contoh',
+                                        url: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
+                                        downloadUrl: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
+                                        ext: 'pdf',
+                                        ukuran: '1.4 MB',
+                                        tanggal: '01-05-2026 08:30',
+                                        nipPengunggah: '199002022015022002',
+                                        namaPengunggah: 'Budi Santoso, A.Md.Kep.',
+                                        bisaHapus: false
+                                    },
+                                    {
+                                        id: 'mock_cert_contoh_2',
+                                        namaAsli: 'Contoh_Sertifikat_Seminar_Nasional.pdf',
+                                        namaFile: '199002022015022002_Contoh_Sertifikat_Seminar_Nasional_1730100000000.pdf',
+                                        kategori: 'sertifikat',
+                                        subfolder: 'Sertifikat Contoh',
+                                        url: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
+                                        downloadUrl: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
+                                        ext: 'pdf',
+                                        ukuran: '980 KB',
+                                        tanggal: '02-05-2026 09:10',
+                                        nipPengunggah: '199002022015022002',
+                                        namaPengunggah: 'Budi Santoso, A.Md.Kep.',
+                                        bisaHapus: false
+                                    },
+                                    {
+                                        id: 'mock_cert_1',
+                                        namaAsli: 'Sertifikat_Pelatihan_BTCLS_2026.pdf',
+                                        namaFile: '198501012010011001_Sertifikat_Pelatihan_BTCLS_2026_1730000000000.pdf',
+                                        kategori: 'sertifikat',
+                                        subfolder: '',
+                                        url: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
+                                        downloadUrl: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
+                                        ext: 'pdf',
+                                        ukuran: '1.8 MB',
+                                        tanggal: '05-11-2026 09:20',
+                                        nipPengunggah: '198501012010011001',
+                                        namaPengunggah: 'Ns. Siti Nurhaliza, S.Kep.',
+                                        bisaHapus: true
+                                    },
+                                    {
+                                        id: 'mock_cert_2',
+                                        namaAsli: 'Sertifikat_Keahlian_Kamar_Operasi.pdf',
+                                        namaFile: '199002022015022002_Sertifikat_Keahlian_Kamar_Operasi_1730100000000.pdf',
+                                        kategori: 'sertifikat',
+                                        subfolder: '',
+                                        url: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
+                                        downloadUrl: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
+                                        ext: 'pdf',
+                                        ukuran: '2.1 MB',
+                                        tanggal: '04-11-2026 11:45',
+                                        nipPengunggah: '199002022015022002',
+                                        namaPengunggah: 'Budi Santoso, A.Md.Kep.',
+                                        bisaHapus: false
+                                    }
+                                ]
+                            };
                         }
                         if (cat === 'spk_rkk') {
-                            return [
-                                {
-                                    id: 'mock_spk_1',
-                                    namaAsli: 'SPK_RKK_Perawat_Klinis_III_2026.pdf',
-                                    namaFile: '198501012010011001_SPK_RKK_Perawat_Klinis_III_2026_1730000000000.pdf',
-                                    kategori: 'spk_rkk',
-                                    subfolder: 'Tahun 2026',
-                                    url: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G',
-                                    downloadUrl: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G',
-                                    ext: 'pdf',
-                                    ukuran: '3.2 MB',
-                                    tanggal: '07-11-2026 08:30',
-                                    nipPengunggah: '198501012010011001',
-                                    namaPengunggah: 'Ns. Siti Nurhaliza, S.Kep.',
-                                    bisaHapus: true
-                                },
-                                {
-                                    id: 'mock_spk_2',
-                                    namaAsli: 'Draft_RKK_Tenaga_Keperawatan_Baru.docx',
-                                    namaFile: '199002022015022002_Draft_RKK_Tenaga_Keperawatan_Baru_1730100000000.docx',
-                                    kategori: 'spk_rkk',
-                                    subfolder: '',
-                                    url: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G',
-                                    downloadUrl: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G',
-                                    ext: 'docx',
-                                    ukuran: '620 KB',
-                                    tanggal: '06-11-2026 15:10',
-                                    nipPengunggah: '199002022015022002',
-                                    namaPengunggah: 'Budi Santoso, A.Md.Kep.',
-                                    bisaHapus: false
-                                }
-                            ];
+                            return {
+                                success: true,
+                                category: 'spk_rkk',
+                                folders: [
+                                    {
+                                        id: 'mock_sub_spk_1',
+                                        nama: 'Tahun 2026',
+                                        url: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G',
+                                        berkasCount: 2
+                                    },
+                                    {
+                                        id: 'mock_sub_spk_2',
+                                        nama: 'Format Dokumen',
+                                        url: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G',
+                                        berkasCount: 1
+                                    }
+                                ],
+                                files: [
+                                    {
+                                        id: 'mock_spk_1',
+                                        namaAsli: 'SPK_RKK_Perawat_Klinis_III_2026.pdf',
+                                        namaFile: '198501012010011001_SPK_RKK_Perawat_Klinis_III_2026_1730000000000.pdf',
+                                        kategori: 'spk_rkk',
+                                        subfolder: 'Tahun 2026',
+                                        url: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G',
+                                        downloadUrl: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G',
+                                        ext: 'pdf',
+                                        ukuran: '3.2 MB',
+                                        tanggal: '07-11-2026 08:30',
+                                        nipPengunggah: '198501012010011001',
+                                        namaPengunggah: 'Ns. Siti Nurhaliza, S.Kep.',
+                                        bisaHapus: true
+                                    },
+                                    {
+                                        id: 'mock_spk_2',
+                                        namaAsli: 'SPK_RKK_Bidan_Klinis_II_2026.pdf',
+                                        namaFile: '198501012010011001_SPK_RKK_Bidan_Klinis_II_2026_1730000000000.pdf',
+                                        kategori: 'spk_rkk',
+                                        subfolder: 'Tahun 2026',
+                                        url: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G',
+                                        downloadUrl: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G',
+                                        ext: 'pdf',
+                                        ukuran: '2.8 MB',
+                                        tanggal: '06-11-2026 09:40',
+                                        nipPengunggah: '198501012010011001',
+                                        namaPengunggah: 'Ns. Siti Nurhaliza, S.Kep.',
+                                        bisaHapus: true
+                                    },
+                                    {
+                                        id: 'mock_spk_3',
+                                        namaAsli: 'Draft_RKK_Tenaga_Keperawatan_Baru.docx',
+                                        namaFile: '199002022015022002_Draft_RKK_Tenaga_Keperawatan_Baru_1730100000000.docx',
+                                        kategori: 'spk_rkk',
+                                        subfolder: 'Format Dokumen',
+                                        url: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G',
+                                        downloadUrl: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G',
+                                        ext: 'docx',
+                                        ukuran: '620 KB',
+                                        tanggal: '06-11-2026 15:10',
+                                        nipPengunggah: '199002022015022002',
+                                        namaPengunggah: 'Budi Santoso, A.Md.Kep.',
+                                        bisaHapus: false
+                                    },
+                                    {
+                                        id: 'mock_spk_4',
+                                        namaAsli: 'Panduan_Pengisian_SPK_RKK.pdf',
+                                        namaFile: '199002022015022002_Panduan_Pengisian_SPK_RKK_1730100000000.pdf',
+                                        kategori: 'spk_rkk',
+                                        subfolder: '',
+                                        url: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G',
+                                        downloadUrl: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G',
+                                        ext: 'pdf',
+                                        ukuran: '1.1 MB',
+                                        tanggal: '05-11-2026 10:00',
+                                        nipPengunggah: '199002022015022002',
+                                        namaPengunggah: 'Budi Santoso, A.Md.Kep.',
+                                        bisaHapus: false
+                                    }
+                                ]
+                            };
                         }
-                        const mockUmum = [
+                        const mockUmumFolders = [
+                            {
+                                id: 'mock_sub_umum_1',
+                                nama: 'Pedoman & Panduan',
+                                url: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
+                                berkasCount: 2
+                            },
+                            {
+                                id: 'mock_sub_umum_2',
+                                nama: 'Formulir Standar',
+                                url: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
+                                berkasCount: 2
+                            }
+                        ];
+                        const mockUmumFiles = [
                             {
                                 id: 'mock_doc_1',
                                 namaAsli: 'Pedoman_Pelayanan_Komite_Keperawatan_2026.pdf',
                                 namaFile: '198501012010011001_Pedoman_Pelayanan_Komite_Keperawatan_2026_1730000000000.pdf',
                                 kategori: 'umum',
-                                subfolder: '',
+                                subfolder: 'Pedoman & Panduan',
                                 url: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
                                 downloadUrl: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
                                 ext: 'pdf',
@@ -2550,10 +2721,25 @@
                             },
                             {
                                 id: 'mock_doc_2',
+                                namaAsli: 'Panduan_Kredensial_Tenaga_Keperawatan_2026.pdf',
+                                namaFile: '198501012010011001_Panduan_Kredensial_2026_1730000000000.pdf',
+                                kategori: 'umum',
+                                subfolder: 'Pedoman & Panduan',
+                                url: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
+                                downloadUrl: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
+                                ext: 'pdf',
+                                ukuran: '1.9 MB',
+                                tanggal: '02-11-2026 13:20',
+                                nipPengunggah: '198501012010011001',
+                                namaPengunggah: 'Ns. Siti Nurhaliza, S.Kep.',
+                                bisaHapus: true
+                            },
+                            {
+                                id: 'mock_doc_3',
                                 namaAsli: 'Format_Pengajuan_Kredensial_Revisi.docx',
                                 namaFile: '199002022015022002_Format_Pengajuan_Kredensial_Revisi_1730100000000.docx',
                                 kategori: 'umum',
-                                subfolder: '',
+                                subfolder: 'Formulir Standar',
                                 url: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
                                 downloadUrl: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
                                 ext: 'docx',
@@ -2562,10 +2748,25 @@
                                 nipPengunggah: '199002022015022002',
                                 namaPengunggah: 'Budi Santoso, A.Md.Kep.',
                                 bisaHapus: false
+                            },
+                            {
+                                id: 'mock_doc_4',
+                                namaAsli: 'Formulir_Rekredensial_Perawat.docx',
+                                namaFile: '199002022015022002_Formulir_Rekredensial_Perawat_1730100000000.docx',
+                                kategori: 'umum',
+                                subfolder: 'Formulir Standar',
+                                url: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
+                                downloadUrl: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
+                                ext: 'docx',
+                                ukuran: '510 KB',
+                                tanggal: '04-11-2026 16:00',
+                                nipPengunggah: '199002022015022002',
+                                namaPengunggah: 'Budi Santoso, A.Md.Kep.',
+                                bisaHapus: false
                             }
                         ];
-                        for (let i = 3; i <= 12; i++) {
-                            mockUmum.push({
+                        for (let i = 5; i <= 14; i++) {
+                            mockUmumFiles.push({
                                 id: 'mock_doc_' + i,
                                 namaAsli: 'Standar_Operasional_Prosedur_Keperawatan_' + (i < 10 ? '0' + i : i) + '.pdf',
                                 namaFile: '198501012010011001_SOP_Keperawatan_' + i + '_1730000000000.pdf',
@@ -2581,7 +2782,12 @@
                                 bisaHapus: false
                             });
                         }
-                        return mockUmum;
+                        return {
+                            success: true,
+                            category: 'umum',
+                            folders: mockUmumFolders,
+                            files: mockUmumFiles
+                        };
                     },
                     uploadDokumenToDrive: function(base64Data, originalFileName, actorNip) {
                         return {
@@ -8952,17 +9158,22 @@
         let activeDokumenTab = 'umum';
         let dokumenCurrentPage = 1;
         let dokumenRowsPerPage = '10';
+        let activeFolderFilter = null;
         const dokumenCache = {
             umum: null,
             sertifikat: null,
             spk_rkk: null
         };
+        let dokumenAllFolders = [];
         let dokumenAllData = [];
         let dokumenFilteredData = [];
 
         function switchDokumenTab(tabName) {
             activeDokumenTab = (tabName === 'sertifikat' || tabName === 'spk_rkk') ? tabName : 'umum';
             dokumenCurrentPage = 1;
+            activeFolderFilter = null;
+            updateFolderBanner();
+
             const tabs = ['umum', 'sertifikat', 'spk_rkk'];
             tabs.forEach(function(t) {
                 const btn = document.getElementById('tab_dokumen_' + t);
@@ -9011,21 +9222,106 @@
             return { icon: '<i class="fas fa-file-alt text-teal-600 text-xl"></i>', bg: 'bg-teal-50 border border-teal-100' };
         }
 
+        function updateFolderBanner() {
+            const banner = document.getElementById('bannerActiveFolder');
+            const nameEl = document.getElementById('nameActiveFolder');
+            if (!banner) return;
+            if (activeFolderFilter) {
+                if (nameEl) nameEl.innerText = activeFolderFilter;
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+        }
+
+        function renderFolderCards(folders) {
+            const section = document.getElementById('sectionFolderDokumen');
+            const grid = document.getElementById('gridFolderDokumen');
+            const label = document.getElementById('labelFolderDokumen');
+            const count = document.getElementById('countFolderDokumen');
+            if (!section || !grid) return;
+
+            if (!folders || folders.length === 0) {
+                section.classList.add('hidden');
+                grid.innerHTML = '';
+                return;
+            }
+
+            let tabLabel = 'Dokumen Umum';
+            if (activeDokumenTab === 'sertifikat') tabLabel = 'Sertifikat';
+            else if (activeDokumenTab === 'spk_rkk') tabLabel = 'SPK & RKK';
+
+            if (label) label.innerText = 'Folder Direktori (' + tabLabel + ')';
+            if (count) count.innerText = folders.length + ' folder';
+
+            section.classList.remove('hidden');
+
+            let html = '';
+            folders.forEach(function(folder) {
+                const isSelected = Boolean(activeFolderFilter && activeFolderFilter.toLowerCase() === (folder.nama || '').toLowerCase());
+                const safeNama = escapeHtml(folder.nama || 'Folder');
+                const safeUrl = sanitizeUrl(folder.url || '#');
+                let countBerkas = folder.berkasCount;
+                if (countBerkas === undefined && Array.isArray(dokumenAllData)) {
+                    countBerkas = dokumenAllData.filter(function(d) {
+                        return (d.subfolder || '').trim().toLowerCase() === (folder.nama || '').trim().toLowerCase();
+                    }).length;
+                }
+                const escapedNamaParam = (folder.nama || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
+                const activeClass = isSelected
+                    ? 'border-teal-600 bg-teal-50/70 ring-2 ring-teal-500/30'
+                    : 'border-gray-200 bg-white hover:border-teal-400 hover:shadow-xs';
+
+                html += '<div onclick="selectFolderFilter(\'' + escapedNamaParam + '\')" data-folder-name="' + safeNama + '" class="folder-card p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ' + activeClass + '" title="Klik untuk memfilter berkas di folder ' + safeNama + '">';
+                html += '  <div class="flex items-center gap-3 min-w-0 flex-1">';
+                html += '    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center shrink-0 text-lg shadow-xs">';
+                html += '      <i class="fas fa-folder"></i>';
+                html += '    </div>';
+                html += '    <div class="min-w-0 flex-1">';
+                html += '      <h4 class="text-xs sm:text-sm font-bold text-gray-800 truncate" title="' + safeNama + '">' + safeNama + '</h4>';
+                html += '      <div class="flex items-center gap-2 text-[11px] text-gray-500 mt-0.5">';
+                html += '        <span><i class="fas fa-file-alt text-[10px] mr-1 text-teal-600"></i>' + countBerkas + ' berkas</span>';
+                if (isSelected) {
+                    html += '        <span class="text-teal-700 font-bold bg-teal-100 px-1.5 py-0.2 rounded text-[10px]"><i class="fas fa-check mr-0.5"></i>Aktif</span>';
+                }
+                html += '      </div>';
+                html += '    </div>';
+                html += '  </div>';
+                html += '  <div class="flex items-center gap-1 shrink-0" onclick="event.stopPropagation()">';
+                html += '    <a href="' + safeUrl + '" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-400 hover:text-teal-600 hover:bg-gray-100 rounded-lg transition-colors text-xs" title="Buka folder langsung di Google Drive" aria-label="Buka di Drive">';
+                html += '      <i class="fas fa-external-link-alt"></i>';
+                html += '    </a>';
+                html += '  </div>';
+                html += '</div>';
+            });
+
+            grid.innerHTML = html;
+        }
+
+        function selectFolderFilter(folderName) {
+            if (!folderName || activeFolderFilter === folderName) {
+                activeFolderFilter = null;
+            } else {
+                activeFolderFilter = folderName;
+            }
+            updateFolderBanner();
+            renderFolderCards(dokumenAllFolders);
+            filterDokumenList();
+        }
+
         function loadDokumenList(category, forceRefresh) {
             const cat = category || activeDokumenTab || 'umum';
             const grid = document.getElementById('gridDokumen');
             const summary = document.getElementById('dokumenSummary');
 
             if (!forceRefresh && dokumenCache[cat]) {
-                dokumenAllData = dokumenCache[cat];
-                dokumenFilteredData = dokumenAllData.slice();
+                dokumenAllFolders = dokumenCache[cat].folders || [];
+                dokumenAllData = dokumenCache[cat].files || [];
+                renderFolderCards(dokumenAllFolders);
+                updateFolderBanner();
                 dokumenCurrentPage = 1;
-                const searchInput = document.getElementById('inputSearchDokumen');
-                if (searchInput && searchInput.value.trim() !== '') {
-                    filterDokumenList();
-                } else {
-                    displayDokumenPage();
-                }
+                filterDokumenList();
                 return;
             }
 
@@ -9039,23 +9335,34 @@
 
             const actorNip = currentUser ? currentUser.nip : '';
             google.script.run
-                .withSuccessHandler(function(docs) {
-                    const list = Array.isArray(docs) ? docs : [];
-                    dokumenCache[cat] = list;
+                .withSuccessHandler(function(resp) {
+                    let files = [];
+                    let folders = [];
+                    if (resp && Array.isArray(resp)) {
+                        files = resp;
+                        folders = [];
+                    } else if (resp && Array.isArray(resp.files)) {
+                        files = resp.files;
+                        folders = Array.isArray(resp.folders) ? resp.folders : [];
+                    }
+
+                    dokumenCache[cat] = { folders: folders, files: files };
                     if (activeDokumenTab === cat) {
-                        dokumenAllData = list;
-                        dokumenFilteredData = dokumenAllData.slice();
+                        dokumenAllFolders = folders;
+                        dokumenAllData = files;
+                        renderFolderCards(dokumenAllFolders);
+                        updateFolderBanner();
                         dokumenCurrentPage = 1;
-                        const searchInput = document.getElementById('inputSearchDokumen');
-                        if (searchInput && searchInput.value.trim() !== '') {
-                            filterDokumenList();
-                        } else {
-                            displayDokumenPage();
-                        }
+                        filterDokumenList();
                     }
                 })
                 .withFailureHandler(function(err) {
                     if (activeDokumenTab === cat) {
+                        const section = document.getElementById('sectionFolderDokumen');
+                        if (section) section.classList.add('hidden');
+                        const banner = document.getElementById('bannerActiveFolder');
+                        if (banner) banner.classList.add('hidden');
+
                         if (grid) {
                             grid.innerHTML = '<div class="col-span-full p-8 text-center text-rose-500 font-bold bg-white rounded-2xl border border-rose-100">' +
                                 '<i class="fas fa-exclamation-triangle mr-2 text-xl"></i>Gagal memuat dokumen: ' + escapeHtml((err && err.message) || 'Terjadi kesalahan sistem.') +
@@ -9071,18 +9378,23 @@
         function filterDokumenList() {
             const searchInput = document.getElementById('inputSearchDokumen');
             const q = (searchInput ? searchInput.value : '').toLowerCase().trim();
-            if (!q) {
-                dokumenFilteredData = dokumenAllData.slice();
-            } else {
-                dokumenFilteredData = dokumenAllData.filter(function(doc) {
-                    const nama = (doc.namaAsli || doc.namaFile || '').toLowerCase();
-                    const pengunggah = (doc.namaPengunggah || '').toLowerCase();
-                    const nip = (doc.nipPengunggah || '').toLowerCase();
-                    const ext = (doc.ext || '').toLowerCase();
-                    const sub = (doc.subfolder || '').toLowerCase();
-                    return nama.indexOf(q) !== -1 || pengunggah.indexOf(q) !== -1 || nip.indexOf(q) !== -1 || ext.indexOf(q) !== -1 || sub.indexOf(q) !== -1;
-                });
-            }
+
+            dokumenFilteredData = dokumenAllData.filter(function(doc) {
+                if (activeFolderFilter) {
+                    const sub = (doc.subfolder || '').trim().toLowerCase();
+                    if (sub !== activeFolderFilter.toLowerCase()) {
+                        return false;
+                    }
+                }
+                if (!q) return true;
+                const nama = (doc.namaAsli || doc.namaFile || '').toLowerCase();
+                const pengunggah = (doc.namaPengunggah || '').toLowerCase();
+                const nip = (doc.nipPengunggah || '').toLowerCase();
+                const ext = (doc.ext || '').toLowerCase();
+                const sub = (doc.subfolder || '').toLowerCase();
+                return nama.indexOf(q) !== -1 || pengunggah.indexOf(q) !== -1 || nip.indexOf(q) !== -1 || ext.indexOf(q) !== -1 || sub.indexOf(q) !== -1;
+            });
+
             dokumenCurrentPage = 1;
             displayDokumenPage();
         }
@@ -9133,7 +9445,8 @@
             else if (activeDokumenTab === 'spk_rkk') tabLabel = 'SPK & RKK';
 
             if (summary) {
-                summary.innerText = tabLabel + ': Total ' + total + ' berkas';
+                const folderSuffix = activeFolderFilter ? ' (Folder: ' + activeFolderFilter + ')' : '';
+                summary.innerText = tabLabel + folderSuffix + ': Total ' + total + ' berkas';
             }
 
             if (infoEl) {
@@ -9191,12 +9504,13 @@
             else if (activeDokumenTab === 'spk_rkk') tabLabel = 'SPK & RKK';
 
             if (!dokumenFilteredData || dokumenFilteredData.length === 0) {
+                const folderMsg = activeFolderFilter ? ' dalam folder "' + escapeHtml(activeFolderFilter) + '"' : '';
                 grid.innerHTML = '<div class="col-span-full p-12 text-center bg-white rounded-2xl border border-gray-100 shadow-xs">' +
                     '<div class="w-16 h-16 mx-auto mb-3 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center text-2xl">' +
                     '<i class="fas fa-folder-open"></i>' +
                     '</div>' +
                     '<h4 class="font-bold text-gray-800 text-sm sm:text-base">Belum Ada Berkas (' + tabLabel + ')</h4>' +
-                    '<p class="text-xs text-gray-500 mt-1 max-w-md mx-auto">Tidak ada berkas yang ditemukan pada folder arsip Google Drive ini.</p>' +
+                    '<p class="text-xs text-gray-500 mt-1 max-w-md mx-auto">Tidak ada berkas yang ditemukan' + folderMsg + ' pada folder arsip Google Drive ini.</p>' +
                     '</div>';
                 return;
             }
