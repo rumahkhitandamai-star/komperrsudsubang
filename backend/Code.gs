@@ -1695,7 +1695,12 @@ function backupDatabase(actorNip) {
 // ==========================================
 // PENGELOLAAN DOKUMEN DOKUMEN (GOOGLE DRIVE)
 // ==========================================
-const DOKUMEN_FOLDER_ID = "1NnxZM12bk-S8zNVPOvTcTh817XotGmYA";
+const DOKUMEN_FOLDERS = {
+  "umum": "1NnxZM12bk-S8zNVPOvTcTh817XotGmYA",
+  "sertifikat": "1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj",
+  "spk_rkk": "16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G"
+};
+const DOKUMEN_FOLDER_ID = DOKUMEN_FOLDERS.umum;
 
 function _getUserName(nip) {
   if (!nip) return "";
@@ -1720,16 +1725,25 @@ function _getUserName(nip) {
   }
 }
 
-function getDokumenList(actorNip) {
+function getDokumenList(categoryOrNip, actorNip) {
   try {
-    const folder = DriveApp.getFolderById(DOKUMEN_FOLDER_ID);
-    const files = folder.getFiles();
-    const result = [];
-    const isAdmin = _isAdminOrSuperAdmin(actorNip);
+    let category = "umum";
+    let effectiveActor = actorNip;
 
-    while (files.hasNext()) {
-      const file = files.next();
-      if (file.isTrashed()) continue;
+    if (categoryOrNip && (categoryOrNip === "umum" || categoryOrNip === "sertifikat" || categoryOrNip === "spk_rkk")) {
+      category = categoryOrNip;
+    } else if (categoryOrNip && !actorNip) {
+      // Dipanggil satu argumen: getDokumenList(actorNip)
+      effectiveActor = categoryOrNip;
+    }
+
+    const folderId = DOKUMEN_FOLDERS[category] || DOKUMEN_FOLDERS["umum"];
+    const folder = DriveApp.getFolderById(folderId);
+    const result = [];
+    const isAdmin = _isAdminOrSuperAdmin(effectiveActor);
+
+    function processDriveFile(file, subfolderName) {
+      if (!file || file.isTrashed()) return;
 
       const fileId = file.getId();
       const fileName = file.getName();
@@ -1791,13 +1805,15 @@ function getDokumenList(actorNip) {
         ext = originalName.substring(dotIdx + 1).toLowerCase();
       }
 
-      const isOwner = (uploaderNip && String(uploaderNip).trim() === String(actorNip).trim());
+      const isOwner = (uploaderNip && String(uploaderNip).trim() === String(effectiveActor).trim());
       const bisaHapus = (isAdmin || isOwner);
 
       result.push({
         id: fileId,
         namaAsli: originalName,
         namaFile: fileName,
+        subfolder: subfolderName || "",
+        kategori: category,
         url: file.getUrl(),
         downloadUrl: "https://drive.google.com/uc?export=download&id=" + fileId,
         ext: ext,
@@ -1808,6 +1824,25 @@ function getDokumenList(actorNip) {
         bisaHapus: bisaHapus
       });
     }
+
+    // 1. Ambil berkas di root folder
+    const files = folder.getFiles();
+    while (files.hasNext()) {
+      processDriveFile(files.next(), "");
+    }
+
+    // 2. Ambil berkas di subfolder (kedalaman 1)
+    try {
+      const subfolders = folder.getFolders();
+      while (subfolders.hasNext()) {
+        const sub = subfolders.next();
+        if (sub.isTrashed()) continue;
+        const subFiles = sub.getFiles();
+        while (subFiles.hasNext()) {
+          processDriveFile(subFiles.next(), sub.getName());
+        }
+      }
+    } catch(eSub) {}
 
     // Urutkan dokumen terbaru di atas
     result.sort(function(a, b) {

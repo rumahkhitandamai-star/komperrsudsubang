@@ -180,6 +180,9 @@
         body.dark-mode .profil-tab-btn.border-teal-600 { border-color: #2dd4bf !important; color: #5eead4 !important; }
         body.dark-mode .profil-tab-btn.border-transparent { color: #9ca3af !important; }
         body.dark-mode .profil-tab-btn.border-transparent:hover { color: #5eead4 !important; }
+        body.dark-mode .dokumen-tab-btn.border-teal-600 { border-color: #2dd4bf !important; color: #5eead4 !important; }
+        body.dark-mode .dokumen-tab-btn.border-transparent { color: #9ca3af !important; }
+        body.dark-mode .dokumen-tab-btn.border-transparent:hover { color: #5eead4 !important; }
 
         /* ==========================================
            RUNNING TEXT (MARQUEE) STYLES
@@ -739,16 +742,32 @@
                         <p class="text-xs text-gray-500 mt-1">Penyimpanan dan pengunduhan berkas dokumen resmi Komite Keperawatan RSUD Subang.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <a href="https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA?usp=sharing" target="_blank" rel="noopener noreferrer" class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-3.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1.5 shadow-sm">
+                        <a id="btnLinkFolderDrive" href="https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA?usp=sharing" target="_blank" rel="noopener noreferrer" class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-3.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1.5 shadow-sm">
                             <i class="fab fa-google-drive text-amber-500"></i>
                             <span>Buka Folder Drive</span>
                             <i class="fas fa-external-link-alt text-[10px] text-gray-400"></i>
                         </a>
-                        <button type="button" onclick="loadDokumenList()" class="bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded-lg text-xs font-bold transition-colors shadow-md whitespace-nowrap inline-flex items-center gap-1.5 cursor-pointer">
+                        <button type="button" onclick="loadDokumenList(activeDokumenTab, true)" class="bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded-lg text-xs font-bold transition-colors shadow-md whitespace-nowrap inline-flex items-center gap-1.5 cursor-pointer">
                             <i class="fas fa-sync-alt"></i>
                             <span>Refresh</span>
                         </button>
                     </div>
+                </div>
+
+                <!-- Tab Navigasi Dokumen -->
+                <div class="flex border-b border-gray-200 mb-6 overflow-x-auto gap-2">
+                    <button type="button" onclick="switchDokumenTab('umum')" id="tab_dokumen_umum" class="dokumen-tab-btn px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-teal-600 text-teal-700 whitespace-nowrap transition-colors flex items-center gap-2 cursor-pointer">
+                        <i class="fas fa-folder text-amber-500"></i>
+                        <span>Dokumen Umum</span>
+                    </button>
+                    <button type="button" onclick="switchDokumenTab('sertifikat')" id="tab_dokumen_sertifikat" class="dokumen-tab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-teal-700 whitespace-nowrap transition-colors flex items-center gap-2 cursor-pointer">
+                        <i class="fas fa-certificate text-teal-600"></i>
+                        <span>Sertifikat</span>
+                    </button>
+                    <button type="button" onclick="switchDokumenTab('spk_rkk')" id="tab_dokumen_spk_rkk" class="dokumen-tab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-teal-700 whitespace-nowrap transition-colors flex items-center gap-2 cursor-pointer">
+                        <i class="fas fa-file-contract text-blue-600"></i>
+                        <span>SPK & RKK</span>
+                    </button>
                 </div>
 
                 <!-- Search & Filter Bar -->
@@ -2417,12 +2436,86 @@
                             fileUrl: 'https://drive.google.com/drive/folders/1DN1euHY_C_Tf6aaHJxxXrn8lrsY4THVD'
                         };
                     },
-                    getDokumenList: function(actorNip) {
+                    getDokumenList: function(categoryOrNip, actorNip) {
+                        let cat = 'umum';
+                        if (categoryOrNip === 'sertifikat' || categoryOrNip === 'spk_rkk' || categoryOrNip === 'umum') {
+                            cat = categoryOrNip;
+                        }
+                        if (cat === 'sertifikat') {
+                            return [
+                                {
+                                    id: 'mock_cert_1',
+                                    namaAsli: 'Sertifikat_Pelatihan_BTCLS_2026.pdf',
+                                    namaFile: '198501012010011001_Sertifikat_Pelatihan_BTCLS_2026_1730000000000.pdf',
+                                    kategori: 'sertifikat',
+                                    subfolder: 'Pelatihan Keperawatan',
+                                    url: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
+                                    downloadUrl: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
+                                    ext: 'pdf',
+                                    ukuran: '1.8 MB',
+                                    tanggal: '05-11-2026 09:20',
+                                    nipPengunggah: '198501012010011001',
+                                    namaPengunggah: 'Ns. Siti Nurhaliza, S.Kep.',
+                                    bisaHapus: true
+                                },
+                                {
+                                    id: 'mock_cert_2',
+                                    namaAsli: 'Sertifikat_Keahlian_Kamar_Operasi.pdf',
+                                    namaFile: '199002022015022002_Sertifikat_Keahlian_Kamar_Operasi_1730100000000.pdf',
+                                    kategori: 'sertifikat',
+                                    subfolder: '',
+                                    url: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
+                                    downloadUrl: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj',
+                                    ext: 'pdf',
+                                    ukuran: '2.1 MB',
+                                    tanggal: '04-11-2026 11:45',
+                                    nipPengunggah: '199002022015022002',
+                                    namaPengunggah: 'Budi Santoso, A.Md.Kep.',
+                                    bisaHapus: false
+                                }
+                            ];
+                        }
+                        if (cat === 'spk_rkk') {
+                            return [
+                                {
+                                    id: 'mock_spk_1',
+                                    namaAsli: 'SPK_RKK_Perawat_Klinis_III_2026.pdf',
+                                    namaFile: '198501012010011001_SPK_RKK_Perawat_Klinis_III_2026_1730000000000.pdf',
+                                    kategori: 'spk_rkk',
+                                    subfolder: 'Tahun 2026',
+                                    url: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G',
+                                    downloadUrl: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G',
+                                    ext: 'pdf',
+                                    ukuran: '3.2 MB',
+                                    tanggal: '07-11-2026 08:30',
+                                    nipPengunggah: '198501012010011001',
+                                    namaPengunggah: 'Ns. Siti Nurhaliza, S.Kep.',
+                                    bisaHapus: true
+                                },
+                                {
+                                    id: 'mock_spk_2',
+                                    namaAsli: 'Draft_RKK_Tenaga_Keperawatan_Baru.docx',
+                                    namaFile: '199002022015022002_Draft_RKK_Tenaga_Keperawatan_Baru_1730100000000.docx',
+                                    kategori: 'spk_rkk',
+                                    subfolder: '',
+                                    url: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G',
+                                    downloadUrl: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G',
+                                    ext: 'docx',
+                                    ukuran: '620 KB',
+                                    tanggal: '06-11-2026 15:10',
+                                    nipPengunggah: '199002022015022002',
+                                    namaPengunggah: 'Budi Santoso, A.Md.Kep.',
+                                    bisaHapus: false
+                                }
+                            ];
+                        }
                         return [
                             {
                                 id: 'mock_doc_1',
                                 namaAsli: 'Pedoman_Pelayanan_Komite_Keperawatan_2026.pdf',
                                 namaFile: '198501012010011001_Pedoman_Pelayanan_Komite_Keperawatan_2026_1730000000000.pdf',
+                                kategori: 'umum',
+                                subfolder: '',
                                 url: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
                                 downloadUrl: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
                                 ext: 'pdf',
@@ -2436,6 +2529,8 @@
                                 id: 'mock_doc_2',
                                 namaAsli: 'Format_Pengajuan_Kredensial_Revisi.docx',
                                 namaFile: '199002022015022002_Format_Pengajuan_Kredensial_Revisi_1730100000000.docx',
+                                kategori: 'umum',
+                                subfolder: '',
                                 url: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
                                 downloadUrl: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
                                 ext: 'docx',
@@ -3023,7 +3118,7 @@
             if (viewName === 'beranda') {
                 updateBerandaUI();
             } else if (viewName === 'dokumen') {
-                loadDokumenList();
+                switchDokumenTab(activeDokumenTab || 'umum');
             } else if (viewName === 'datakomper') {
                 loadDataKomper();
             } else if (viewName === 'dashboard') {
@@ -8807,8 +8902,47 @@
         // ==========================================
         // FITUR DOKUMEN DOKUMEN (GOOGLE DRIVE)
         // ==========================================
+        const DOKUMEN_TAB_URLS = {
+            umum: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA?usp=sharing',
+            sertifikat: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj?usp=sharing',
+            spk_rkk: 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G?usp=sharing'
+        };
+
+        let activeDokumenTab = 'umum';
+        const dokumenCache = {
+            umum: null,
+            sertifikat: null,
+            spk_rkk: null
+        };
         let dokumenAllData = [];
         let dokumenFilteredData = [];
+
+        function switchDokumenTab(tabName) {
+            activeDokumenTab = (tabName === 'sertifikat' || tabName === 'spk_rkk') ? tabName : 'umum';
+            const tabs = ['umum', 'sertifikat', 'spk_rkk'];
+            tabs.forEach(function(t) {
+                const btn = document.getElementById('tab_dokumen_' + t);
+                if (btn) {
+                    if (t === activeDokumenTab) {
+                        btn.className = 'dokumen-tab-btn px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-teal-600 text-teal-700 whitespace-nowrap transition-colors flex items-center gap-2 cursor-pointer';
+                    } else {
+                        btn.className = 'dokumen-tab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-teal-700 whitespace-nowrap transition-colors flex items-center gap-2 cursor-pointer';
+                    }
+                }
+            });
+
+            // Sinkronkan link shortcut "Buka Folder Drive" di header
+            const btnLink = document.getElementById('btnLinkFolderDrive');
+            if (btnLink && DOKUMEN_TAB_URLS[activeDokumenTab]) {
+                btnLink.href = DOKUMEN_TAB_URLS[activeDokumenTab];
+            }
+
+            // Bersihkan input pencarian saat berpindah tab
+            const searchInput = document.getElementById('inputSearchDokumen');
+            if (searchInput) searchInput.value = '';
+
+            loadDokumenList(activeDokumenTab);
+        }
 
         function getFileIconConfig(ext) {
             const e = (ext || '').toLowerCase();
@@ -8833,9 +8967,23 @@
             return { icon: '<i class="fas fa-file-alt text-teal-600 text-xl"></i>', bg: 'bg-teal-50 border border-teal-100' };
         }
 
-        function loadDokumenList() {
+        function loadDokumenList(category, forceRefresh) {
+            const cat = category || activeDokumenTab || 'umum';
             const grid = document.getElementById('gridDokumen');
             const summary = document.getElementById('dokumenSummary');
+
+            if (!forceRefresh && dokumenCache[cat]) {
+                dokumenAllData = dokumenCache[cat];
+                dokumenFilteredData = dokumenAllData.slice();
+                const searchInput = document.getElementById('inputSearchDokumen');
+                if (searchInput && searchInput.value.trim() !== '') {
+                    filterDokumenList();
+                } else {
+                    renderDokumenList(dokumenFilteredData);
+                }
+                return;
+            }
+
             if (grid) {
                 grid.innerHTML = '<div class="col-span-full p-8 text-center text-teal-600 font-bold bg-white rounded-2xl border border-teal-50">' +
                     '<i class="fas fa-spinner fa-spin mr-2 text-xl"></i>Sedang memuat dokumen dari Google Drive...' +
@@ -8846,24 +8994,30 @@
             const actorNip = currentUser ? currentUser.nip : '';
             google.script.run
                 .withSuccessHandler(function(docs) {
-                    dokumenAllData = Array.isArray(docs) ? docs : [];
-                    dokumenFilteredData = dokumenAllData.slice();
-                    const searchInput = document.getElementById('inputSearchDokumen');
-                    if (searchInput && searchInput.value.trim() !== '') {
-                        filterDokumenList();
-                    } else {
-                        renderDokumenList(dokumenFilteredData);
+                    const list = Array.isArray(docs) ? docs : [];
+                    dokumenCache[cat] = list;
+                    if (activeDokumenTab === cat) {
+                        dokumenAllData = list;
+                        dokumenFilteredData = dokumenAllData.slice();
+                        const searchInput = document.getElementById('inputSearchDokumen');
+                        if (searchInput && searchInput.value.trim() !== '') {
+                            filterDokumenList();
+                        } else {
+                            renderDokumenList(dokumenFilteredData);
+                        }
                     }
                 })
                 .withFailureHandler(function(err) {
-                    if (grid) {
-                        grid.innerHTML = '<div class="col-span-full p-8 text-center text-rose-500 font-bold bg-white rounded-2xl border border-rose-100">' +
-                            '<i class="fas fa-exclamation-triangle mr-2 text-xl"></i>Gagal memuat dokumen: ' + escapeHtml((err && err.message) || 'Terjadi kesalahan sistem.') +
-                            '</div>';
+                    if (activeDokumenTab === cat) {
+                        if (grid) {
+                            grid.innerHTML = '<div class="col-span-full p-8 text-center text-rose-500 font-bold bg-white rounded-2xl border border-rose-100">' +
+                                '<i class="fas fa-exclamation-triangle mr-2 text-xl"></i>Gagal memuat dokumen: ' + escapeHtml((err && err.message) || 'Terjadi kesalahan sistem.') +
+                                '</div>';
+                        }
+                        if (summary) summary.innerText = 'Gagal memuat dokumen';
                     }
-                    if (summary) summary.innerText = 'Gagal memuat dokumen';
                 })
-                .getDokumenList(actorNip);
+                .getDokumenList(cat, actorNip);
         }
 
         function filterDokumenList() {
@@ -8877,7 +9031,8 @@
                     const pengunggah = (doc.namaPengunggah || '').toLowerCase();
                     const nip = (doc.nipPengunggah || '').toLowerCase();
                     const ext = (doc.ext || '').toLowerCase();
-                    return nama.indexOf(q) !== -1 || pengunggah.indexOf(q) !== -1 || nip.indexOf(q) !== -1 || ext.indexOf(q) !== -1;
+                    const sub = (doc.subfolder || '').toLowerCase();
+                    return nama.indexOf(q) !== -1 || pengunggah.indexOf(q) !== -1 || nip.indexOf(q) !== -1 || ext.indexOf(q) !== -1 || sub.indexOf(q) !== -1;
                 });
             }
             renderDokumenList(dokumenFilteredData);
@@ -8888,8 +9043,12 @@
             const summary = document.getElementById('dokumenSummary');
             if (!grid) return;
 
+            let tabLabel = 'Dokumen Umum';
+            if (activeDokumenTab === 'sertifikat') tabLabel = 'Sertifikat';
+            else if (activeDokumenTab === 'spk_rkk') tabLabel = 'SPK & RKK';
+
             if (summary) {
-                summary.innerText = 'Menampilkan ' + docs.length + ' dari ' + dokumenAllData.length + ' dokumen';
+                summary.innerText = tabLabel + ': Menampilkan ' + docs.length + ' dari ' + dokumenAllData.length + ' berkas';
             }
 
             if (!docs || docs.length === 0) {
@@ -8897,8 +9056,8 @@
                     '<div class="w-16 h-16 mx-auto mb-3 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center text-2xl">' +
                     '<i class="fas fa-folder-open"></i>' +
                     '</div>' +
-                    '<h4 class="font-bold text-gray-800 text-sm sm:text-base">Belum Ada Dokumen</h4>' +
-                    '<p class="text-xs text-gray-500 mt-1 max-w-md mx-auto">Tidak ada berkas yang ditemukan pada folder arsip Google Drive.</p>' +
+                    '<h4 class="font-bold text-gray-800 text-sm sm:text-base">Belum Ada Berkas (' + tabLabel + ')</h4>' +
+                    '<p class="text-xs text-gray-500 mt-1 max-w-md mx-auto">Tidak ada berkas yang ditemukan pada folder arsip Google Drive ini.</p>' +
                     '</div>';
                 return;
             }
@@ -8915,6 +9074,7 @@
                 const safeUrl = sanitizeUrl(doc.url || '#');
                 const safeDownloadUrl = sanitizeUrl(doc.downloadUrl || doc.url || '#');
                 const safeId = escapeJsAttr(doc.id || '');
+                const safeSubfolder = doc.subfolder ? escapeHtml(doc.subfolder) : '';
                 const canDelete = Boolean(doc.bisaHapus);
 
                 html += '<div class="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow flex flex-col justify-between">';
@@ -8925,10 +9085,14 @@
                 html += '      </div>';
                 html += '      <div class="flex-1 min-w-0">';
                 html += '        <h4 class="text-xs sm:text-sm font-bold text-gray-800 truncate" title="' + safeNama + '">' + safeNama + '</h4>';
-                html += '        <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-gray-500 mt-1">';
+                html += '        <div class="flex flex-wrap items-center gap-1.5 text-[10px] sm:text-xs text-gray-500 mt-1">';
                 html += '          <span class="px-1.5 py-0.5 rounded bg-gray-100 font-bold uppercase text-[9px] text-gray-600 tracking-wider">' + safeExt + '</span>';
                 html += '          <span>•</span>';
                 html += '          <span>' + safeUkuran + '</span>';
+                if (safeSubfolder) {
+                    html += '          <span>•</span>';
+                    html += '          <span class="px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 font-medium text-[9px] truncate max-w-[130px]" title="' + safeSubfolder + '"><i class="fas fa-folder text-[8px] mr-1"></i>' + safeSubfolder + '</span>';
+                }
                 html += '        </div>';
                 html += '      </div>';
                 html += '    </div>';
@@ -9023,7 +9187,8 @@
                                 text: res.message || 'Dokumen telah tersimpan di Google Drive.',
                                 confirmButtonColor: '#0d9488'
                             });
-                            loadDokumenList();
+                            dokumenCache[activeDokumenTab] = null;
+                            loadDokumenList(activeDokumenTab, true);
                         } else {
                             if (statusEl) statusEl.innerHTML = '<span class="text-rose-600 font-bold"><i class="fas fa-times-circle mr-1"></i>' + escapeHtml((res && res.message) || 'Gagal mengunggah dokumen.') + '</span>';
                             Swal.fire({
@@ -9094,7 +9259,8 @@
                                     text: res.message || 'Dokumen berhasil dihapus.',
                                     confirmButtonColor: '#0d9488'
                                 });
-                                loadDokumenList();
+                                dokumenCache[activeDokumenTab] = null;
+                                loadDokumenList(activeDokumenTab, true);
                             } else {
                                 Swal.fire({
                                     icon: 'error',
