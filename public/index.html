@@ -782,9 +782,32 @@
                 </div>
 
                 <!-- Dokumen Grid / List Container -->
-                <div id="gridDokumen" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-8">
+                <div id="gridDokumen" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-6">
                     <div class="col-span-full p-8 text-center text-teal-600 font-bold bg-white rounded-2xl border border-teal-50">
                         <i class="fas fa-spinner fa-spin mr-2 text-xl"></i>Sedang memuat dokumen dari Google Drive...
+                    </div>
+                </div>
+
+                <!-- BARIS PAGINASI DOKUMEN -->
+                <div id="dokumenPaginationBar" class="bg-white rounded-2xl p-3 sm:p-4 mb-8 shadow-sm border border-gray-100 flex flex-wrap justify-between items-center gap-3 text-xs shrink-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-teal-800 font-bold">Tampilkan:</span>
+                        <select id="selectRowsDokumen" onchange="changeRowsDokumen()" class="p-1.5 border border-teal-300 rounded text-xs outline-none bg-white text-teal-800 font-bold cursor-pointer transition-colors focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="all">Semua</option>
+                        </select>
+                        <span class="text-teal-800 font-bold hidden sm:inline">berkas / halaman</span>
+                    </div>
+                    <div class="flex items-center gap-3 sm:gap-4">
+                        <span id="paginationInfoDokumen" class="text-teal-800 font-bold">Menampilkan 0 - 0 dari 0 berkas</span>
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="prevDokumenPage()" id="btnPrevDokumen" class="px-3 py-1.5 bg-teal-600 text-white rounded hover:bg-teal-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer" title="Halaman Sebelumnya" aria-label="Halaman Sebelumnya"><i class="fas fa-chevron-left"></i></button>
+                            <span id="pageIndicatorDokumen" class="px-2 font-bold text-teal-700 text-xs">Hal 1 / 1</span>
+                            <button type="button" onclick="nextDokumenPage()" id="btnNextDokumen" class="px-3 py-1.5 bg-teal-600 text-white rounded hover:bg-teal-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer" title="Halaman Selanjutnya" aria-label="Halaman Selanjutnya"><i class="fas fa-chevron-right"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2509,7 +2532,7 @@
                                 }
                             ];
                         }
-                        return [
+                        const mockUmum = [
                             {
                                 id: 'mock_doc_1',
                                 namaAsli: 'Pedoman_Pelayanan_Komite_Keperawatan_2026.pdf',
@@ -2541,6 +2564,24 @@
                                 bisaHapus: false
                             }
                         ];
+                        for (let i = 3; i <= 12; i++) {
+                            mockUmum.push({
+                                id: 'mock_doc_' + i,
+                                namaAsli: 'Standar_Operasional_Prosedur_Keperawatan_' + (i < 10 ? '0' + i : i) + '.pdf',
+                                namaFile: '198501012010011001_SOP_Keperawatan_' + i + '_1730000000000.pdf',
+                                kategori: 'umum',
+                                subfolder: '',
+                                url: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
+                                downloadUrl: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
+                                ext: 'pdf',
+                                ukuran: '1.' + i + ' MB',
+                                tanggal: '02-11-2026 11:00',
+                                nipPengunggah: '198501012010011001',
+                                namaPengunggah: 'Ns. Siti Nurhaliza, S.Kep.',
+                                bisaHapus: false
+                            });
+                        }
+                        return mockUmum;
                     },
                     uploadDokumenToDrive: function(base64Data, originalFileName, actorNip) {
                         return {
@@ -8909,6 +8950,8 @@
         };
 
         let activeDokumenTab = 'umum';
+        let dokumenCurrentPage = 1;
+        let dokumenRowsPerPage = '10';
         const dokumenCache = {
             umum: null,
             sertifikat: null,
@@ -8919,6 +8962,7 @@
 
         function switchDokumenTab(tabName) {
             activeDokumenTab = (tabName === 'sertifikat' || tabName === 'spk_rkk') ? tabName : 'umum';
+            dokumenCurrentPage = 1;
             const tabs = ['umum', 'sertifikat', 'spk_rkk'];
             tabs.forEach(function(t) {
                 const btn = document.getElementById('tab_dokumen_' + t);
@@ -8975,11 +9019,12 @@
             if (!forceRefresh && dokumenCache[cat]) {
                 dokumenAllData = dokumenCache[cat];
                 dokumenFilteredData = dokumenAllData.slice();
+                dokumenCurrentPage = 1;
                 const searchInput = document.getElementById('inputSearchDokumen');
                 if (searchInput && searchInput.value.trim() !== '') {
                     filterDokumenList();
                 } else {
-                    renderDokumenList(dokumenFilteredData);
+                    displayDokumenPage();
                 }
                 return;
             }
@@ -8990,6 +9035,7 @@
                     '</div>';
             }
             if (summary) summary.innerText = 'Memuat dokumen...';
+            updateDokumenPagination(0, 0, 0);
 
             const actorNip = currentUser ? currentUser.nip : '';
             google.script.run
@@ -8999,11 +9045,12 @@
                     if (activeDokumenTab === cat) {
                         dokumenAllData = list;
                         dokumenFilteredData = dokumenAllData.slice();
+                        dokumenCurrentPage = 1;
                         const searchInput = document.getElementById('inputSearchDokumen');
                         if (searchInput && searchInput.value.trim() !== '') {
                             filterDokumenList();
                         } else {
-                            renderDokumenList(dokumenFilteredData);
+                            displayDokumenPage();
                         }
                     }
                 })
@@ -9015,6 +9062,7 @@
                                 '</div>';
                         }
                         if (summary) summary.innerText = 'Gagal memuat dokumen';
+                        updateDokumenPagination(0, 0, 0);
                     }
                 })
                 .getDokumenList(cat, actorNip);
@@ -9035,23 +9083,114 @@
                     return nama.indexOf(q) !== -1 || pengunggah.indexOf(q) !== -1 || nip.indexOf(q) !== -1 || ext.indexOf(q) !== -1 || sub.indexOf(q) !== -1;
                 });
             }
-            renderDokumenList(dokumenFilteredData);
+            dokumenCurrentPage = 1;
+            displayDokumenPage();
+        }
+
+        function displayDokumenPage() {
+            const total = dokumenFilteredData.length;
+            let startIndex = 0;
+            let endIndex = total;
+            let pageDocs = dokumenFilteredData;
+
+            // Pastikan select element sinkron
+            const sel = document.getElementById('selectRowsDokumen');
+            if (sel && sel.value !== dokumenRowsPerPage) {
+                sel.value = dokumenRowsPerPage;
+            }
+
+            if (dokumenRowsPerPage !== 'all') {
+                const rows = parseInt(dokumenRowsPerPage) || 10;
+                const maxPages = Math.ceil(total / rows) || 1;
+                if (dokumenCurrentPage > maxPages) dokumenCurrentPage = maxPages;
+                if (dokumenCurrentPage < 1) dokumenCurrentPage = 1;
+
+                startIndex = (dokumenCurrentPage - 1) * rows;
+                endIndex = Math.min(startIndex + rows, total);
+                pageDocs = dokumenFilteredData.slice(startIndex, endIndex);
+            }
+
+            renderDokumenCards(pageDocs);
+            updateDokumenPagination(total === 0 ? 0 : startIndex + 1, endIndex, total);
         }
 
         function renderDokumenList(docs) {
-            const grid = document.getElementById('gridDokumen');
+            if (Array.isArray(docs)) {
+                dokumenFilteredData = docs;
+            }
+            displayDokumenPage();
+        }
+
+        function updateDokumenPagination(start, end, total) {
+            const infoEl = document.getElementById('paginationInfoDokumen');
+            const pageInd = document.getElementById('pageIndicatorDokumen');
+            const btnPrev = document.getElementById('btnPrevDokumen');
+            const btnNext = document.getElementById('btnNextDokumen');
             const summary = document.getElementById('dokumenSummary');
-            if (!grid) return;
 
             let tabLabel = 'Dokumen Umum';
             if (activeDokumenTab === 'sertifikat') tabLabel = 'Sertifikat';
             else if (activeDokumenTab === 'spk_rkk') tabLabel = 'SPK & RKK';
 
             if (summary) {
-                summary.innerText = tabLabel + ': Menampilkan ' + docs.length + ' dari ' + dokumenAllData.length + ' berkas';
+                summary.innerText = tabLabel + ': Total ' + total + ' berkas';
             }
 
-            if (!docs || docs.length === 0) {
+            if (infoEl) {
+                infoEl.innerText = `Menampilkan ${start} - ${end} dari ${total} berkas`;
+            }
+
+            let maxPages = 1;
+            if (dokumenRowsPerPage !== 'all') {
+                const rows = parseInt(dokumenRowsPerPage) || 10;
+                maxPages = Math.ceil(total / rows) || 1;
+            }
+
+            if (pageInd) {
+                pageInd.innerText = `Hal ${dokumenCurrentPage} / ${maxPages}`;
+            }
+
+            if (btnPrev && btnNext) {
+                btnPrev.disabled = (dokumenCurrentPage <= 1 || total === 0);
+                btnNext.disabled = (dokumenRowsPerPage === 'all' || dokumenCurrentPage >= maxPages || total === 0);
+            }
+        }
+
+        function prevDokumenPage() {
+            if (dokumenCurrentPage > 1) {
+                dokumenCurrentPage--;
+                displayDokumenPage();
+            }
+        }
+
+        function nextDokumenPage() {
+            if (dokumenRowsPerPage === 'all') return;
+            const rows = parseInt(dokumenRowsPerPage) || 10;
+            const maxPages = Math.ceil(dokumenFilteredData.length / rows);
+            if (dokumenCurrentPage < maxPages) {
+                dokumenCurrentPage++;
+                displayDokumenPage();
+            }
+        }
+
+        function changeRowsDokumen() {
+            const sel = document.getElementById('selectRowsDokumen');
+            if (sel) {
+                dokumenRowsPerPage = sel.value;
+            }
+            dokumenCurrentPage = 1;
+            displayDokumenPage();
+        }
+
+        function renderDokumenCards(docs) {
+            const grid = document.getElementById('gridDokumen');
+            if (!grid) return;
+
+            let tabLabel = 'Dokumen Umum';
+            if (activeDokumenTab === 'sertifikat') tabLabel = 'Sertifikat';
+            else if (activeDokumenTab === 'spk_rkk') tabLabel = 'SPK & RKK';
+
+            if (!dokumenFilteredData || dokumenFilteredData.length === 0) {
                 grid.innerHTML = '<div class="col-span-full p-12 text-center bg-white rounded-2xl border border-gray-100 shadow-xs">' +
                     '<div class="w-16 h-16 mx-auto mb-3 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center text-2xl">' +
                     '<i class="fas fa-folder-open"></i>' +
