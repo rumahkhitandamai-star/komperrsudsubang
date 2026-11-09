@@ -750,11 +750,6 @@
                             <i id="syncIconDokumen" class="fas fa-check-circle text-teal-500"></i>
                             <span id="syncTextDokumen">Tersinkron GDrive</span>
                         </span>
-                        <a id="btnLinkFolderDrive" href="https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj?usp=sharing" target="_blank" rel="noopener noreferrer" class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-3.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1.5 shadow-sm">
-                            <i class="fab fa-google-drive text-amber-500"></i>
-                            <span>Buka Folder Drive</span>
-                            <i class="fas fa-external-link-alt text-[10px] text-gray-400"></i>
-                        </a>
                         <button type="button" id="btnRefreshDokumen" onclick="loadDokumenList(activeDokumenTab, true)" class="bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded-lg text-xs font-bold transition-colors shadow-md whitespace-nowrap inline-flex items-center gap-1.5 cursor-pointer">
                             <i id="iconRefreshDokumen" class="fas fa-sync-alt"></i>
                             <span>Refresh</span>
@@ -9034,12 +9029,6 @@
                     }
                 }
             });
-
-            // Sinkronkan link shortcut "Buka Folder Drive" di header
-            const btnLink = document.getElementById('btnLinkFolderDrive');
-            if (btnLink && DOKUMEN_TAB_URLS[activeDokumenTab]) {
-                btnLink.href = DOKUMEN_TAB_URLS[activeDokumenTab];
-            }
 
             // Bersihkan input pencarian saat berpindah tab
             const searchInput = document.getElementById('inputSearchDokumen');
