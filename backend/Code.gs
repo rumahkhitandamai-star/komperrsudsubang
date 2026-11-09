@@ -1727,16 +1727,23 @@ function _getUserName(nip) {
 
 function getDokumenList(categoryOrNip, actorNip) {
   try {
+    let category = "umum";
     let effectiveActor = actorNip;
-    if (categoryOrNip && !actorNip) {
+
+    if (categoryOrNip && (categoryOrNip === "umum" || categoryOrNip === "sertifikat" || categoryOrNip === "spk_rkk")) {
+      category = categoryOrNip;
+    } else if (categoryOrNip && !actorNip) {
+      // Dipanggil satu argumen: getDokumenList(actorNip)
       effectiveActor = categoryOrNip;
     }
 
+    const folderId = DOKUMEN_FOLDERS[category] || DOKUMEN_FOLDERS.umum;
+    const folder = DriveApp.getFolderById(folderId);
     const result = [];
     const foldersList = [];
     const isAdmin = _isAdminOrSuperAdmin(effectiveActor);
 
-    function processDriveFile(file, subfolderName, categoryKey) {
+    function processDriveFile(file, subfolderName) {
       if (!file || file.isTrashed()) return;
 
       const fileId = file.getId();
@@ -1807,7 +1814,7 @@ function getDokumenList(categoryOrNip, actorNip) {
         namaAsli: originalName,
         namaFile: fileName,
         subfolder: subfolderName || "",
-        kategori: categoryKey || "umum",
+        kategori: category,
         url: file.getUrl(),
         downloadUrl: "https://drive.google.com/uc?export=download&id=" + fileId,
         ext: ext,
@@ -1819,15 +1826,16 @@ function getDokumenList(categoryOrNip, actorNip) {
       });
     }
 
-    // 1. Ambil berkas & subfolder di folder Dokumen Utama (umum)
-    try {
-      const folderUmum = DriveApp.getFolderById(DOKUMEN_FOLDERS.umum);
-      if (folderUmum && !folderUmum.isTrashed()) {
-        const rootFiles = folderUmum.getFiles();
-        while (rootFiles.hasNext()) {
-          processDriveFile(rootFiles.next(), "", "umum");
-        }
-        const subfolders = folderUmum.getFolders();
+    if (folder && !folder.isTrashed()) {
+      // 1. Ambil berkas di root folder
+      const files = folder.getFiles();
+      while (files.hasNext()) {
+        processDriveFile(files.next(), "");
+      }
+
+      // 2. Ambil berkas di subfolder (kedalaman 1) dan daftarkan sebagai folder card
+      try {
+        const subfolders = folder.getFolders();
         while (subfolders.hasNext()) {
           const sub = subfolders.next();
           if (sub.isTrashed()) continue;
@@ -1837,7 +1845,7 @@ function getDokumenList(categoryOrNip, actorNip) {
           let subCount = 0;
           const subFiles = sub.getFiles();
           while (subFiles.hasNext()) {
-            processDriveFile(subFiles.next(), subName, "umum");
+            processDriveFile(subFiles.next(), subName);
             subCount++;
           }
           foldersList.push({
@@ -1847,74 +1855,8 @@ function getDokumenList(categoryOrNip, actorNip) {
             berkasCount: subCount
           });
         }
-      }
-    } catch(eUmum) {}
-
-    // 2. Ambil berkas & buat folder card untuk Folder Sertifikat (ID: 1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj)
-    try {
-      const folderSertifikat = DriveApp.getFolderById(DOKUMEN_FOLDERS.sertifikat);
-      if (folderSertifikat && !folderSertifikat.isTrashed()) {
-        const sUrl = folderSertifikat.getUrl() || ("https://drive.google.com/drive/folders/" + DOKUMEN_FOLDERS.sertifikat);
-        let sCount = 0;
-        const sFiles = folderSertifikat.getFiles();
-        while (sFiles.hasNext()) {
-          processDriveFile(sFiles.next(), "Sertifikat", "sertifikat");
-          sCount++;
-        }
-        try {
-          const sSubs = folderSertifikat.getFolders();
-          while (sSubs.hasNext()) {
-            const sub = sSubs.next();
-            if (sub.isTrashed()) continue;
-            const subFiles = sub.getFiles();
-            while (subFiles.hasNext()) {
-              processDriveFile(subFiles.next(), "Sertifikat / " + sub.getName(), "sertifikat");
-              sCount++;
-            }
-          }
-        } catch(eSSubs) {}
-
-        foldersList.push({
-          id: DOKUMEN_FOLDERS.sertifikat,
-          nama: "Sertifikat",
-          url: sUrl,
-          berkasCount: sCount
-        });
-      }
-    } catch(eSertif) {}
-
-    // 3. Ambil berkas & buat folder card untuk Folder SPK & RKK (ID: 16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G)
-    try {
-      const folderSpk = DriveApp.getFolderById(DOKUMEN_FOLDERS.spk_rkk);
-      if (folderSpk && !folderSpk.isTrashed()) {
-        const spkUrl = folderSpk.getUrl() || ("https://drive.google.com/drive/folders/" + DOKUMEN_FOLDERS.spk_rkk);
-        let spkCount = 0;
-        const spkFiles = folderSpk.getFiles();
-        while (spkFiles.hasNext()) {
-          processDriveFile(spkFiles.next(), "SPK & RKK", "spk_rkk");
-          spkCount++;
-        }
-        try {
-          const spkSubs = folderSpk.getFolders();
-          while (spkSubs.hasNext()) {
-            const sub = spkSubs.next();
-            if (sub.isTrashed()) continue;
-            const subFiles = sub.getFiles();
-            while (subFiles.hasNext()) {
-              processDriveFile(subFiles.next(), "SPK & RKK / " + sub.getName(), "spk_rkk");
-              spkCount++;
-            }
-          }
-        } catch(eSpkSubs) {}
-
-        foldersList.push({
-          id: DOKUMEN_FOLDERS.spk_rkk,
-          nama: "SPK & RKK",
-          url: spkUrl,
-          berkasCount: spkCount
-        });
-      }
-    } catch(eSpk) {}
+      } catch(eSub) {}
+    }
 
     // Urutkan folders berdasarkan nama
     foldersList.sort(function(a, b) {
@@ -1928,21 +1870,21 @@ function getDokumenList(categoryOrNip, actorNip) {
 
     return {
       success: true,
-      category: "umum",
+      category: category,
       folders: foldersList,
       files: result
     };
   } catch(e) {
     return {
       success: false,
-      category: "umum",
+      category: categoryOrNip || "umum",
       folders: [],
       files: []
     };
   }
 }
 
-function uploadDokumenToDrive(base64Data, originalFileName, actorNip) {
+function uploadDokumenToDrive(base64Data, originalFileName, actorNip, category) {
   try {
     if (!actorNip) {
       return { success: false, message: "Akses ditolak: NIP pengunggah tidak valid." };
@@ -1970,7 +1912,9 @@ function uploadDokumenToDrive(base64Data, originalFileName, actorNip) {
     const cleanBaseName = baseNameWithoutExt.replace(/[^a-zA-Z0-9_\-\. ]/g, '_').replace(/\s+/g, '_');
     const driveFileName = actorNip + "_" + cleanBaseName + "_" + new Date().getTime() + ext;
 
-    const folder = DriveApp.getFolderById(DOKUMEN_FOLDER_ID);
+    const targetCategory = (category === "sertifikat" || category === "spk_rkk") ? category : "umum";
+    const targetFolderId = DOKUMEN_FOLDERS[targetCategory] || DOKUMEN_FOLDER_ID;
+    const folder = DriveApp.getFolderById(targetFolderId);
     const byteCharacters = Utilities.base64Decode(base64String);
     const blob = Utilities.newBlob(byteCharacters, type, driveFileName);
     const file = folder.createFile(blob);
