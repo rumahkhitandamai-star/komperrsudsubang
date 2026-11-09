@@ -1696,9 +1696,7 @@ function backupDatabase(actorNip) {
 // PENGELOLAAN DOKUMEN DOKUMEN (GOOGLE DRIVE)
 // ==========================================
 const DOKUMEN_FOLDERS = {
-  "umum": "1NnxZM12bk-S8zNVPOvTcTh817XotGmYA",
-  "sertifikat": "1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj",
-  "spk_rkk": "16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G"
+  "umum": "1NnxZM12bk-S8zNVPOvTcTh817XotGmYA"
 };
 const DOKUMEN_FOLDER_ID = DOKUMEN_FOLDERS.umum;
 
@@ -1730,9 +1728,7 @@ function getDokumenList(categoryOrNip, actorNip) {
     let category = "umum";
     let effectiveActor = actorNip;
 
-    if (categoryOrNip && (categoryOrNip === "umum" || categoryOrNip === "sertifikat" || categoryOrNip === "spk_rkk")) {
-      category = categoryOrNip;
-    } else if (categoryOrNip && !actorNip) {
+    if (categoryOrNip && !actorNip) {
       // Dipanggil satu argumen: getDokumenList(actorNip)
       effectiveActor = categoryOrNip;
     }
