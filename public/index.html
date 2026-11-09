@@ -298,6 +298,7 @@
             <ul class="p-4 space-y-2">
                 <li data-menu="beranda"><button onclick="navigate('beranda')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-teal-50 text-gray-700 flex items-center gap-3 transition-colors"><svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V9.5z" fill="#3B82F6"/></svg> Beranda</button></li>
                 <li data-menu="profil"><button onclick="navigate('profil')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-teal-50 text-gray-700 flex items-center gap-3 transition-colors"><svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="18" height="16" rx="2" fill="#8B5CF6"/><circle cx="8" cy="10" r="3" fill="#F3F4F6"/><path d="M4 18c0-2.2 1.8-4 4-4h0c2.2 0 4 1.8 4 4v2H4v-2z" fill="#F3F4F6"/><rect x="14" y="10" width="5" height="2" rx="1" fill="#F3F4F6"/><rect x="14" y="14" width="3" height="2" rx="1" fill="#F3F4F6"/></svg> Profil</button></li>
+                <li data-menu="dokumen"><button onclick="navigate('dokumen')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-teal-50 text-gray-700 flex items-center gap-3 transition-colors"><svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6z" fill="#F59E0B"/><path d="M14 2v6h6" fill="#FCD34D"/><rect x="8" y="12" width="8" height="2" rx="1" fill="#FFFFFF"/><rect x="8" y="16" width="6" height="2" rx="1" fill="#FFFFFF"/></svg> Dokumen Dokumen</button></li>
                 <li data-menu="verifikasi"><button onclick="kirimWA()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-teal-50 text-gray-700 flex items-center justify-between gap-2 transition-colors"><div class="flex items-center gap-3"><svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.48 2 2 6.48 2 12C2 13.75 2.45 15.4 3.24 16.84L2 22L7.33 20.8C8.75 21.57 10.33 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM17.34 16.32C17.15 16.86 16.4 17.34 15.82 17.47C15.34 17.58 14.65 17.65 11.96 16.53C8.55 15.11 6.36 11.64 6.2 11.43C6.04 11.22 4.96 9.79 4.96 8.31C4.96 6.83 5.71 6.1 6 5.8C6.24 5.56 6.64 5.46 7 5.46C7.11 5.46 7.22 5.46 7.32 5.47C7.62 5.49 7.78 5.52 7.97 5.97C8.21 6.55 8.79 7.97 8.86 8.12C8.93 8.27 9.02 8.46 8.92 8.65C8.83 8.84 8.76 8.94 8.61 9.11C8.46 9.28 8.3 9.49 8.16 9.63C8.01 9.79 7.85 9.96 8.03 10.22C8.21 10.48 8.79 11.43 9.64 12.18C10.74 13.15 11.64 13.46 11.93 13.58C12.22 13.7 12.56 13.67 12.76 13.46C13.01 13.19 13.34 12.69 13.68 12.18C13.93 11.8 14.3 11.75 14.65 11.88C15.01 12 16.89 12.93 17.27 13.11C17.65 13.3 17.9 13.39 17.99 13.55C18.08 13.7 18.08 14.46 17.7 15.34L17.34 16.32Z" fill="#22C55E"/></svg> <span>Ajukan Verifikasi</span></div><span class="text-[10px] bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full shrink-0">Kirim WA</span></button></li>
                 <li data-menu="kredensial"><button onclick="ajukanKredensial()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-teal-50 text-gray-700 flex items-center justify-between gap-2 transition-colors"><div class="flex items-center gap-3"><svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="18" height="16" rx="2" fill="#3B82F6"/><path d="M8 9h8M8 13h5" stroke="#BFDBFE" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="15" r="4" fill="#F59E0B"/><path d="M15 15l1 1 2-2" stroke="#FFFBEB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> <span>Ajukan Kredensial</span></div><span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded-full shrink-0">Unduh Word</span></button></li>
                 <li data-menu="dashboard" class="admin-menu hidden"><button onclick="navigate('dashboard')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-teal-50 text-gray-700 flex items-center gap-3 transition-colors"><svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="7" height="7" rx="1" fill="#14B8A6"/><rect x="14" y="3" width="7" height="7" rx="1" fill="#14B8A6"/><rect x="14" y="14" width="7" height="7" rx="1" fill="#14B8A6"/><rect x="3" y="14" width="7" height="7" rx="1" fill="#14B8A6"/></svg> Dashboard</button></li>
@@ -722,6 +723,73 @@
                                 <div class="sm:col-span-2 lg:col-span-4 pt-2"><p class="text-[10px] text-teal-600 font-bold uppercase">Link Sertifikat MU</p><div class="text-sm font-medium break-words mt-1" id="card_link_mu">-</div></div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DOKUMEN DOKUMEN -->
+            <div id="view_dokumen" class="view-section hidden flex-col h-full">
+                <!-- Header -->
+                <div class="flex flex-wrap justify-between items-center gap-3 mb-6 shrink-0">
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-bold text-teal-800 flex items-center gap-2">
+                            <i class="fas fa-folder-open text-teal-600"></i>
+                            <span>Dokumen Dokumen</span>
+                        </h2>
+                        <p class="text-xs text-gray-500 mt-1">Penyimpanan dan pengunduhan berkas dokumen resmi Komite Keperawatan RSUD Subang.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA?usp=sharing" target="_blank" rel="noopener noreferrer" class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-3.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1.5 shadow-sm">
+                            <i class="fab fa-google-drive text-amber-500"></i>
+                            <span>Buka Folder Drive</span>
+                            <i class="fas fa-external-link-alt text-[10px] text-gray-400"></i>
+                        </a>
+                        <button type="button" onclick="loadDokumenList()" class="bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded-lg text-xs font-bold transition-colors shadow-md whitespace-nowrap inline-flex items-center gap-1.5 cursor-pointer">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Refresh</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card Upload Dokumen Baru -->
+                <div class="bg-white rounded-2xl p-4 sm:p-6 border-l-4 border-teal-500 mb-6 shadow-md">
+                    <h3 class="font-bold text-gray-800 mb-1 flex items-center gap-2">
+                        <i class="fas fa-cloud-upload-alt text-teal-600"></i>
+                        <span>Unggah Dokumen Baru</span>
+                    </h3>
+                    <p class="text-xs text-gray-500 mb-4 leading-relaxed">
+                        Mendukung berbagai format berkas (PDF, Word, Excel, PowerPoint, Gambar, ZIP) dengan ukuran maksimal <strong>10 MB</strong>. Berkas akan otomatis tersimpan di Google Drive dan dapat diakses/diunduh oleh anggota Komite.
+                    </p>
+
+                    <form onsubmit="handleUploadDokumen(event)" class="space-y-3">
+                        <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                            <div class="flex-1">
+                                <input type="file" id="inputDokumenFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.zip,.rar" class="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 cursor-pointer border border-gray-200 rounded-lg p-1 bg-gray-50/50">
+                            </div>
+                            <button type="submit" id="btnUploadDokumen" class="bg-teal-600 hover:bg-teal-700 active:scale-95 text-white py-2.5 px-6 rounded-lg text-sm font-bold transition-all shadow-sm shrink-0 flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="fas fa-upload"></i>
+                                <span>Unggah Berkas</span>
+                            </button>
+                        </div>
+                        <div id="dokumenUploadStatus" class="text-xs"></div>
+                    </form>
+                </div>
+
+                <!-- Search & Filter Bar -->
+                <div class="bg-white rounded-2xl p-3 sm:p-4 mb-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+                    <div class="relative flex-1 max-w-md">
+                        <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                        <input type="text" id="inputSearchDokumen" oninput="filterDokumenList()" placeholder="Cari nama dokumen, pengunggah, atau ekstensi..." class="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-gray-200 rounded-lg outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    </div>
+                    <div class="flex items-center justify-between sm:justify-end gap-3 text-xs text-gray-500">
+                        <span id="dokumenSummary" class="font-medium">Memuat data dokumen...</span>
+                    </div>
+                </div>
+
+                <!-- Dokumen Grid / List Container -->
+                <div id="gridDokumen" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-8">
+                    <div class="col-span-full p-8 text-center text-teal-600 font-bold bg-white rounded-2xl border border-teal-50">
+                        <i class="fas fa-spinner fa-spin mr-2 text-xl"></i>Sedang memuat dokumen dari Google Drive...
                     </div>
                 </div>
             </div>
@@ -2372,6 +2440,50 @@
                             fileId: 'mock_backup_id_' + Date.now(),
                             fileUrl: 'https://drive.google.com/drive/folders/1DN1euHY_C_Tf6aaHJxxXrn8lrsY4THVD'
                         };
+                    },
+                    getDokumenList: function(actorNip) {
+                        return [
+                            {
+                                id: 'mock_doc_1',
+                                namaAsli: 'Pedoman_Pelayanan_Komite_Keperawatan_2026.pdf',
+                                namaFile: '198501012010011001_Pedoman_Pelayanan_Komite_Keperawatan_2026_1730000000000.pdf',
+                                url: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
+                                downloadUrl: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
+                                ext: 'pdf',
+                                ukuran: '2.4 MB',
+                                tanggal: '01-11-2026 10:30',
+                                nipPengunggah: '198501012010011001',
+                                namaPengunggah: 'Ns. Siti Nurhaliza, S.Kep.',
+                                bisaHapus: true
+                            },
+                            {
+                                id: 'mock_doc_2',
+                                namaAsli: 'Format_Pengajuan_Kredensial_Revisi.docx',
+                                namaFile: '199002022015022002_Format_Pengajuan_Kredensial_Revisi_1730100000000.docx',
+                                url: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
+                                downloadUrl: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA',
+                                ext: 'docx',
+                                ukuran: '450 KB',
+                                tanggal: '03-11-2026 14:15',
+                                nipPengunggah: '199002022015022002',
+                                namaPengunggah: 'Budi Santoso, A.Md.Kep.',
+                                bisaHapus: false
+                            }
+                        ];
+                    },
+                    uploadDokumenToDrive: function(base64Data, originalFileName, actorNip) {
+                        return {
+                            success: true,
+                            message: 'Dokumen "' + originalFileName + '" berhasil disimpan ke Google Drive (Simulasi Mock).',
+                            id: 'mock_doc_' + Date.now(),
+                            url: 'https://drive.google.com/drive/folders/1NnxZM12bk-S8zNVPOvTcTh817XotGmYA'
+                        };
+                    },
+                    hapusDokumenFromDrive: function(fileId, actorNip) {
+                        return {
+                            success: true,
+                            message: 'Dokumen berhasil dihapus dari Google Drive (Simulasi Mock).'
+                        };
                     }
                 };
 
@@ -2764,7 +2876,7 @@
         }
 
         const ALL_MENU_KEYS = [
-            'beranda', 'profil', 'verifikasi', 'kredensial', 'dashboard', 
+            'beranda', 'profil', 'dokumen', 'verifikasi', 'kredensial', 'dashboard', 
             'datakomper', 'setting_users', 'setting_slideshow', 'setting_runningtext', 'setting_backup'
         ];
 
@@ -2934,6 +3046,8 @@
 
             if (viewName === 'beranda') {
                 updateBerandaUI();
+            } else if (viewName === 'dokumen') {
+                loadDokumenList();
             } else if (viewName === 'datakomper') {
                 loadDataKomper();
             } else if (viewName === 'dashboard') {
@@ -8112,6 +8226,7 @@
             const menus = [
                 {k:'beranda', l:'Beranda', dis:true},
                 {k:'profil', l:'Profil'},
+                {k:'dokumen', l:'Dokumen Dokumen'},
                 {k:'verifikasi', l:'Ajukan Verifikasi'},
                 {k:'kredensial', l:'Ajukan Kredensial'},
                 {k:'dashboard', l:'Dashboard'},
@@ -8710,6 +8825,319 @@
                         confirmButtonColor: '#0d9488'
                     });
                 }).backupDatabase(currentUser.nip);
+            });
+        }
+
+        // ==========================================
+        // FITUR DOKUMEN DOKUMEN (GOOGLE DRIVE)
+        // ==========================================
+        let dokumenAllData = [];
+        let dokumenFilteredData = [];
+
+        function getFileIconConfig(ext) {
+            const e = (ext || '').toLowerCase();
+            if (e === 'pdf') {
+                return { icon: '<i class="fas fa-file-pdf text-red-500 text-xl"></i>', bg: 'bg-red-50 border border-red-100' };
+            }
+            if (e === 'doc' || e === 'docx') {
+                return { icon: '<i class="fas fa-file-word text-blue-600 text-xl"></i>', bg: 'bg-blue-50 border border-blue-100' };
+            }
+            if (e === 'xls' || e === 'xlsx' || e === 'csv') {
+                return { icon: '<i class="fas fa-file-excel text-emerald-600 text-xl"></i>', bg: 'bg-emerald-50 border border-emerald-100' };
+            }
+            if (e === 'ppt' || e === 'pptx') {
+                return { icon: '<i class="fas fa-file-powerpoint text-orange-600 text-xl"></i>', bg: 'bg-orange-50 border border-orange-100' };
+            }
+            if (e === 'jpg' || e === 'jpeg' || e === 'png' || e === 'webp' || e === 'gif') {
+                return { icon: '<i class="fas fa-file-image text-purple-600 text-xl"></i>', bg: 'bg-purple-50 border border-purple-100' };
+            }
+            if (e === 'zip' || e === 'rar' || e === '7z' || e === 'tar' || e === 'gz') {
+                return { icon: '<i class="fas fa-file-archive text-amber-600 text-xl"></i>', bg: 'bg-amber-50 border border-amber-100' };
+            }
+            return { icon: '<i class="fas fa-file-alt text-teal-600 text-xl"></i>', bg: 'bg-teal-50 border border-teal-100' };
+        }
+
+        function loadDokumenList() {
+            const grid = document.getElementById('gridDokumen');
+            const summary = document.getElementById('dokumenSummary');
+            if (grid) {
+                grid.innerHTML = '<div class="col-span-full p-8 text-center text-teal-600 font-bold bg-white rounded-2xl border border-teal-50">' +
+                    '<i class="fas fa-spinner fa-spin mr-2 text-xl"></i>Sedang memuat dokumen dari Google Drive...' +
+                    '</div>';
+            }
+            if (summary) summary.innerText = 'Memuat dokumen...';
+
+            const actorNip = currentUser ? currentUser.nip : '';
+            google.script.run
+                .withSuccessHandler(function(docs) {
+                    dokumenAllData = Array.isArray(docs) ? docs : [];
+                    dokumenFilteredData = dokumenAllData.slice();
+                    const searchInput = document.getElementById('inputSearchDokumen');
+                    if (searchInput && searchInput.value.trim() !== '') {
+                        filterDokumenList();
+                    } else {
+                        renderDokumenList(dokumenFilteredData);
+                    }
+                })
+                .withFailureHandler(function(err) {
+                    if (grid) {
+                        grid.innerHTML = '<div class="col-span-full p-8 text-center text-rose-500 font-bold bg-white rounded-2xl border border-rose-100">' +
+                            '<i class="fas fa-exclamation-triangle mr-2 text-xl"></i>Gagal memuat dokumen: ' + escapeHtml((err && err.message) || 'Terjadi kesalahan sistem.') +
+                            '</div>';
+                    }
+                    if (summary) summary.innerText = 'Gagal memuat dokumen';
+                })
+                .getDokumenList(actorNip);
+        }
+
+        function filterDokumenList() {
+            const searchInput = document.getElementById('inputSearchDokumen');
+            const q = (searchInput ? searchInput.value : '').toLowerCase().trim();
+            if (!q) {
+                dokumenFilteredData = dokumenAllData.slice();
+            } else {
+                dokumenFilteredData = dokumenAllData.filter(function(doc) {
+                    const nama = (doc.namaAsli || doc.namaFile || '').toLowerCase();
+                    const pengunggah = (doc.namaPengunggah || '').toLowerCase();
+                    const nip = (doc.nipPengunggah || '').toLowerCase();
+                    const ext = (doc.ext || '').toLowerCase();
+                    return nama.indexOf(q) !== -1 || pengunggah.indexOf(q) !== -1 || nip.indexOf(q) !== -1 || ext.indexOf(q) !== -1;
+                });
+            }
+            renderDokumenList(dokumenFilteredData);
+        }
+
+        function renderDokumenList(docs) {
+            const grid = document.getElementById('gridDokumen');
+            const summary = document.getElementById('dokumenSummary');
+            if (!grid) return;
+
+            if (summary) {
+                summary.innerText = 'Menampilkan ' + docs.length + ' dari ' + dokumenAllData.length + ' dokumen';
+            }
+
+            if (!docs || docs.length === 0) {
+                grid.innerHTML = '<div class="col-span-full p-12 text-center bg-white rounded-2xl border border-gray-100 shadow-xs">' +
+                    '<div class="w-16 h-16 mx-auto mb-3 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center text-2xl">' +
+                    '<i class="fas fa-folder-open"></i>' +
+                    '</div>' +
+                    '<h4 class="font-bold text-gray-800 text-sm sm:text-base">Belum Ada Dokumen</h4>' +
+                    '<p class="text-xs text-gray-500 mt-1 max-w-md mx-auto">Tidak ada berkas yang ditemukan. Anda dapat mengunggah berkas baru melalui form di atas.</p>' +
+                    '</div>';
+                return;
+            }
+
+            let html = '';
+            docs.forEach(function(doc) {
+                const cfg = getFileIconConfig(doc.ext);
+                const safeNama = escapeHtml(doc.namaAsli || doc.namaFile || 'Dokumen');
+                const safeExt = escapeHtml((doc.ext || 'FILE').toUpperCase());
+                const safeUkuran = escapeHtml(doc.ukuran || '-');
+                const safePengunggah = escapeHtml(doc.namaPengunggah && doc.namaPengunggah !== '-' ? doc.namaPengunggah : (doc.nipPengunggah || 'Pegawai'));
+                const safeNip = escapeHtml(doc.nipPengunggah || '');
+                const safeTanggal = escapeHtml(doc.tanggal || '-');
+                const safeUrl = sanitizeUrl(doc.url || '#');
+                const safeDownloadUrl = sanitizeUrl(doc.downloadUrl || doc.url || '#');
+                const safeId = escapeJsAttr(doc.id || '');
+                const canDelete = Boolean(doc.bisaHapus);
+
+                html += '<div class="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow flex flex-col justify-between">';
+                html += '  <div>';
+                html += '    <div class="flex items-start gap-3 mb-3">';
+                html += '      <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ' + cfg.bg + '">';
+                html += '        ' + cfg.icon;
+                html += '      </div>';
+                html += '      <div class="flex-1 min-w-0">';
+                html += '        <h4 class="text-xs sm:text-sm font-bold text-gray-800 truncate" title="' + safeNama + '">' + safeNama + '</h4>';
+                html += '        <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-gray-500 mt-1">';
+                html += '          <span class="px-1.5 py-0.5 rounded bg-gray-100 font-bold uppercase text-[9px] text-gray-600 tracking-wider">' + safeExt + '</span>';
+                html += '          <span>•</span>';
+                html += '          <span>' + safeUkuran + '</span>';
+                html += '        </div>';
+                html += '      </div>';
+                html += '    </div>';
+                html += '    <div class="text-[11px] text-gray-500 space-y-1 border-t border-gray-100 pt-2.5 mb-3">';
+                html += '      <div class="truncate" title="' + safePengunggah + (safeNip ? ' (' + safeNip + ')' : '') + '">';
+                html += '        <i class="fas fa-user-circle mr-1.5 text-teal-600"></i>';
+                html += '        <span class="font-medium text-gray-700">' + safePengunggah + '</span>';
+                html += '      </div>';
+                html += '      <div>';
+                html += '        <i class="far fa-clock mr-1.5 text-teal-600"></i>';
+                html += '        <span>' + safeTanggal + '</span>';
+                html += '      </div>';
+                html += '    </div>';
+                html += '  </div>';
+                html += '  <div class="flex items-center gap-2 pt-2 border-t border-gray-100">';
+                html += '    <a href="' + safeUrl + '" target="_blank" rel="noopener noreferrer" class="flex-1 text-center py-2 px-2 bg-teal-50 hover:bg-teal-100 text-teal-700 rounded-lg text-xs font-bold transition-colors inline-flex items-center justify-center gap-1">';
+                html += '      <i class="fas fa-external-link-alt text-[10px]"></i><span>Buka</span>';
+                html += '    </a>';
+                html += '    <a href="' + safeDownloadUrl + '" target="_blank" rel="noopener noreferrer" class="flex-1 text-center py-2 px-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition-colors shadow-xs inline-flex items-center justify-center gap-1">';
+                html += '      <i class="fas fa-download text-[10px]"></i><span>Unduh</span>';
+                html += '    </a>';
+                if (canDelete) {
+                    html += '    <button type="button" onclick="confirmHapusDokumen(\'' + safeId + '\', \'' + safeNama.replace(/'/g, "\\'") + '\')" class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg text-xs font-bold transition-colors shrink-0 cursor-pointer" title="Hapus Dokumen" aria-label="Hapus Dokumen">';
+                    html += '      <i class="fas fa-trash-alt"></i>';
+                    html += '    </button>';
+                }
+                html += '  </div>';
+                html += '</div>';
+            });
+
+            grid.innerHTML = html;
+        }
+
+        function handleUploadDokumen(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            const fileInput = document.getElementById('inputDokumenFile');
+            const statusEl = document.getElementById('dokumenUploadStatus');
+            const btnUpload = document.getElementById('btnUploadDokumen');
+
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                if (statusEl) statusEl.innerHTML = '<span class="text-rose-500 font-semibold"><i class="fas fa-exclamation-triangle mr-1"></i>Pilih file terlebih dahulu sebelum mengunggah.</span>';
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const maxFileSize = 10 * 1024 * 1024; // 10 MB
+            if (file.size > maxFileSize) {
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                if (statusEl) statusEl.innerHTML = '<span class="text-rose-500 font-semibold"><i class="fas fa-exclamation-triangle mr-1"></i>Ukuran file (' + sizeMB + ' MB) melebihi batas maksimal 10 MB.</span>';
+                return Swal.fire({
+                    icon: 'warning',
+                    title: 'Ukuran File Terlalu Besar',
+                    text: 'Ukuran berkas maksimal adalah 10 MB. Berkas yang Anda pilih berukuran ' + sizeMB + ' MB.'
+                });
+            }
+
+            if (!currentUser || !currentUser.nip) {
+                return Swal.fire('Error', 'Sesi login tidak valid. Silakan login kembali.', 'error');
+            }
+
+            const origName = file.name;
+            if (statusEl) statusEl.innerHTML = '<span class="text-teal-600 font-medium"><i class="fas fa-spinner fa-spin mr-1"></i>Membaca dan menyiapkan berkas...</span>';
+            if (btnUpload) {
+                btnUpload.disabled = true;
+                btnUpload.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i><span>Mengunggah...</span>';
+            }
+
+            Swal.fire({
+                title: 'Mengunggah Dokumen...',
+                html: 'Menyimpan <strong>' + escapeHtml(origName) + '</strong> ke Google Drive.<br><span class="text-xs text-gray-500">Mohon tunggu hingga proses selesai...</span>',
+                allowOutsideClick: false,
+                didOpen: function() {
+                    Swal.showLoading();
+                }
+            });
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const base64Data = evt.target.result;
+                google.script.run
+                    .withSuccessHandler(function(res) {
+                        if (btnUpload) {
+                            btnUpload.disabled = false;
+                            btnUpload.innerHTML = '<i class="fas fa-upload mr-1"></i><span>Unggah Berkas</span>';
+                        }
+                        if (res && res.success) {
+                            fileInput.value = '';
+                            if (statusEl) statusEl.innerHTML = '<span class="text-green-600 font-bold"><i class="fas fa-check-circle mr-1"></i>' + escapeHtml(res.message || 'Dokumen berhasil diunggah.') + '</span>';
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil Diunggah!',
+                                text: res.message || 'Dokumen telah tersimpan di Google Drive.',
+                                confirmButtonColor: '#0d9488'
+                            });
+                            loadDokumenList();
+                        } else {
+                            if (statusEl) statusEl.innerHTML = '<span class="text-rose-600 font-bold"><i class="fas fa-times-circle mr-1"></i>' + escapeHtml((res && res.message) || 'Gagal mengunggah dokumen.') + '</span>';
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal Mengunggah',
+                                text: res ? res.message : 'Terjadi kesalahan sistem.',
+                                confirmButtonColor: '#0d9488'
+                            });
+                        }
+                    })
+                    .withFailureHandler(function(err) {
+                        if (btnUpload) {
+                            btnUpload.disabled = false;
+                            btnUpload.innerHTML = '<i class="fas fa-upload mr-1"></i><span>Unggah Berkas</span>';
+                        }
+                        if (statusEl) statusEl.innerHTML = '<span class="text-rose-600 font-bold"><i class="fas fa-times-circle mr-1"></i>Gagal menghubungi server.</span>';
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error Server',
+                            text: err ? err.message : 'Gagal menghubungi server Google Apps Script.',
+                            confirmButtonColor: '#0d9488'
+                        });
+                    })
+                    .uploadDokumenToDrive(base64Data, origName, currentUser.nip);
+            };
+            reader.onerror = function() {
+                if (btnUpload) {
+                    btnUpload.disabled = false;
+                    btnUpload.innerHTML = '<i class="fas fa-upload mr-1"></i><span>Unggah Berkas</span>';
+                }
+                if (statusEl) statusEl.innerHTML = '<span class="text-rose-600 font-bold"><i class="fas fa-times-circle mr-1"></i>Gagal membaca file di browser.</span>';
+                Swal.fire('Error', 'Gagal membaca berkas di perangkat Anda.', 'error');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function confirmHapusDokumen(fileId, fileName) {
+            if (!currentUser || !currentUser.nip) {
+                return Swal.fire('Error', 'Sesi login tidak valid.', 'error');
+            }
+
+            Swal.fire({
+                title: 'Hapus Dokumen?',
+                html: 'Apakah Anda yakin ingin menghapus berkas:<br><strong class="text-teal-700">' + escapeHtml(fileName) + '</strong>?<br><span class="text-xs text-gray-500">Berkas akan dipindahkan ke Sampah Google Drive.</span>',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e11d48',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '<i class="fas fa-trash-alt mr-1"></i> Ya, Hapus',
+                cancelButtonText: 'Batal'
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Menghapus...',
+                        text: 'Memindahkan berkas ke sampah...',
+                        allowOutsideClick: false,
+                        didOpen: function() {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    google.script.run
+                        .withSuccessHandler(function(res) {
+                            if (res && res.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Terhapus',
+                                    text: res.message || 'Dokumen berhasil dihapus.',
+                                    confirmButtonColor: '#0d9488'
+                                });
+                                loadDokumenList();
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal Menghapus',
+                                    text: res ? res.message : 'Dokumen tidak dapat dihapus.',
+                                    confirmButtonColor: '#0d9488'
+                                });
+                            }
+                        })
+                        .withFailureHandler(function(err) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error Server',
+                                text: err ? err.message : 'Gagal menghubungi server.',
+                                confirmButtonColor: '#0d9488'
+                            });
+                        })
+                        .hapusDokumenFromDrive(fileId, currentUser.nip);
+                }
             });
         }
     </script>

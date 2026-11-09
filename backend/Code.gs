@@ -1692,4 +1692,234 @@ function backupDatabase(actorNip) {
   }
 }
 
+// ==========================================
+// PENGELOLAAN DOKUMEN DOKUMEN (GOOGLE DRIVE)
+// ==========================================
+const DOKUMEN_FOLDER_ID = "1NnxZM12bk-S8zNVPOvTcTh817XotGmYA";
+
+function _getUserName(nip) {
+  if (!nip) return "";
+  try {
+    const ss = SpreadsheetApp.openById("1fuuoaGFVBFqK3gOKHQFsB5Kr5dqUJSehlCdtnvyrOhA");
+    const sheet = ss.getSheetByName("DATA KOMPER");
+    if (!sheet) return "";
+    const data = sheet.getDataRange().getValues();
+    if (data.length <= 1) return "";
+    const headers = data[0].map(function(h) { return String(h).trim().toUpperCase(); });
+    const idxNip = headers.indexOf("NIP");
+    const idxNama = headers.indexOf("NAMA");
+    if (idxNip === -1 || idxNama === -1) return "";
+    for (let i = 1; i < data.length; i++) {
+      if (String(data[i][idxNip]).trim() === String(nip).trim()) {
+        return String(data[i][idxNama] || "").trim();
+      }
+    }
+    return "";
+  } catch(e) {
+    return "";
+  }
+}
+
+function getDokumenList(actorNip) {
+  try {
+    const folder = DriveApp.getFolderById(DOKUMEN_FOLDER_ID);
+    const files = folder.getFiles();
+    const result = [];
+    const isAdmin = _isAdminOrSuperAdmin(actorNip);
+
+    while (files.hasNext()) {
+      const file = files.next();
+      if (file.isTrashed()) continue;
+
+      const fileId = file.getId();
+      const fileName = file.getName();
+      let originalName = fileName;
+      let uploaderNip = "";
+      let uploaderName = "";
+      let tanggalStr = "";
+
+      // Coba baca metadata dari deskripsi file (JSON)
+      try {
+        const descText = file.getDescription();
+        if (descText && descText.trim().startsWith("{")) {
+          const desc = JSON.parse(descText);
+          if (desc.originalName) originalName = desc.originalName;
+          if (desc.uploaderNip) uploaderNip = desc.uploaderNip;
+          if (desc.uploaderName) uploaderName = desc.uploaderName;
+          if (desc.uploadedAt) {
+            tanggalStr = Utilities.formatDate(new Date(desc.uploadedAt), "Asia/Jakarta", "dd-MM-yyyy HH:mm");
+          }
+        }
+      } catch(eDesc) {}
+
+      // Fallback: Ekstraksi NIP dari format nama file "NIP_NamaFile_Timestamp.ext"
+      if (!uploaderNip) {
+        const match = fileName.match(/^(\d+)_(.+)_\d+(\.[a-zA-Z0-9]+)$/);
+        if (match) {
+          uploaderNip = match[1];
+          if (originalName === fileName) {
+            originalName = match[2] + match[3];
+          }
+        }
+      }
+
+      if (!uploaderName && uploaderNip) {
+        uploaderName = _getUserName(uploaderNip);
+      }
+
+      if (!tanggalStr) {
+        try {
+          tanggalStr = Utilities.formatDate(file.getDateCreated(), "Asia/Jakarta", "dd-MM-yyyy HH:mm");
+        } catch(eDate) {
+          tanggalStr = "-";
+        }
+      }
+
+      // Hitung ukuran file
+      let sizeStr = "-";
+      try {
+        const bytes = file.getSize();
+        if (bytes < 1024) sizeStr = bytes + " B";
+        else if (bytes < 1024 * 1024) sizeStr = (bytes / 1024).toFixed(1) + " KB";
+        else sizeStr = (bytes / (1024 * 1024)).toFixed(1) + " MB";
+      } catch(eSize) {}
+
+      // Ekstensi file
+      let ext = "";
+      const dotIdx = originalName.lastIndexOf(".");
+      if (dotIdx !== -1) {
+        ext = originalName.substring(dotIdx + 1).toLowerCase();
+      }
+
+      const isOwner = (uploaderNip && String(uploaderNip).trim() === String(actorNip).trim());
+      const bisaHapus = (isAdmin || isOwner);
+
+      result.push({
+        id: fileId,
+        namaAsli: originalName,
+        namaFile: fileName,
+        url: file.getUrl(),
+        downloadUrl: "https://drive.google.com/uc?export=download&id=" + fileId,
+        ext: ext,
+        ukuran: sizeStr,
+        tanggal: tanggalStr,
+        nipPengunggah: uploaderNip || "-",
+        namaPengunggah: uploaderName || "-",
+        bisaHapus: bisaHapus
+      });
+    }
+
+    // Urutkan dokumen terbaru di atas
+    result.sort(function(a, b) {
+      return (b.namaFile || "").localeCompare(a.namaFile || "");
+    });
+
+    return result;
+  } catch(e) {
+    return [];
+  }
+}
+
+function uploadDokumenToDrive(base64Data, originalFileName, actorNip) {
+  try {
+    if (!actorNip) {
+      return { success: false, message: "Akses ditolak: NIP pengunggah tidak valid." };
+    }
+    if (!base64Data) {
+      return { success: false, message: "Tidak ada data berkas yang dikirim." };
+    }
+
+    let type = 'application/octet-stream';
+    let base64String = base64Data;
+    if (base64Data.indexOf(',') !== -1) {
+      const splitBase = base64Data.split(',');
+      type = splitBase[0].split(';')[0].replace('data:', '');
+      base64String = splitBase[1];
+    }
+
+    let ext = '';
+    const safeOrigName = String(originalFileName || 'Dokumen').trim();
+    const dotIdx = safeOrigName.lastIndexOf('.');
+    let baseNameWithoutExt = safeOrigName;
+    if (dotIdx !== -1) {
+      ext = safeOrigName.substring(dotIdx);
+      baseNameWithoutExt = safeOrigName.substring(0, dotIdx);
+    }
+    const cleanBaseName = baseNameWithoutExt.replace(/[^a-zA-Z0-9_\-\. ]/g, '_').replace(/\s+/g, '_');
+    const driveFileName = actorNip + "_" + cleanBaseName + "_" + new Date().getTime() + ext;
+
+    const folder = DriveApp.getFolderById(DOKUMEN_FOLDER_ID);
+    const byteCharacters = Utilities.base64Decode(base64String);
+    const blob = Utilities.newBlob(byteCharacters, type, driveFileName);
+    const file = folder.createFile(blob);
+
+    try {
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    } catch(shareErr) {}
+
+    const uploaderName = _getUserName(actorNip);
+    const descObj = {
+      originalName: safeOrigName,
+      uploaderNip: actorNip,
+      uploaderName: uploaderName,
+      uploadedAt: new Date().toISOString()
+    };
+    try {
+      file.setDescription(JSON.stringify(descObj));
+    } catch(eDesc) {}
+
+    return {
+      success: true,
+      message: "Dokumen \"" + safeOrigName + "\" berhasil disimpan ke Google Drive.",
+      id: file.getId(),
+      url: file.getUrl()
+    };
+  } catch(e) {
+    return {
+      success: false,
+      message: "Gagal menyimpan dokumen: " + e.message
+    };
+  }
+}
+
+function hapusDokumenFromDrive(fileId, actorNip) {
+  try {
+    if (!actorNip) {
+      return { success: false, message: "Akses ditolak: Sesi tidak valid." };
+    }
+    if (!fileId) {
+      return { success: false, message: "ID Dokumen tidak valid." };
+    }
+
+    const file = DriveApp.getFileById(fileId);
+    let uploaderNip = "";
+
+    try {
+      const descText = file.getDescription();
+      if (descText && descText.trim().startsWith("{")) {
+        const desc = JSON.parse(descText);
+        uploaderNip = desc.uploaderNip || "";
+      }
+    } catch(e) {}
+
+    if (!uploaderNip) {
+      const match = file.getName().match(/^(\d+)_/);
+      if (match) uploaderNip = match[1];
+    }
+
+    const isAdmin = _isAdminOrSuperAdmin(actorNip);
+    const isOwner = (uploaderNip && String(uploaderNip).trim() === String(actorNip).trim());
+
+    if (!isAdmin && !isOwner) {
+      return { success: false, message: "Akses ditolak: Anda tidak memiliki wewenang untuk menghapus dokumen ini." };
+    }
+
+    file.setTrashed(true);
+    return { success: true, message: "Dokumen berhasil dihapus." };
+  } catch(e) {
+    return { success: false, message: "Gagal menghapus dokumen: " + e.message };
+  }
+}
+
+
 
