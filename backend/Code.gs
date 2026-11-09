@@ -1696,11 +1696,10 @@ function backupDatabase(actorNip) {
 // PENGELOLAAN DOKUMEN DOKUMEN (GOOGLE DRIVE)
 // ==========================================
 const DOKUMEN_FOLDERS = {
-  "umum": "1NnxZM12bk-S8zNVPOvTcTh817XotGmYA",
   "sertifikat": "1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj",
   "spk_rkk": "16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G"
 };
-const DOKUMEN_FOLDER_ID = DOKUMEN_FOLDERS.umum;
+const DOKUMEN_FOLDER_ID = DOKUMEN_FOLDERS.sertifikat;
 
 function _getUserName(nip) {
   if (!nip) return "";
@@ -1727,17 +1726,17 @@ function _getUserName(nip) {
 
 function getDokumenList(categoryOrNip, actorNip) {
   try {
-    let category = "umum";
+    let category = "sertifikat";
     let effectiveActor = actorNip;
 
-    if (categoryOrNip && (categoryOrNip === "umum" || categoryOrNip === "sertifikat" || categoryOrNip === "spk_rkk")) {
+    if (categoryOrNip && (categoryOrNip === "sertifikat" || categoryOrNip === "spk_rkk")) {
       category = categoryOrNip;
     } else if (categoryOrNip && !actorNip) {
       // Dipanggil satu argumen: getDokumenList(actorNip)
       effectiveActor = categoryOrNip;
     }
 
-    const folderId = DOKUMEN_FOLDERS[category] || DOKUMEN_FOLDERS.umum;
+    const folderId = DOKUMEN_FOLDERS[category] || DOKUMEN_FOLDERS.sertifikat;
     const folder = DriveApp.getFolderById(folderId);
     const result = [];
     const foldersList = [];
@@ -1877,7 +1876,7 @@ function getDokumenList(categoryOrNip, actorNip) {
   } catch(e) {
     return {
       success: false,
-      category: categoryOrNip || "umum",
+      category: categoryOrNip || "sertifikat",
       folders: [],
       files: []
     };
@@ -1912,7 +1911,7 @@ function uploadDokumenToDrive(base64Data, originalFileName, actorNip, category) 
     const cleanBaseName = baseNameWithoutExt.replace(/[^a-zA-Z0-9_\-\. ]/g, '_').replace(/\s+/g, '_');
     const driveFileName = actorNip + "_" + cleanBaseName + "_" + new Date().getTime() + ext;
 
-    const targetCategory = (category === "sertifikat" || category === "spk_rkk") ? category : "umum";
+    const targetCategory = (category === "spk_rkk") ? "spk_rkk" : "sertifikat";
     const targetFolderId = DOKUMEN_FOLDERS[targetCategory] || DOKUMEN_FOLDER_ID;
     const folder = DriveApp.getFolderById(targetFolderId);
     const byteCharacters = Utilities.base64Decode(base64String);
