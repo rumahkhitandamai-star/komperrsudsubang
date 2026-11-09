@@ -1696,7 +1696,9 @@ function backupDatabase(actorNip) {
 // PENGELOLAAN DOKUMEN DOKUMEN (GOOGLE DRIVE)
 // ==========================================
 const DOKUMEN_FOLDERS = {
-  "umum": "1NnxZM12bk-S8zNVPOvTcTh817XotGmYA"
+  "umum": "1NnxZM12bk-S8zNVPOvTcTh817XotGmYA",
+  "sertifikat": "1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj",
+  "spk_rkk": "16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G"
 };
 const DOKUMEN_FOLDER_ID = DOKUMEN_FOLDERS.umum;
 
@@ -1725,20 +1727,16 @@ function _getUserName(nip) {
 
 function getDokumenList(categoryOrNip, actorNip) {
   try {
-    let category = "umum";
     let effectiveActor = actorNip;
-
     if (categoryOrNip && !actorNip) {
-      // Dipanggil satu argumen: getDokumenList(actorNip)
       effectiveActor = categoryOrNip;
     }
 
-    const folderId = DOKUMEN_FOLDERS[category] || DOKUMEN_FOLDERS["umum"];
-    const folder = DriveApp.getFolderById(folderId);
     const result = [];
+    const foldersList = [];
     const isAdmin = _isAdminOrSuperAdmin(effectiveActor);
 
-    function processDriveFile(file, subfolderName) {
+    function processDriveFile(file, subfolderName, categoryKey) {
       if (!file || file.isTrashed()) return;
 
       const fileId = file.getId();
@@ -1809,7 +1807,7 @@ function getDokumenList(categoryOrNip, actorNip) {
         namaAsli: originalName,
         namaFile: fileName,
         subfolder: subfolderName || "",
-        kategori: category,
+        kategori: categoryKey || "umum",
         url: file.getUrl(),
         downloadUrl: "https://drive.google.com/uc?export=download&id=" + fileId,
         ext: ext,
@@ -1821,36 +1819,102 @@ function getDokumenList(categoryOrNip, actorNip) {
       });
     }
 
-    // 1. Ambil berkas di root folder
-    const files = folder.getFiles();
-    while (files.hasNext()) {
-      processDriveFile(files.next(), "");
-    }
-
-    // 2. Ambil berkas di subfolder (kedalaman 1) dan data folder
-    const foldersList = [];
+    // 1. Ambil berkas & subfolder di folder Dokumen Utama (umum)
     try {
-      const subfolders = folder.getFolders();
-      while (subfolders.hasNext()) {
-        const sub = subfolders.next();
-        if (sub.isTrashed()) continue;
-        const subName = sub.getName();
-        const subId = sub.getId();
-        const subUrl = sub.getUrl();
-        let subCount = 0;
-        const subFiles = sub.getFiles();
-        while (subFiles.hasNext()) {
-          processDriveFile(subFiles.next(), subName);
-          subCount++;
+      const folderUmum = DriveApp.getFolderById(DOKUMEN_FOLDERS.umum);
+      if (folderUmum && !folderUmum.isTrashed()) {
+        const rootFiles = folderUmum.getFiles();
+        while (rootFiles.hasNext()) {
+          processDriveFile(rootFiles.next(), "", "umum");
         }
+        const subfolders = folderUmum.getFolders();
+        while (subfolders.hasNext()) {
+          const sub = subfolders.next();
+          if (sub.isTrashed()) continue;
+          const subName = sub.getName();
+          const subId = sub.getId();
+          const subUrl = sub.getUrl();
+          let subCount = 0;
+          const subFiles = sub.getFiles();
+          while (subFiles.hasNext()) {
+            processDriveFile(subFiles.next(), subName, "umum");
+            subCount++;
+          }
+          foldersList.push({
+            id: subId,
+            nama: subName,
+            url: subUrl,
+            berkasCount: subCount
+          });
+        }
+      }
+    } catch(eUmum) {}
+
+    // 2. Ambil berkas & buat folder card untuk Folder Sertifikat (ID: 1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj)
+    try {
+      const folderSertifikat = DriveApp.getFolderById(DOKUMEN_FOLDERS.sertifikat);
+      if (folderSertifikat && !folderSertifikat.isTrashed()) {
+        const sUrl = folderSertifikat.getUrl() || ("https://drive.google.com/drive/folders/" + DOKUMEN_FOLDERS.sertifikat);
+        let sCount = 0;
+        const sFiles = folderSertifikat.getFiles();
+        while (sFiles.hasNext()) {
+          processDriveFile(sFiles.next(), "Sertifikat", "sertifikat");
+          sCount++;
+        }
+        try {
+          const sSubs = folderSertifikat.getFolders();
+          while (sSubs.hasNext()) {
+            const sub = sSubs.next();
+            if (sub.isTrashed()) continue;
+            const subFiles = sub.getFiles();
+            while (subFiles.hasNext()) {
+              processDriveFile(subFiles.next(), "Sertifikat / " + sub.getName(), "sertifikat");
+              sCount++;
+            }
+          }
+        } catch(eSSubs) {}
+
         foldersList.push({
-          id: subId,
-          nama: subName,
-          url: subUrl,
-          berkasCount: subCount
+          id: DOKUMEN_FOLDERS.sertifikat,
+          nama: "Sertifikat",
+          url: sUrl,
+          berkasCount: sCount
         });
       }
-    } catch(eSub) {}
+    } catch(eSertif) {}
+
+    // 3. Ambil berkas & buat folder card untuk Folder SPK & RKK (ID: 16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G)
+    try {
+      const folderSpk = DriveApp.getFolderById(DOKUMEN_FOLDERS.spk_rkk);
+      if (folderSpk && !folderSpk.isTrashed()) {
+        const spkUrl = folderSpk.getUrl() || ("https://drive.google.com/drive/folders/" + DOKUMEN_FOLDERS.spk_rkk);
+        let spkCount = 0;
+        const spkFiles = folderSpk.getFiles();
+        while (spkFiles.hasNext()) {
+          processDriveFile(spkFiles.next(), "SPK & RKK", "spk_rkk");
+          spkCount++;
+        }
+        try {
+          const spkSubs = folderSpk.getFolders();
+          while (spkSubs.hasNext()) {
+            const sub = spkSubs.next();
+            if (sub.isTrashed()) continue;
+            const subFiles = sub.getFiles();
+            while (subFiles.hasNext()) {
+              processDriveFile(subFiles.next(), "SPK & RKK / " + sub.getName(), "spk_rkk");
+              spkCount++;
+            }
+          }
+        } catch(eSpkSubs) {}
+
+        foldersList.push({
+          id: DOKUMEN_FOLDERS.spk_rkk,
+          nama: "SPK & RKK",
+          url: spkUrl,
+          berkasCount: spkCount
+        });
+      }
+    } catch(eSpk) {}
 
     // Urutkan folders berdasarkan nama
     foldersList.sort(function(a, b) {
@@ -1864,7 +1928,7 @@ function getDokumenList(categoryOrNip, actorNip) {
 
     return {
       success: true,
-      category: category,
+      category: "umum",
       folders: foldersList,
       files: result
     };
