@@ -186,6 +186,7 @@
         body.dark-mode .folder-card.border-teal-600 { border-color: #2dd4bf !important; background-color: #134e4a !important; }
         body.dark-mode #bannerActiveFolder { background-color: #134e4a !important; border-color: #0f766e !important; color: #ccfbf1 !important; }
         body.dark-mode #bannerActiveFolder strong { color: #5eead4 !important; }
+        body.dark-mode #syncStatusDokumen { background-color: #134e4a !important; border-color: #0f766e !important; color: #5eead4 !important; }
 
         /* ==========================================
            RUNNING TEXT (MARQUEE) STYLES
@@ -744,14 +745,18 @@
                         </h2>
                         <p class="text-xs text-gray-500 mt-1">Penyimpanan dan pengunduhan berkas dokumen resmi Komite Keperawatan RSUD Subang.</p>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 flex-wrap justify-end">
+                        <span id="syncStatusDokumen" class="text-[11px] text-teal-700 bg-teal-50 border border-teal-200/80 px-2.5 py-1.5 rounded-lg font-medium inline-flex items-center gap-1.5 shadow-2xs" title="Status sinkronisasi real-time dengan Google Drive">
+                            <i id="syncIconDokumen" class="fas fa-check-circle text-teal-500"></i>
+                            <span id="syncTextDokumen">Tersinkron GDrive</span>
+                        </span>
                         <a id="btnLinkFolderDrive" href="https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj?usp=sharing" target="_blank" rel="noopener noreferrer" class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-3.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1.5 shadow-sm">
                             <i class="fab fa-google-drive text-amber-500"></i>
                             <span>Buka Folder Drive</span>
                             <i class="fas fa-external-link-alt text-[10px] text-gray-400"></i>
                         </a>
-                        <button type="button" onclick="loadDokumenList(activeDokumenTab, true)" class="bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded-lg text-xs font-bold transition-colors shadow-md whitespace-nowrap inline-flex items-center gap-1.5 cursor-pointer">
-                            <i class="fas fa-sync-alt"></i>
+                        <button type="button" id="btnRefreshDokumen" onclick="loadDokumenList(activeDokumenTab, true)" class="bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded-lg text-xs font-bold transition-colors shadow-md whitespace-nowrap inline-flex items-center gap-1.5 cursor-pointer">
+                            <i id="iconRefreshDokumen" class="fas fa-sync-alt"></i>
                             <span>Refresh</span>
                         </button>
                     </div>
@@ -2630,12 +2635,17 @@
                             ]
                         };
                     },
-                    uploadDokumenToDrive: function(base64Data, originalFileName, actorNip) {
+                    uploadDokumenToDrive: function(base64Data, originalFileName, actorNip, category) {
+                        const targetCat = (category === 'spk_rkk') ? 'spk_rkk' : 'sertifikat';
+                        const targetUrl = (targetCat === 'spk_rkk')
+                            ? 'https://drive.google.com/drive/folders/16vGA4gxXLyUTfeNzhT8loNFePp5wa_1G?usp=sharing'
+                            : 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj?usp=sharing';
                         return {
                             success: true,
+                            category: targetCat,
                             message: 'Dokumen "' + originalFileName + '" berhasil disimpan ke Google Drive (Simulasi Mock).',
                             id: 'mock_doc_' + Date.now(),
-                            url: 'https://drive.google.com/drive/folders/1i4B0QvSDbFffGWntUn5DJOTwWtSuD3kj?usp=sharing'
+                            url: targetUrl
                         };
                     },
                     hapusDokumenFromDrive: function(fileId, actorNip) {
@@ -9151,28 +9161,88 @@
             filterDokumenList();
         }
 
+        function setDokumenSyncStatus(status, text) {
+            const statusEl = document.getElementById('syncStatusDokumen');
+            const iconEl = document.getElementById('syncIconDokumen');
+            const textEl = document.getElementById('syncTextDokumen');
+            const refreshIcon = document.getElementById('iconRefreshDokumen');
+            const refreshBtn = document.getElementById('btnRefreshDokumen');
+
+            if (!statusEl || !iconEl || !textEl) return;
+
+            if (status === 'syncing') {
+                statusEl.className = 'text-[11px] text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1.5 rounded-lg font-medium inline-flex items-center gap-1.5 shadow-2xs transition-colors';
+                iconEl.className = 'fas fa-sync-alt fa-spin text-amber-500';
+                textEl.innerText = text || 'Menyinkronkan...';
+                if (refreshIcon) refreshIcon.classList.add('fa-spin');
+                if (refreshBtn) refreshBtn.disabled = true;
+            } else if (status === 'synced') {
+                statusEl.className = 'text-[11px] text-teal-700 bg-teal-50 border border-teal-200/80 px-2.5 py-1.5 rounded-lg font-medium inline-flex items-center gap-1.5 shadow-2xs transition-colors';
+                iconEl.className = 'fas fa-check-circle text-teal-500';
+                textEl.innerText = text || 'Tersinkron GDrive';
+                if (refreshIcon) refreshIcon.classList.remove('fa-spin');
+                if (refreshBtn) refreshBtn.disabled = false;
+            } else if (status === 'error') {
+                statusEl.className = 'text-[11px] text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-1.5 rounded-lg font-medium inline-flex items-center gap-1.5 shadow-2xs transition-colors';
+                iconEl.className = 'fas fa-exclamation-triangle text-rose-500';
+                textEl.innerText = text || 'Gagal Sinkron';
+                if (refreshIcon) refreshIcon.classList.remove('fa-spin');
+                if (refreshBtn) refreshBtn.disabled = false;
+            }
+        }
+
         function loadDokumenList(category, forceRefresh) {
             const cat = category || activeDokumenTab || 'sertifikat';
             const grid = document.getElementById('gridDokumen');
             const summary = document.getElementById('dokumenSummary');
+            const localKey = 'komper_dokumen_cache_' + cat;
 
-            if (!forceRefresh && dokumenCache[cat]) {
-                dokumenAllFolders = dokumenCache[cat].folders || [];
-                dokumenAllData = dokumenCache[cat].files || [];
-                renderFolderCards(dokumenAllFolders);
-                updateFolderBanner();
-                dokumenCurrentPage = 1;
-                filterDokumenList();
-                return;
+            let hasRenderedCachedData = false;
+
+            // 1. Cek in-memory cache atau localStorage jika bukan forceRefresh (0ms instant display)
+            if (!forceRefresh) {
+                let cachedItem = dokumenCache[cat];
+                if (!cachedItem) {
+                    try {
+                        const localRaw = localStorage.getItem(localKey);
+                        if (localRaw) {
+                            cachedItem = JSON.parse(localRaw);
+                        }
+                    } catch(e) {}
+                }
+
+                if (cachedItem && Array.isArray(cachedItem.files)) {
+                    dokumenCache[cat] = cachedItem;
+                    if (activeDokumenTab === cat) {
+                        dokumenAllFolders = cachedItem.folders || [];
+                        dokumenAllData = cachedItem.files || [];
+                        renderFolderCards(dokumenAllFolders);
+                        updateFolderBanner();
+                        dokumenCurrentPage = 1;
+                        filterDokumenList();
+                        setDokumenSyncStatus('synced', 'Tersinkron GDrive');
+                        hasRenderedCachedData = true;
+
+                        // Jika cache lokal masih segar (kurang dari 60 detik), tidak perlu query ulang ke cloud
+                        if (cachedItem.timestamp && (Date.now() - cachedItem.timestamp < 60000)) {
+                            return;
+                        }
+                    }
+                }
             }
 
-            if (grid) {
-                grid.innerHTML = '<div class="col-span-full p-8 text-center text-teal-600 font-bold bg-white rounded-2xl border border-teal-50">' +
-                    '<i class="fas fa-spinner fa-spin mr-2 text-xl"></i>Sedang memuat dokumen dari Google Drive...' +
-                    '</div>';
+            // 2. Jika belum ada cache lokal yang ditampilkan, munculkan skeleton loader
+            if (!hasRenderedCachedData) {
+                if (grid) {
+                    grid.innerHTML = '<div class="col-span-full p-8 text-center text-teal-600 font-bold bg-white rounded-2xl border border-teal-50">' +
+                        '<i class="fas fa-spinner fa-spin mr-2 text-xl"></i>Sedang menyinkronkan dokumen dari Google Drive...' +
+                        '</div>';
+                }
+                if (summary) summary.innerText = 'Menyinkronkan dokumen...';
+                updateDokumenPagination(0, 0, 0);
             }
-            if (summary) summary.innerText = 'Memuat dokumen...';
-            updateDokumenPagination(0, 0, 0);
+
+            setDokumenSyncStatus('syncing', hasRenderedCachedData ? 'Memperbarui...' : 'Menyinkronkan...');
 
             const actorNip = currentUser ? currentUser.nip : '';
             google.script.run
@@ -9187,18 +9257,47 @@
                         folders = Array.isArray(resp.folders) ? resp.folders : [];
                     }
 
-                    dokumenCache[cat] = { folders: folders, files: files };
+                    const cacheData = {
+                        folders: folders,
+                        files: files,
+                        timestamp: Date.now()
+                    };
+                    dokumenCache[cat] = cacheData;
+                    try {
+                        localStorage.setItem(localKey, JSON.stringify(cacheData));
+                    } catch(eStore) {}
+
                     if (activeDokumenTab === cat) {
                         dokumenAllFolders = folders;
                         dokumenAllData = files;
                         renderFolderCards(dokumenAllFolders);
                         updateFolderBanner();
-                        dokumenCurrentPage = 1;
                         filterDokumenList();
+                        setDokumenSyncStatus('synced', 'Tersinkron GDrive');
                     }
                 })
                 .withFailureHandler(function(err) {
                     if (activeDokumenTab === cat) {
+                        setDokumenSyncStatus('error', 'Gagal Sinkron');
+
+                        // Jika data cache sudah ada di layar, jangan hancurkan tampilan; cukup beri toast notifikasi
+                        if (hasRenderedCachedData && dokumenAllData && dokumenAllData.length > 0) {
+                            if (typeof Swal !== 'undefined' && Swal.mixin) {
+                                const Toast = Swal.mixin({
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    timerProgressBar: true
+                                });
+                                Toast.fire({
+                                    icon: 'warning',
+                                    title: 'Sinkronisasi GDrive tertunda (menampilkan data tersimpan)'
+                                });
+                            }
+                            return;
+                        }
+
                         const section = document.getElementById('sectionFolderDokumen');
                         if (section) section.classList.add('hidden');
                         const banner = document.getElementById('bannerActiveFolder');
@@ -9207,13 +9306,18 @@
                         if (grid) {
                             grid.innerHTML = '<div class="col-span-full p-8 text-center text-rose-500 font-bold bg-white rounded-2xl border border-rose-100">' +
                                 '<i class="fas fa-exclamation-triangle mr-2 text-xl"></i>Gagal memuat dokumen: ' + escapeHtml((err && err.message) || 'Terjadi kesalahan sistem.') +
+                                '<div class="mt-3">' +
+                                '<button type="button" onclick="loadDokumenList(activeDokumenTab, true)" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs">' +
+                                '<i class="fas fa-sync-alt"></i> Coba Sinkronkan Lagi' +
+                                '</button>' +
+                                '</div>' +
                                 '</div>';
                         }
                         if (summary) summary.innerText = 'Gagal memuat dokumen';
                         updateDokumenPagination(0, 0, 0);
                     }
                 })
-                .getDokumenList(cat, actorNip);
+                .getDokumenList(cat, actorNip, Boolean(forceRefresh));
         }
 
         function filterDokumenList() {
@@ -9480,6 +9584,7 @@
                                 confirmButtonColor: '#0d9488'
                             });
                             dokumenCache[activeDokumenTab] = null;
+                            try { localStorage.removeItem('komper_dokumen_cache_' + activeDokumenTab); } catch(e) {}
                             loadDokumenList(activeDokumenTab, true);
                         } else {
                             if (statusEl) statusEl.innerHTML = '<span class="text-rose-600 font-bold"><i class="fas fa-times-circle mr-1"></i>' + escapeHtml((res && res.message) || 'Gagal mengunggah dokumen.') + '</span>';
@@ -9504,7 +9609,7 @@
                             confirmButtonColor: '#0d9488'
                         });
                     })
-                    .uploadDokumenToDrive(base64Data, origName, currentUser.nip);
+                    .uploadDokumenToDrive(base64Data, origName, currentUser.nip, activeDokumenTab);
             };
             reader.onerror = function() {
                 if (btnUpload) {
@@ -9552,6 +9657,7 @@
                                     confirmButtonColor: '#0d9488'
                                 });
                                 dokumenCache[activeDokumenTab] = null;
+                                try { localStorage.removeItem('komper_dokumen_cache_' + activeDokumenTab); } catch(e) {}
                                 loadDokumenList(activeDokumenTab, true);
                             } else {
                                 Swal.fire({

@@ -1701,30 +1701,49 @@ const DOKUMEN_FOLDERS = {
 };
 const DOKUMEN_FOLDER_ID = DOKUMEN_FOLDERS.sertifikat;
 
-function _getUserName(nip) {
-  if (!nip) return "";
+let _cachedUserMap = null;
+function _getUserMap() {
+  if (_cachedUserMap) return _cachedUserMap;
+  _cachedUserMap = {};
   try {
     const ss = SpreadsheetApp.openById("1fuuoaGFVBFqK3gOKHQFsB5Kr5dqUJSehlCdtnvyrOhA");
     const sheet = ss.getSheetByName("DATA KOMPER");
-    if (!sheet) return "";
+    if (!sheet) return _cachedUserMap;
     const data = sheet.getDataRange().getValues();
-    if (data.length <= 1) return "";
+    if (data.length <= 1) return _cachedUserMap;
     const headers = data[0].map(function(h) { return String(h).trim().toUpperCase(); });
     const idxNip = headers.indexOf("NIP");
     const idxNama = headers.indexOf("NAMA");
-    if (idxNip === -1 || idxNama === -1) return "";
+    if (idxNip === -1 || idxNama === -1) return _cachedUserMap;
     for (let i = 1; i < data.length; i++) {
-      if (String(data[i][idxNip]).trim() === String(nip).trim()) {
-        return String(data[i][idxNama] || "").trim();
+      const nipKey = String(data[i][idxNip]).trim();
+      if (nipKey && !_cachedUserMap[nipKey]) {
+        _cachedUserMap[nipKey] = String(data[i][idxNama] || "").trim();
       }
     }
-    return "";
-  } catch(e) {
-    return "";
-  }
+  } catch(e) {}
+  return _cachedUserMap;
 }
 
-function getDokumenList(categoryOrNip, actorNip) {
+function _getUserName(nip) {
+  if (!nip) return "";
+  const map = _getUserMap();
+  return map[String(nip).trim()] || "";
+}
+
+function _clearDokumenCache(category) {
+  try {
+    const cache = CacheService.getScriptCache();
+    if (category) {
+      cache.remove("dokumen_list_" + category);
+    } else {
+      cache.remove("dokumen_list_sertifikat");
+      cache.remove("dokumen_list_spk_rkk");
+    }
+  } catch(e) {}
+}
+
+function getDokumenList(categoryOrNip, actorNip, forceRefresh) {
   try {
     let category = "sertifikat";
     let effectiveActor = actorNip;
@@ -1736,11 +1755,40 @@ function getDokumenList(categoryOrNip, actorNip) {
       effectiveActor = categoryOrNip;
     }
 
+    const isAdmin = _isAdminOrSuperAdmin(effectiveActor);
+    const cacheKey = "dokumen_list_" + category;
+    const scriptCache = CacheService.getScriptCache();
+
+    // 1. Cek Server Cache (CacheService) jika bukan forceRefresh (optimasi kecepatan 0ms)
+    if (!forceRefresh) {
+      try {
+        const cachedRaw = scriptCache.get(cacheKey);
+        if (cachedRaw) {
+          const cachedObj = JSON.parse(cachedRaw);
+          if (cachedObj && Array.isArray(cachedObj.files)) {
+            const filesWithAuth = cachedObj.files.map(function(f) {
+              const isOwner = (f.nipPengunggah && String(f.nipPengunggah).trim() === String(effectiveActor).trim());
+              return Object.assign({}, f, { bisaHapus: isAdmin || isOwner });
+            });
+            return {
+              success: true,
+              category: category,
+              cached: true,
+              folders: cachedObj.folders || [],
+              files: filesWithAuth
+            };
+          }
+        }
+      } catch(eCache) {}
+    }
+
     const folderId = DOKUMEN_FOLDERS[category] || DOKUMEN_FOLDERS.sertifikat;
     const folder = DriveApp.getFolderById(folderId);
     const result = [];
     const foldersList = [];
-    const isAdmin = _isAdminOrSuperAdmin(effectiveActor);
+
+    // Preload user map sekali (mencegah puluhan call SpreadsheetApp berulang)
+    const userMap = _getUserMap();
 
     function processDriveFile(file, subfolderName) {
       if (!file || file.isTrashed()) return;
@@ -1752,7 +1800,14 @@ function getDokumenList(categoryOrNip, actorNip) {
       let uploaderName = "";
       let tanggalStr = "";
 
-      // Coba baca metadata dari deskripsi file (JSON)
+      // Prioritas 1: Ekstraksi NIP dari format nama file "NIP_NamaFile_Timestamp.ext"
+      const match = fileName.match(/^(\d+)_(.+)_\d+(\.[a-zA-Z0-9]+)$/);
+      if (match) {
+        uploaderNip = match[1];
+        originalName = match[2] + match[3];
+      }
+
+      // Prioritas 2: Baca deskripsi metadata JSON jika tersedia
       try {
         const descText = file.getDescription();
         if (descText && descText.trim().startsWith("{")) {
@@ -1766,19 +1821,8 @@ function getDokumenList(categoryOrNip, actorNip) {
         }
       } catch(eDesc) {}
 
-      // Fallback: Ekstraksi NIP dari format nama file "NIP_NamaFile_Timestamp.ext"
-      if (!uploaderNip) {
-        const match = fileName.match(/^(\d+)_(.+)_\d+(\.[a-zA-Z0-9]+)$/);
-        if (match) {
-          uploaderNip = match[1];
-          if (originalName === fileName) {
-            originalName = match[2] + match[3];
-          }
-        }
-      }
-
       if (!uploaderName && uploaderNip) {
-        uploaderName = _getUserName(uploaderNip);
+        uploaderName = userMap[String(uploaderNip).trim()] || "";
       }
 
       if (!tanggalStr) {
@@ -1805,9 +1849,6 @@ function getDokumenList(categoryOrNip, actorNip) {
         ext = originalName.substring(dotIdx + 1).toLowerCase();
       }
 
-      const isOwner = (uploaderNip && String(uploaderNip).trim() === String(effectiveActor).trim());
-      const bisaHapus = (isAdmin || isOwner);
-
       result.push({
         id: fileId,
         namaAsli: originalName,
@@ -1820,8 +1861,7 @@ function getDokumenList(categoryOrNip, actorNip) {
         ukuran: sizeStr,
         tanggal: tanggalStr,
         nipPengunggah: uploaderNip || "-",
-        namaPengunggah: uploaderName || "-",
-        bisaHapus: bisaHapus
+        namaPengunggah: uploaderName || "-"
       });
     }
 
@@ -1832,7 +1872,7 @@ function getDokumenList(categoryOrNip, actorNip) {
         processDriveFile(files.next(), "");
       }
 
-      // 2. Ambil berkas di subfolder (kedalaman 1) dan daftarkan sebagai folder card
+      // 2. Ambil berkas di subfolder (kedalaman 1 & kedalaman 2 jika bersarang)
       try {
         const subfolders = folder.getFolders();
         while (subfolders.hasNext()) {
@@ -1847,6 +1887,21 @@ function getDokumenList(categoryOrNip, actorNip) {
             processDriveFile(subFiles.next(), subName);
             subCount++;
           }
+
+          // Periksa sub-subfolder (kedalaman 2) jika ada
+          try {
+            const nestedSubs = sub.getFolders();
+            while (nestedSubs.hasNext()) {
+              const nSub = nestedSubs.next();
+              if (nSub.isTrashed()) continue;
+              const nFiles = nSub.getFiles();
+              while (nFiles.hasNext()) {
+                processDriveFile(nFiles.next(), subName + " / " + nSub.getName());
+                subCount++;
+              }
+            }
+          } catch(eNested) {}
+
           foldersList.push({
             id: subId,
             nama: subName,
@@ -1867,11 +1922,26 @@ function getDokumenList(categoryOrNip, actorNip) {
       return (b.namaFile || "").localeCompare(a.namaFile || "");
     });
 
+    // Simpan ke CacheService (TTL 600 detik = 10 menit)
+    try {
+      const toCache = JSON.stringify({ folders: foldersList, files: result });
+      if (toCache.length < 95000) {
+        scriptCache.put(cacheKey, toCache, 600);
+      }
+    } catch(eSaveCache) {}
+
+    // Sisipkan flag bisaHapus sesuai hak akses user saat ini
+    const filesWithAuth = result.map(function(f) {
+      const isOwner = (f.nipPengunggah && String(f.nipPengunggah).trim() === String(effectiveActor).trim());
+      return Object.assign({}, f, { bisaHapus: isAdmin || isOwner });
+    });
+
     return {
       success: true,
       category: category,
+      cached: false,
       folders: foldersList,
-      files: result
+      files: filesWithAuth
     };
   } catch(e) {
     return {
@@ -1933,6 +2003,9 @@ function uploadDokumenToDrive(base64Data, originalFileName, actorNip, category) 
       file.setDescription(JSON.stringify(descObj));
     } catch(eDesc) {}
 
+    // Invalidate cache kategori target agar sinkron seketika
+    _clearDokumenCache(targetCategory);
+
     return {
       success: true,
       message: "Dokumen \"" + safeOrigName + "\" berhasil disimpan ke Google Drive.",
@@ -1980,6 +2053,10 @@ function hapusDokumenFromDrive(fileId, actorNip) {
     }
 
     file.setTrashed(true);
+
+    // Invalidate seluruh cache dokumen agar sinkron seketika
+    _clearDokumenCache();
+
     return { success: true, message: "Dokumen berhasil dihapus." };
   } catch(e) {
     return { success: false, message: "Gagal menghapus dokumen: " + e.message };
