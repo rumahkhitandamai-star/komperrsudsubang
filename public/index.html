@@ -857,7 +857,13 @@
             <!-- Database Komper (ROLE ADMIN/SUPER ADMIN) -->
             <div id="view_datakomper" class="view-section hidden flex-col h-full">
                 <div class="flex flex-wrap justify-between items-center gap-3 mb-6 shrink-0">
-                    <h2 class="text-xl sm:text-2xl font-bold text-teal-800">Database Komper</h2>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <h2 class="text-xl sm:text-2xl font-bold text-teal-800">Database Komper</h2>
+                        <span id="komperRowCountBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-teal-50 text-teal-800 border border-teal-200 shadow-sm transition-all">
+                            <i id="komperRowCountIcon" class="fas fa-database text-teal-600"></i>
+                            <span id="komperRowCountText">0 baris data</span>
+                        </span>
+                    </div>
                     <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-start sm:justify-end">
                         <button onclick="openModalTambahData()" id="btnOpenTambahData" class="hidden bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-xs font-bold transition-colors shadow-md whitespace-nowrap">
                             <i class="fas fa-plus mr-1"></i> Tambah Data
@@ -903,7 +909,7 @@
                             <span class="text-teal-800 font-bold hidden sm:inline">baris</span>
                         </div>
                         <div class="flex items-center gap-3 sm:gap-4">
-                            <span id="paginationInfo" class="text-teal-800 font-bold hidden sm:inline">Menampilkan 0 - 0 dari 0 data</span>
+                            <span id="paginationInfo" class="text-teal-800 font-bold text-xs">Menampilkan 0 - 0 dari 0 data</span>
                             <div class="flex gap-1">
                                 <button onclick="prevPage()" id="btnPrevPage" class="px-3 py-1.5 bg-teal-600 text-white rounded hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"><i class="fas fa-chevron-left"></i></button>
                                 <button onclick="nextPage()" id="btnNextPage" class="px-3 py-1.5 bg-teal-600 text-white rounded hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"><i class="fas fa-chevron-right"></i></button>
@@ -5891,8 +5897,12 @@
             const tbody = document.getElementById('tableBodyKomper');
             tbody.innerHTML = '<tr><td colspan="84" class="p-8 text-center text-teal-600 font-bold"><i class="fas fa-spinner fa-spin mr-2 text-xl"></i>Sedang memuat data komper...</td></tr>';
             
+            const textEl = document.getElementById('komperRowCountText');
+            if (textEl) textEl.innerText = 'Memuat data...';
+
             if (typeof google.script.run.getAllDataKomper !== 'function') {
                 tbody.innerHTML = '<tr><td colspan="84" class="p-8 text-center text-red-500 font-bold"><i class="fas fa-exclamation-triangle mr-2"></i>Error: Fungsi getAllDataKomper() belum ada di backend (Code.gs).</td></tr>';
+                updateKomperRowCount();
                 return;
             }
 
@@ -5901,6 +5911,7 @@
             }).withFailureHandler(function(err) {
                 tbody.innerHTML = '<tr><td colspan="84" class="p-8 text-center text-red-500 font-bold"><i class="fas fa-exclamation-triangle mr-2"></i>Gagal memuat data dari server.</td></tr>';
                 Swal.fire('Error', 'Gagal memuat data komper.', 'error');
+                updateKomperRowCount();
             }).getAllDataKomper(currentUser ? currentUser.nip : '');
         }
 
@@ -6111,6 +6122,7 @@
             if (komperFilteredData.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="84" class="p-6 text-center text-gray-500 font-medium">Tidak ada data pegawai yang sesuai dengan pencarian Anda.</td></tr>';
                 updatePaginationInfo(0, 0, 0);
+                updateKomperRowCount();
                 return;
             }
 
@@ -6214,12 +6226,28 @@
             tbody.innerHTML = bodyHTML;
             
             updatePaginationInfo(startIndex + 1, endIndex, komperFilteredData.length);
+            updateKomperRowCount();
         }
 
         // FUNGSI NAVIGASI PAGINASI
         function updatePaginationInfo(start, end, total) {
             const infoEl = document.getElementById('paginationInfo');
-            if (infoEl) infoEl.innerText = `Menampilkan ${start} - ${end} dari ${total} data`;
+            const totalSemua = (globalDataKomper || []).length;
+            const hasActiveFilter = Object.keys(currentFilters || {}).length > 0;
+
+            if (infoEl) {
+                if (total === 0) {
+                    if (hasActiveFilter && totalSemua > 0) {
+                        infoEl.innerText = `Menampilkan 0 baris data (difilter dari total ${totalSemua} baris)`;
+                    } else {
+                        infoEl.innerText = `Menampilkan 0 baris data`;
+                    }
+                } else if (hasActiveFilter && total < totalSemua) {
+                    infoEl.innerText = `Menampilkan ${start} - ${end} dari ${total} baris data (difilter dari total ${totalSemua} baris)`;
+                } else {
+                    infoEl.innerText = `Menampilkan ${start} - ${end} dari ${total} baris data`;
+                }
+            }
 
             const btnPrev = document.getElementById('btnPrevPage');
             const btnNext = document.getElementById('btnNextPage');
@@ -6233,6 +6261,41 @@
                     let maxPages = Math.ceil(total / parseInt(komperRowsPerPage));
                     btnNext.disabled = komperCurrentPage >= maxPages || maxPages === 0;
                 }
+            }
+        }
+
+        function updateKomperRowCount() {
+            const badgeEl = document.getElementById('komperRowCountBadge');
+            const textEl = document.getElementById('komperRowCountText');
+            const iconEl = document.getElementById('komperRowCountIcon');
+            if (!badgeEl || !textEl) return;
+
+            const totalRows = (globalDataKomper || []).length;
+            const filteredRows = (komperFilteredData || []).length;
+            const hasActiveFilter = Object.keys(currentFilters || {}).length > 0;
+
+            if (totalRows === 0) {
+                textEl.innerText = '0 baris data';
+                badgeEl.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200 shadow-sm transition-all';
+                if (iconEl) iconEl.className = 'fas fa-database text-gray-500';
+            } else if (hasActiveFilter) {
+                if (filteredRows === 0) {
+                    textEl.innerText = `0 dari ${totalRows} baris data (difilter)`;
+                    badgeEl.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200 shadow-sm transition-all';
+                    if (iconEl) iconEl.className = 'fas fa-filter text-red-500';
+                } else if (filteredRows < totalRows) {
+                    textEl.innerText = `${filteredRows} dari ${totalRows} baris data (difilter)`;
+                    badgeEl.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-300 shadow-sm transition-all';
+                    if (iconEl) iconEl.className = 'fas fa-filter text-amber-600';
+                } else {
+                    textEl.innerText = `${filteredRows} baris data (difilter)`;
+                    badgeEl.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-teal-50 text-teal-800 border border-teal-200 shadow-sm transition-all';
+                    if (iconEl) iconEl.className = 'fas fa-filter text-teal-600';
+                }
+            } else {
+                textEl.innerText = `${filteredRows} baris data`;
+                badgeEl.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-teal-50 text-teal-800 border border-teal-200 shadow-sm transition-all';
+                if (iconEl) iconEl.className = 'fas fa-database text-teal-600';
             }
         }
 
