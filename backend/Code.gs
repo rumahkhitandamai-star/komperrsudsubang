@@ -1734,6 +1734,7 @@ function _getUserName(nip) {
 function _clearDokumenCache(category) {
   try {
     const cache = CacheService.getScriptCache();
+    cache.remove("komper_filelengkap_v3");
     if (category) {
       cache.remove("dokumen_list_" + category);
     } else {
@@ -2066,6 +2067,8 @@ function hapusDokumenFromDrive(fileId, actorNip) {
 // ==========================================
 // PENGELOLAAN FILE LENGKAP (SUPER ADMIN ONLY)
 // ==========================================
+const FILE_LENGKAP_FOLDER_ID = "1WA2lVWwGQuKEsN5EBK8esZsVr5V_JGTX";
+
 function getFileLengkapList(actorNip, forceRefresh) {
   try {
     if (!_isSuperAdmin(actorNip)) {
@@ -2077,39 +2080,175 @@ function getFileLengkapList(actorNip, forceRefresh) {
       };
     }
 
-    const categories = ["sertifikat", "spk_rkk"];
-    const allFiles = [];
-    const allFolders = [];
-
-    categories.forEach(function(cat) {
-      const resp = getDokumenList(cat, actorNip, Boolean(forceRefresh));
-      if (resp && resp.success) {
-        if (Array.isArray(resp.files)) {
-          resp.files.forEach(function(f) {
-            allFiles.push(Object.assign({}, f, {
-              kategoriLabel: (cat === "spk_rkk") ? "SPK & RKK" : "Sertifikat"
-            }));
-          });
+    const cacheKey = "komper_filelengkap_v3";
+    const scriptCache = CacheService.getScriptCache();
+    if (!forceRefresh) {
+      try {
+        const cached = scriptCache.get(cacheKey);
+        if (cached) {
+          const cachedObj = JSON.parse(cached);
+          if (cachedObj && Array.isArray(cachedObj.folders)) {
+            return {
+              success: true,
+              category: "filelengkap",
+              cached: true,
+              parentFolderUrl: "https://drive.google.com/drive/folders/" + FILE_LENGKAP_FOLDER_ID + "?usp=drive_link",
+              folders: cachedObj.folders,
+              files: cachedObj.files || []
+            };
+          }
         }
-        if (Array.isArray(resp.folders)) {
-          resp.folders.forEach(function(fld) {
-            allFolders.push(Object.assign({}, fld, {
-              kategori: cat,
-              kategoriLabel: (cat === "spk_rkk") ? "SPK & RKK" : "Sertifikat"
-            }));
-          });
+      } catch(eCache) {}
+    }
+
+    const mainFolder = DriveApp.getFolderById(FILE_LENGKAP_FOLDER_ID);
+    const userMap = _getUserMap();
+    const allFolders = [];
+    const allFiles = [];
+
+    function processDriveFile(file, subfolderName, subfolderId) {
+      if (!file || file.isTrashed()) return;
+
+      const fileId = file.getId();
+      const fileName = file.getName();
+      let originalName = fileName;
+      let uploaderNip = "";
+      let uploaderName = "";
+      let tanggalStr = "";
+
+      const match = fileName.match(/^(\d+)_(.+)_\d+(\.[a-zA-Z0-9]+)$/);
+      if (match) {
+        uploaderNip = match[1];
+        originalName = match[2] + match[3];
+      }
+
+      try {
+        const descText = file.getDescription();
+        if (descText && descText.trim().startsWith("{")) {
+          const desc = JSON.parse(descText);
+          if (desc.originalName) originalName = desc.originalName;
+          if (desc.uploaderNip) uploaderNip = desc.uploaderNip;
+          if (desc.uploaderName) uploaderName = desc.uploaderName;
+          if (desc.uploadedAt) {
+            tanggalStr = Utilities.formatDate(new Date(desc.uploadedAt), "Asia/Jakarta", "dd-MM-yyyy HH:mm");
+          }
+        }
+      } catch(eDesc) {}
+
+      if (!uploaderName && uploaderNip) {
+        uploaderName = userMap[String(uploaderNip).trim()] || "";
+      }
+
+      if (!tanggalStr) {
+        try {
+          tanggalStr = Utilities.formatDate(file.getDateCreated(), "Asia/Jakarta", "dd-MM-yyyy HH:mm");
+        } catch(eDate) {
+          tanggalStr = "-";
         }
       }
+
+      let sizeStr = "-";
+      try {
+        const bytes = file.getSize();
+        if (bytes < 1024) sizeStr = bytes + " B";
+        else if (bytes < 1024 * 1024) sizeStr = (bytes / 1024).toFixed(1) + " KB";
+        else sizeStr = (bytes / (1024 * 1024)).toFixed(1) + " MB";
+      } catch(eSize) {}
+
+      let ext = "";
+      const dotIdx = originalName.lastIndexOf(".");
+      if (dotIdx !== -1) {
+        ext = originalName.substring(dotIdx + 1).toLowerCase();
+      }
+
+      allFiles.push({
+        id: fileId,
+        namaAsli: originalName,
+        namaFile: fileName,
+        subfolder: subfolderName || "",
+        subfolderId: subfolderId || "",
+        kategori: "filelengkap",
+        kategoriLabel: subfolderName || "Arsip",
+        url: file.getUrl(),
+        downloadUrl: "https://drive.google.com/uc?export=download&id=" + fileId,
+        ext: ext,
+        ukuran: sizeStr,
+        tanggal: tanggalStr,
+        nipPengunggah: uploaderNip || "-",
+        namaPengunggah: uploaderName || "-",
+        bisaHapus: true
+      });
+    }
+
+    if (mainFolder && !mainFolder.isTrashed()) {
+      // 1. Ambil berkas langsung di root folder (jika ada)
+      const rootFiles = mainFolder.getFiles();
+      while (rootFiles.hasNext()) {
+        processDriveFile(rootFiles.next(), "ROOT", mainFolder.getId());
+      }
+
+      // 2. Ambil seluruh subfolder tingkat 1
+      const subfolders = mainFolder.getFolders();
+      while (subfolders.hasNext()) {
+        const sub = subfolders.next();
+        if (sub.isTrashed()) continue;
+        const subName = sub.getName();
+        const subId = sub.getId();
+        const subUrl = sub.getUrl();
+        let subCount = 0;
+
+        const sFiles = sub.getFiles();
+        while (sFiles.hasNext()) {
+          processDriveFile(sFiles.next(), subName, subId);
+          subCount++;
+        }
+
+        // Cek sub-subfolder tingkat 2 jika ada
+        try {
+          const nestedSubs = sub.getFolders();
+          while (nestedSubs.hasNext()) {
+            const nSub = nestedSubs.next();
+            if (nSub.isTrashed()) continue;
+            const nFiles = nSub.getFiles();
+            while (nFiles.hasNext()) {
+              processDriveFile(nFiles.next(), subName + " / " + nSub.getName(), nSub.getId());
+              subCount++;
+            }
+          }
+        } catch(eNested) {}
+
+        allFolders.push({
+          id: subId,
+          nama: subName,
+          url: subUrl,
+          berkasCount: subCount
+        });
+      }
+    }
+
+    // Urutkan subfolder secara alfabetis (@SLIDESHOW, BTCLS, dst)
+    allFolders.sort(function(a, b) {
+      return (a.nama || "").localeCompare(b.nama || "");
     });
 
-    // Urutkan dokumen terbaru di atas
+    // Urutkan berkas terbaru di atas
     allFiles.sort(function(a, b) {
       return (b.namaFile || "").localeCompare(a.namaFile || "");
     });
 
+    // Simpan ke CacheService (TTL 600 detik = 10 menit)
+    try {
+      const toCache = JSON.stringify({ folders: allFolders, files: allFiles });
+      if (toCache.length < 95000) {
+        scriptCache.put(cacheKey, toCache, 600);
+      }
+    } catch(eSaveCache) {}
+
     return {
       success: true,
       category: "filelengkap",
+      cached: false,
+      parentFolderUrl: "https://drive.google.com/drive/folders/" + FILE_LENGKAP_FOLDER_ID + "?usp=drive_link",
       folders: allFolders,
       files: allFiles
     };

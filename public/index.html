@@ -189,6 +189,52 @@
         body.dark-mode #syncStatusDokumen, body.dark-mode #syncStatusFileLengkap { background-color: #134e4a !important; border-color: #0f766e !important; color: #5eead4 !important; }
 
         /* ==========================================
+           GDRIVE SUB FOLDER PILLS ([Image 1] STYLE)
+           ========================================== */
+        .gdrive-folder-pill {
+            background-color: #f0f4f9;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease-in-out;
+        }
+        .gdrive-folder-pill:hover {
+            background-color: #e5ebf3;
+            border-color: #cbd5e1;
+        }
+        .gdrive-folder-pill.active-folder {
+            background-color: #ccfbf1 !important;
+            border-color: #0d9488 !important;
+            box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2);
+        }
+        .gdrive-folder-pill.active-folder span {
+            color: #0f766e !important;
+        }
+        .gdrive-folder-pill.active-folder svg {
+            color: #0d9488 !important;
+        }
+        body.dark-mode .gdrive-folder-pill {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+        }
+        body.dark-mode .gdrive-folder-pill:hover {
+            background-color: #334155 !important;
+        }
+        body.dark-mode .gdrive-folder-pill.active-folder {
+            background-color: #134e4a !important;
+            border-color: #2dd4bf !important;
+        }
+        body.dark-mode .gdrive-folder-pill.active-folder span {
+            color: #5eead4 !important;
+        }
+        body.dark-mode .gdrive-folder-pill.active-folder svg {
+            color: #2dd4bf !important;
+        }
+        body.dark-mode #bannerActiveFileLengkapFolder {
+            background-color: #134e4a !important;
+            border-color: #0f766e !important;
+            color: #ccfbf1 !important;
+        }
+
+        /* ==========================================
            RUNNING TEXT (MARQUEE) STYLES
            ========================================== */
         @keyframes runningTextScroll {
@@ -849,13 +895,17 @@
                             <i class="fas fa-archive text-teal-600"></i>
                             <span>File Lengkap</span>
                         </h2>
-                        <p class="text-xs text-gray-500 mt-1">Daftar arsip seluruh berkas dokumen resmi (Sertifikat, SPK & RKK) Komite Keperawatan RSUD Subang.</p>
+                        <p class="text-xs text-gray-500 mt-1">Daftar arsip seluruh berkas dokumen resmi sesuai Sub Folder di Google Drive.</p>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap justify-end">
                         <span id="syncStatusFileLengkap" class="text-[11px] text-teal-700 bg-teal-50 border border-teal-200/80 px-2.5 py-1.5 rounded-lg font-medium inline-flex items-center gap-1.5 shadow-2xs" title="Status sinkronisasi real-time dengan Google Drive">
                             <i id="syncIconFileLengkap" class="fas fa-check-circle text-teal-500"></i>
                             <span id="syncTextFileLengkap">Tersinkron GDrive</span>
                         </span>
+                        <a href="https://drive.google.com/drive/folders/1WA2lVWwGQuKEsN5EBK8esZsVr5V_JGTX?usp=drive_link" target="_blank" rel="noopener noreferrer" class="bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 py-2 px-3 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1.5 cursor-pointer" title="Buka Folder Induk di Google Drive">
+                            <i class="fab fa-google-drive text-amber-600"></i>
+                            <span class="hidden sm:inline">Buka GDrive</span>
+                        </a>
                         <button type="button" id="btnRefreshFileLengkap" onclick="loadFileLengkapList(true)" class="bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded-lg text-xs font-bold transition-colors shadow-md whitespace-nowrap inline-flex items-center gap-1.5 cursor-pointer">
                             <i id="iconRefreshFileLengkap" class="fas fa-sync-alt"></i>
                             <span>Refresh</span>
@@ -863,11 +913,44 @@
                     </div>
                 </div>
 
+                <!-- SUB FOLDER GOOGLE DRIVE (PERSIS GAYA GOOGLE DRIVE [Image 1]) -->
+                <div class="mb-6 bg-white rounded-2xl p-4 sm:p-5 border border-gray-100 shadow-xs">
+                    <div class="flex items-center justify-between gap-3 mb-3.5">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold uppercase tracking-wider text-gray-600">Sub Folder Google Drive</span>
+                            <span id="badgeFolderCountFileLengkap" class="text-[10px] bg-teal-50 text-teal-700 border border-teal-200 px-2.5 py-0.5 rounded-full font-bold">16 Folder</span>
+                        </div>
+                        <button type="button" id="btnResetFolderFilter" onclick="resetFileLengkapFolderFilter()" class="text-xs font-bold text-teal-600 hover:text-teal-800 transition-colors inline-flex items-center gap-1.5 cursor-pointer">
+                            <i class="fas fa-layer-group text-[11px]"></i>
+                            <span>Tampilkan Semua</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Grid Folder Pills (Sesuai [Image 1]) -->
+                    <div id="gridFileLengkapFolders" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2.5 sm:gap-3">
+                        <div class="col-span-full py-4 text-center text-xs text-gray-400">
+                            <i class="fas fa-spinner fa-spin mr-1.5"></i>Memuat daftar sub folder...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Sub Folder Aktif (Saat salah satu folder dipilih) -->
+                <div id="bannerActiveFileLengkapFolder" class="hidden items-center justify-between bg-teal-50 border border-teal-200 text-teal-800 px-4 py-2.5 rounded-xl mb-4 text-xs font-semibold shadow-2xs">
+                    <div class="flex items-center gap-2 truncate">
+                        <i class="fas fa-folder-open text-teal-600 text-sm shrink-0"></i>
+                        <span class="truncate">Menampilkan berkas dalam Sub Folder: <strong id="activeFileLengkapFolderName" class="text-teal-900 font-bold">-</strong></span>
+                        <span id="activeFileLengkapCount" class="bg-teal-200/70 text-teal-900 text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0">0 berkas</span>
+                    </div>
+                    <button type="button" onclick="resetFileLengkapFolderFilter()" class="text-teal-700 hover:text-teal-900 font-bold underline cursor-pointer shrink-0 ml-2 inline-flex items-center gap-1">
+                        <i class="fas fa-times-circle"></i> Lihat Semua Folder
+                    </button>
+                </div>
+
                 <!-- Search & Summary Bar -->
                 <div class="bg-white rounded-2xl p-3 sm:p-4 mb-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
                     <div class="relative flex-1 max-w-md">
                         <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none z-10"></i>
-                        <input type="text" id="inputSearchFileLengkap" oninput="filterFileLengkapList()" placeholder="Cari nama berkas, kategori, pengunggah, atau ekstensi..." class="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-gray-200 rounded-lg outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                        <input type="text" id="inputSearchFileLengkap" oninput="filterFileLengkapList()" placeholder="Cari nama berkas, sub folder, pengunggah, atau ekstensi..." class="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-gray-200 rounded-lg outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                     </div>
                     <div class="flex items-center justify-between sm:justify-end gap-3 text-xs text-gray-500">
                         <span id="fileLengkapSummary" class="font-medium">Memuat data berkas...</span>
@@ -2722,15 +2805,91 @@
                         };
                     },
                     getFileLengkapList: function(actorNip) {
-                        const sResp = mockHandlers.getDokumenList('sertifikat', actorNip);
-                        const rResp = mockHandlers.getDokumenList('spk_rkk', actorNip);
-                        const sFiles = (sResp && sResp.files) ? sResp.files.map(function(f){ return Object.assign({}, f, { kategoriLabel: 'Sertifikat' }); }) : [];
-                        const rFiles = (rResp && rResp.files) ? rResp.files.map(function(f){ return Object.assign({}, f, { kategoriLabel: 'SPK & RKK' }); }) : [];
+                        const folderNames = [
+                            "@SLIDESHOW", "BTCLS", "FOTO PROFIL", "HD", "IJAZAH", "INTENSIVE", 
+                            "JENJANG KARIR", "KAMAR OPERASI", "KGB", "KTP", "MU", "SIPP SIPB", 
+                            "SK GOLONGAN", "SK JABFUNG", "SPK & RKK", "STR"
+                        ];
+                        const mockFolders = folderNames.map(function(fname, i) {
+                            return {
+                                id: 'fld_mock_' + (i + 1),
+                                nama: fname,
+                                url: 'https://drive.google.com/drive/folders/1WA2lVWwGQuKEsN5EBK8esZsVr5V_JGTX?usp=drive_link',
+                                berkasCount: (i % 2 === 0 ? 2 : 1)
+                            };
+                        });
+                        const mockFiles = [
+                            {
+                                id: 'fl_mock_1',
+                                namaAsli: 'Sertifikat_BTCLS_Emergency.pdf',
+                                namaFile: '19800101_Sertifikat_BTCLS_Emergency.pdf',
+                                ext: 'pdf',
+                                ukuran: '1.4 MB',
+                                subfolder: 'BTCLS',
+                                kategori: 'filelengkap',
+                                kategoriLabel: 'BTCLS',
+                                tanggal: '14-11-2026 09:30',
+                                nipPengunggah: '198001012005011001',
+                                namaPengunggah: 'Super Admin Test',
+                                url: 'https://drive.google.com/drive/folders/1WA2lVWwGQuKEsN5EBK8esZsVr5V_JGTX?usp=drive_link',
+                                downloadUrl: 'https://drive.google.com/drive/folders/1WA2lVWwGQuKEsN5EBK8esZsVr5V_JGTX?usp=drive_link',
+                                bisaHapus: true
+                            },
+                            {
+                                id: 'fl_mock_2',
+                                namaAsli: 'SPK_RKK_Klinis_2026.pdf',
+                                namaFile: '19800101_SPK_RKK_Klinis_2026.pdf',
+                                ext: 'pdf',
+                                ukuran: '820 KB',
+                                subfolder: 'SPK & RKK',
+                                kategori: 'filelengkap',
+                                kategoriLabel: 'SPK & RKK',
+                                tanggal: '12-11-2026 14:15',
+                                nipPengunggah: '198001012005011001',
+                                namaPengunggah: 'Super Admin Test',
+                                url: 'https://drive.google.com/drive/folders/1WA2lVWwGQuKEsN5EBK8esZsVr5V_JGTX?usp=drive_link',
+                                downloadUrl: 'https://drive.google.com/drive/folders/1WA2lVWwGQuKEsN5EBK8esZsVr5V_JGTX?usp=drive_link',
+                                bisaHapus: true
+                            },
+                            {
+                                id: 'fl_mock_3',
+                                namaAsli: 'STR_Perawat_Berlaku_2028.pdf',
+                                namaFile: '19800101_STR_Perawat_Berlaku_2028.pdf',
+                                ext: 'pdf',
+                                ukuran: '650 KB',
+                                subfolder: 'STR',
+                                kategori: 'filelengkap',
+                                kategoriLabel: 'STR',
+                                tanggal: '10-11-2026 11:20',
+                                nipPengunggah: '198501012010011001',
+                                namaPengunggah: 'Ns. Siti Nurhaliza, S.Kep.',
+                                url: 'https://drive.google.com/drive/folders/1WA2lVWwGQuKEsN5EBK8esZsVr5V_JGTX?usp=drive_link',
+                                downloadUrl: 'https://drive.google.com/drive/folders/1WA2lVWwGQuKEsN5EBK8esZsVr5V_JGTX?usp=drive_link',
+                                bisaHapus: true
+                            },
+                            {
+                                id: 'fl_mock_4',
+                                namaAsli: 'KTP_Elektronik_Resmi.jpg',
+                                namaFile: '19900202_KTP_Elektronik_Resmi.jpg',
+                                ext: 'jpg',
+                                ukuran: '410 KB',
+                                subfolder: 'KTP',
+                                kategori: 'filelengkap',
+                                kategoriLabel: 'KTP',
+                                tanggal: '08-11-2026 16:45',
+                                nipPengunggah: '199002022015022002',
+                                namaPengunggah: 'Budi Santoso, A.Md.Kep.',
+                                url: 'https://drive.google.com/drive/folders/1WA2lVWwGQuKEsN5EBK8esZsVr5V_JGTX?usp=drive_link',
+                                downloadUrl: 'https://drive.google.com/drive/folders/1WA2lVWwGQuKEsN5EBK8esZsVr5V_JGTX?usp=drive_link',
+                                bisaHapus: true
+                            }
+                        ];
                         return {
                             success: true,
                             category: 'filelengkap',
-                            folders: (sResp.folders || []).concat(rResp.folders || []),
-                            files: sFiles.concat(rFiles)
+                            parentFolderUrl: 'https://drive.google.com/drive/folders/1WA2lVWwGQuKEsN5EBK8esZsVr5V_JGTX?usp=drive_link',
+                            folders: mockFolders,
+                            files: mockFiles
                         };
                     }
                 };
@@ -9825,6 +9984,8 @@
         let fileLengkapCache = null;
         let fileLengkapAllData = [];
         let fileLengkapFilteredData = [];
+        let fileLengkapFoldersData = [];
+        let fileLengkapSelectedFolder = null; // null = Semua Sub Folder
 
         function setFileLengkapSyncStatus(status, text) {
             const statusEl = document.getElementById('syncStatusFileLengkap');
@@ -9859,7 +10020,7 @@
         function loadFileLengkapList(forceRefresh) {
             const grid = document.getElementById('gridFileLengkap');
             const summary = document.getElementById('fileLengkapSummary');
-            const localKey = 'komper_filelengkap_cache';
+            const localKey = 'komper_filelengkap_cache_v3';
 
             let hasRenderedCachedData = false;
 
@@ -9874,8 +10035,11 @@
 
                 if (cachedItem && Array.isArray(cachedItem.files)) {
                     fileLengkapCache = cachedItem;
+                    fileLengkapFoldersData = cachedItem.folders || [];
                     fileLengkapAllData = cachedItem.files || [];
                     fileLengkapCurrentPage = 1;
+                    renderFileLengkapFolders(fileLengkapFoldersData);
+                    updateFileLengkapFolderUI();
                     filterFileLengkapList();
                     setFileLengkapSyncStatus('synced', 'Tersinkron GDrive');
                     hasRenderedCachedData = true;
@@ -9892,6 +10056,10 @@
                         '<i class="fas fa-spinner fa-spin mr-2 text-xl"></i>Sedang menyinkronkan seluruh berkas dari Google Drive...' +
                         '</div>';
                 }
+                const folderGrid = document.getElementById('gridFileLengkapFolders');
+                if (folderGrid) {
+                    folderGrid.innerHTML = '<div class="col-span-full py-4 text-center text-xs text-teal-600 font-semibold"><i class="fas fa-spinner fa-spin mr-1.5"></i>Menyinkronkan sub folder Google Drive...</div>';
+                }
                 if (summary) summary.innerText = 'Menyinkronkan berkas...';
                 updateFileLengkapPagination(0, 0, 0);
             }
@@ -9902,13 +10070,16 @@
             google.script.run
                 .withSuccessHandler(function(resp) {
                     let files = [];
+                    let folders = [];
                     if (resp && Array.isArray(resp)) {
                         files = resp;
-                    } else if (resp && Array.isArray(resp.files)) {
-                        files = resp.files;
+                    } else if (resp) {
+                        if (Array.isArray(resp.files)) files = resp.files;
+                        if (Array.isArray(resp.folders)) folders = resp.folders;
                     }
 
                     const cacheData = {
+                        folders: folders,
                         files: files,
                         timestamp: Date.now()
                     };
@@ -9917,7 +10088,10 @@
                         localStorage.setItem(localKey, JSON.stringify(cacheData));
                     } catch(eStore) {}
 
+                    fileLengkapFoldersData = folders;
                     fileLengkapAllData = files;
+                    renderFileLengkapFolders(fileLengkapFoldersData);
+                    updateFileLengkapFolderUI();
                     filterFileLengkapList();
                     setFileLengkapSyncStatus('synced', 'Tersinkron GDrive');
                 })
@@ -9956,11 +10130,105 @@
                 .getFileLengkapList(actorNip, Boolean(forceRefresh));
         }
 
+        // Render Kartu Folder Bergaya Google Drive [Image 1]
+        function renderFileLengkapFolders(folders) {
+            const container = document.getElementById('gridFileLengkapFolders');
+            const badge = document.getElementById('badgeFolderCountFileLengkap');
+            if (!container) return;
+
+            if (!folders || folders.length === 0) {
+                container.innerHTML = '<div class="col-span-full py-4 text-center text-xs text-gray-400">Tidak ada sub folder ditemukan di Google Drive.</div>';
+                if (badge) badge.innerText = '0 Folder';
+                return;
+            }
+
+            if (badge) badge.innerText = folders.length + ' Folder';
+
+            let html = '';
+            folders.forEach(function(fld) {
+                const safeName = escapeHtml(fld.nama || 'FOLDER');
+                const safeUrl = sanitizeUrl(fld.url || 'https://drive.google.com/drive/folders/1WA2lVWwGQuKEsN5EBK8esZsVr5V_JGTX?usp=drive_link');
+                const isActive = (fileLengkapSelectedFolder && fileLengkapSelectedFolder.toLowerCase() === (fld.nama || '').toLowerCase());
+                const activeClass = isActive ? 'active-folder' : '';
+
+                html += '<div onclick="selectFileLengkapFolder(\'' + escapeJsAttr(fld.nama) + '\')" class="gdrive-folder-pill ' + activeClass + ' flex items-center justify-between gap-2 px-3 py-2.5 rounded-2xl cursor-pointer select-none transition-all shadow-2xs group hover:shadow-xs" title="' + safeName + ' (' + (fld.berkasCount || 0) + ' berkas)">';
+                html += '  <div class="flex items-center gap-2.5 min-w-0 flex-1">';
+                // Google Drive Shared Folder SVG Icon (Folder dengan Siluet Orang)
+                html += '    <svg class="w-5 h-5 ' + (isActive ? 'text-teal-600' : 'text-gray-600 dark:text-gray-300') + ' shrink-0" viewBox="0 0 24 24" fill="currentColor">';
+                html += '      <path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-5 3c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm4 8h-8v-1c0-1.33 2.67-2 4-2s4 .67 4 2v1z"/>';
+                html += '    </svg>';
+                html += '    <span class="font-bold text-xs ' + (isActive ? 'text-teal-900' : 'text-gray-800 dark:text-gray-100') + ' truncate uppercase tracking-tight">' + safeName + '</span>';
+                html += '  </div>';
+                html += '  <button type="button" onclick="event.stopPropagation(); window.open(\'' + safeUrl + '\', \'_blank\')" class="p-1 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 dark:hover:text-gray-200 transition-colors shrink-0" title="Buka Folder di Google Drive" aria-label="Buka Folder di Google Drive">';
+                html += '    <i class="fas fa-ellipsis-v text-xs"></i>';
+                html += '  </button>';
+                html += '</div>';
+            });
+
+            container.innerHTML = html;
+        }
+
+        function selectFileLengkapFolder(folderName) {
+            if (fileLengkapSelectedFolder && fileLengkapSelectedFolder.toLowerCase() === (folderName || '').toLowerCase()) {
+                // Klik ulang: batalkan pilihan (kembali ke semua folder)
+                fileLengkapSelectedFolder = null;
+            } else {
+                fileLengkapSelectedFolder = folderName;
+            }
+            updateFileLengkapFolderUI();
+            filterFileLengkapList();
+        }
+
+        function resetFileLengkapFolderFilter() {
+            fileLengkapSelectedFolder = null;
+            updateFileLengkapFolderUI();
+            filterFileLengkapList();
+        }
+
+        function updateFileLengkapFolderUI() {
+            const banner = document.getElementById('bannerActiveFileLengkapFolder');
+            const nameEl = document.getElementById('activeFileLengkapFolderName');
+            const countEl = document.getElementById('activeFileLengkapCount');
+
+            // Re-render highlight aktif pada pill folder
+            renderFileLengkapFolders(fileLengkapFoldersData || []);
+
+            if (fileLengkapSelectedFolder) {
+                if (banner) {
+                    banner.classList.remove('hidden');
+                    banner.classList.add('flex');
+                }
+                if (nameEl) nameEl.innerText = fileLengkapSelectedFolder;
+
+                const count = fileLengkapAllData.filter(function(doc) {
+                    const sub = (doc.subfolder || '').toLowerCase();
+                    const sel = fileLengkapSelectedFolder.toLowerCase();
+                    return sub === sel || sub.indexOf(sel) !== -1;
+                }).length;
+
+                if (countEl) countEl.innerText = count + ' berkas';
+            } else {
+                if (banner) {
+                    banner.classList.add('hidden');
+                    banner.classList.remove('flex');
+                }
+            }
+        }
+
         function filterFileLengkapList() {
             const searchInput = document.getElementById('inputSearchFileLengkap');
             const q = (searchInput ? searchInput.value : '').toLowerCase().trim();
 
             fileLengkapFilteredData = fileLengkapAllData.filter(function(doc) {
+                // Filter Subfolder jika sedang dipilih
+                if (fileLengkapSelectedFolder) {
+                    const sub = (doc.subfolder || '').toLowerCase();
+                    const sel = fileLengkapSelectedFolder.toLowerCase();
+                    if (sub !== sel && sub.indexOf(sel) === -1) {
+                        return false;
+                    }
+                }
+
                 if (!q) return true;
                 const nama = (doc.namaAsli || doc.namaFile || '').toLowerCase();
                 const pengunggah = (doc.namaPengunggah || '').toLowerCase();
@@ -10009,7 +10277,11 @@
             const summary = document.getElementById('fileLengkapSummary');
 
             if (summary) {
-                summary.innerText = 'Total ' + total + ' berkas lengkap';
+                if (fileLengkapSelectedFolder) {
+                    summary.innerText = `Sub Folder "${fileLengkapSelectedFolder}": ${total} berkas`;
+                } else {
+                    summary.innerText = 'Total ' + total + ' berkas lengkap';
+                }
             }
 
             if (infoEl) {
@@ -10063,12 +10335,17 @@
             if (!grid) return;
 
             if (!fileLengkapFilteredData || fileLengkapFilteredData.length === 0) {
+                const folderContextText = fileLengkapSelectedFolder
+                    ? `Tidak ada berkas di dalam Sub Folder "<strong>${escapeHtml(fileLengkapSelectedFolder)}</strong>".`
+                    : 'Tidak ada berkas yang ditemukan pada seluruh arsip Google Drive.';
+
                 grid.innerHTML = '<div class="col-span-full p-12 text-center bg-white rounded-2xl border border-gray-100 shadow-xs">' +
                     '<div class="w-16 h-16 mx-auto mb-3 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center text-2xl">' +
                     '<i class="fas fa-folder-open"></i>' +
                     '</div>' +
                     '<h4 class="font-bold text-gray-800 text-sm sm:text-base">Belum Ada Berkas</h4>' +
-                    '<p class="text-xs text-gray-500 mt-1 max-w-md mx-auto">Tidak ada berkas yang ditemukan pada seluruh arsip Google Drive.</p>' +
+                    '<p class="text-xs text-gray-500 mt-1 max-w-md mx-auto">' + folderContextText + '</p>' +
+                    (fileLengkapSelectedFolder ? '<div class="mt-4"><button type="button" onclick="resetFileLengkapFolderFilter()" class="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs"><i class="fas fa-layer-group"></i> Lihat Semua Folder</button></div>' : '') +
                     '</div>';
                 return;
             }
@@ -10085,11 +10362,7 @@
                 const safeUrl = sanitizeUrl(doc.url || '#');
                 const safeDownloadUrl = sanitizeUrl(doc.downloadUrl || doc.url || '#');
                 const safeId = escapeJsAttr(doc.id || '');
-                const safeSubfolder = doc.subfolder ? escapeHtml(doc.subfolder) : '';
-                const kategoriBadge = (doc.kategoriLabel || (doc.kategori === 'spk_rkk' ? 'SPK & RKK' : 'Sertifikat'));
-                const katBg = (doc.kategori === 'spk_rkk' || kategoriBadge === 'SPK & RKK')
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                    : 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+                const safeSubfolder = doc.subfolder ? escapeHtml(doc.subfolder) : (doc.kategoriLabel || 'Dokumen');
 
                 html += '<div class="card-dokumen bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow flex flex-col justify-between">';
                 html += '  <div>';
@@ -10099,17 +10372,13 @@
                 html += '      </div>';
                 html += '      <div class="flex-1 min-w-0">';
                 html += '        <div class="flex items-center gap-1.5 mb-1">';
-                html += '          <span class="px-2 py-0.5 rounded-full font-bold text-[9px] uppercase ' + katBg + '">' + escapeHtml(kategoriBadge) + '</span>';
+                html += '          <span class="px-2 py-0.5 rounded-full font-bold text-[9px] uppercase bg-teal-50 text-teal-800 border border-teal-200 inline-flex items-center gap-1 cursor-pointer hover:bg-teal-100" onclick="selectFileLengkapFolder(\'' + escapeJsAttr(doc.subfolder || '') + '\')" title="Filter sub folder: ' + safeSubfolder + '"><i class="fas fa-folder text-[8px] text-teal-600"></i>' + safeSubfolder + '</span>';
                 html += '        </div>';
                 html += '        <h4 class="text-xs sm:text-sm font-bold text-gray-800 truncate" title="' + safeNama + '">' + safeNama + '</h4>';
                 html += '        <div class="flex flex-wrap items-center gap-1.5 text-[10px] sm:text-xs text-gray-500 mt-1">';
                 html += '          <span class="px-1.5 py-0.5 rounded bg-gray-100 font-bold uppercase text-[9px] text-gray-600 tracking-wider">' + safeExt + '</span>';
                 html += '          <span>•</span>';
                 html += '          <span>' + safeUkuran + '</span>';
-                if (safeSubfolder) {
-                    html += '          <span>•</span>';
-                    html += '          <span class="px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 font-medium text-[9px] truncate max-w-[130px]" title="' + safeSubfolder + '"><i class="fas fa-folder text-[8px] mr-1"></i>' + safeSubfolder + '</span>';
-                }
                 html += '        </div>';
                 html += '      </div>';
                 html += '    </div>';
@@ -10176,13 +10445,7 @@
                                     confirmButtonColor: '#0d9488'
                                 });
                                 fileLengkapCache = null;
-                                try { localStorage.removeItem('komper_filelengkap_cache'); } catch(e) {}
-                                dokumenCache['sertifikat'] = null;
-                                dokumenCache['spk_rkk'] = null;
-                                try {
-                                    localStorage.removeItem('komper_dokumen_cache_sertifikat');
-                                    localStorage.removeItem('komper_dokumen_cache_spk_rkk');
-                                } catch(e) {}
+                                try { localStorage.removeItem('komper_filelengkap_cache_v3'); } catch(e) {}
                                 loadFileLengkapList(true);
                             } else {
                                 Swal.fire({
