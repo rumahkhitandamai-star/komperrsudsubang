@@ -96,7 +96,7 @@
             border-radius: 0.5rem !important;
             transition: all 0.2s ease-in-out;
         }
-        input.users-filter-input { padding-left: 2.25rem !important; }
+        input.users-filter-input, #inputSearchDokumen, #inputSearchFileLengkap, #searchKadaluarsaInput, #searchKredensialInput { padding-left: 2.5rem !important; }
 
         /* CUSTOM SCROLLBAR USERS (Vertikal Tematik, Horizontal Native Disembunyikan) */
         #scrollUsersContainer {
@@ -801,7 +801,7 @@
                 <!-- Search & Filter Bar -->
                 <div class="bg-white rounded-2xl p-3 sm:p-4 mb-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
                     <div class="relative flex-1 max-w-md">
-                        <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                        <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none z-10"></i>
                         <input type="text" id="inputSearchDokumen" oninput="filterDokumenList()" placeholder="Cari nama dokumen, pengunggah, atau ekstensi..." class="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-gray-200 rounded-lg outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                     </div>
                     <div class="flex items-center justify-between sm:justify-end gap-3 text-xs text-gray-500">
@@ -866,7 +866,7 @@
                 <!-- Search & Summary Bar -->
                 <div class="bg-white rounded-2xl p-3 sm:p-4 mb-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
                     <div class="relative flex-1 max-w-md">
-                        <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                        <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none z-10"></i>
                         <input type="text" id="inputSearchFileLengkap" oninput="filterFileLengkapList()" placeholder="Cari nama berkas, kategori, pengunggah, atau ekstensi..." class="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-gray-200 rounded-lg outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                     </div>
                     <div class="flex items-center justify-between sm:justify-end gap-3 text-xs text-gray-500">
@@ -1956,7 +1956,7 @@
             <!-- Search bar -->
             <div class="p-3 sm:px-5 bg-gray-50 border-b flex items-center gap-2 shrink-0">
                 <div class="relative flex-1">
-                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none z-10"></i>
                     <input type="text" id="searchKadaluarsaInput" oninput="filterModalKadaluarsaData()" placeholder="Cari berdasarkan NIP atau Nama pegawai..." class="w-full pl-8 pr-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white">
                 </div>
                 <button type="button" onclick="clearModalKadaluarsaSearch()" class="px-3 py-1.5 text-xs text-gray-600 hover:text-gray-800 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 whitespace-nowrap transition-colors">
@@ -2042,7 +2042,7 @@
             <!-- Search bar -->
             <div class="p-3 sm:px-5 bg-gray-50 border-b flex items-center gap-2 shrink-0">
                 <div class="relative flex-1">
-                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none z-10"></i>
                     <input type="text" id="searchKredensialInput" oninput="filterModalKredensialData()" placeholder="Cari berdasarkan NIP, Nama pegawai, atau Jenjang Karir..." class="w-full pl-8 pr-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white">
                 </div>
                 <button type="button" onclick="clearModalKredensialSearch()" class="px-3 py-1.5 text-xs text-gray-600 hover:text-gray-800 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 whitespace-nowrap transition-colors">
