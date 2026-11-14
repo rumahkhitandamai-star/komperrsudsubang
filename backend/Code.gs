@@ -2063,5 +2063,65 @@ function hapusDokumenFromDrive(fileId, actorNip) {
   }
 }
 
+// ==========================================
+// PENGELOLAAN FILE LENGKAP (SUPER ADMIN ONLY)
+// ==========================================
+function getFileLengkapList(actorNip, forceRefresh) {
+  try {
+    if (!_isSuperAdmin(actorNip)) {
+      return {
+        success: false,
+        message: "Akses ditolak: Menu File Lengkap hanya dapat diakses oleh Super Admin.",
+        folders: [],
+        files: []
+      };
+    }
+
+    const categories = ["sertifikat", "spk_rkk"];
+    const allFiles = [];
+    const allFolders = [];
+
+    categories.forEach(function(cat) {
+      const resp = getDokumenList(cat, actorNip, Boolean(forceRefresh));
+      if (resp && resp.success) {
+        if (Array.isArray(resp.files)) {
+          resp.files.forEach(function(f) {
+            allFiles.push(Object.assign({}, f, {
+              kategoriLabel: (cat === "spk_rkk") ? "SPK & RKK" : "Sertifikat"
+            }));
+          });
+        }
+        if (Array.isArray(resp.folders)) {
+          resp.folders.forEach(function(fld) {
+            allFolders.push(Object.assign({}, fld, {
+              kategori: cat,
+              kategoriLabel: (cat === "spk_rkk") ? "SPK & RKK" : "Sertifikat"
+            }));
+          });
+        }
+      }
+    });
+
+    // Urutkan dokumen terbaru di atas
+    allFiles.sort(function(a, b) {
+      return (b.namaFile || "").localeCompare(a.namaFile || "");
+    });
+
+    return {
+      success: true,
+      category: "filelengkap",
+      folders: allFolders,
+      files: allFiles
+    };
+  } catch(e) {
+    return {
+      success: false,
+      message: "Gagal memuat file lengkap: " + e.message,
+      folders: [],
+      files: []
+    };
+  }
+}
+
 
 

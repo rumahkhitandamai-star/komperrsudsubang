@@ -186,7 +186,7 @@
         body.dark-mode .folder-card.border-teal-600 { border-color: #2dd4bf !important; background-color: #134e4a !important; }
         body.dark-mode #bannerActiveFolder { background-color: #134e4a !important; border-color: #0f766e !important; color: #ccfbf1 !important; }
         body.dark-mode #bannerActiveFolder strong { color: #5eead4 !important; }
-        body.dark-mode #syncStatusDokumen { background-color: #134e4a !important; border-color: #0f766e !important; color: #5eead4 !important; }
+        body.dark-mode #syncStatusDokumen, body.dark-mode #syncStatusFileLengkap { background-color: #134e4a !important; border-color: #0f766e !important; color: #5eead4 !important; }
 
         /* ==========================================
            RUNNING TEXT (MARQUEE) STYLES
@@ -306,6 +306,7 @@
                 <li data-menu="beranda"><button onclick="navigate('beranda')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-teal-50 text-gray-700 flex items-center gap-3 transition-colors"><svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V9.5z" fill="#3B82F6"/></svg> Beranda</button></li>
                 <li data-menu="profil"><button onclick="navigate('profil')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-teal-50 text-gray-700 flex items-center gap-3 transition-colors"><svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="18" height="16" rx="2" fill="#8B5CF6"/><circle cx="8" cy="10" r="3" fill="#F3F4F6"/><path d="M4 18c0-2.2 1.8-4 4-4h0c2.2 0 4 1.8 4 4v2H4v-2z" fill="#F3F4F6"/><rect x="14" y="10" width="5" height="2" rx="1" fill="#F3F4F6"/><rect x="14" y="14" width="3" height="2" rx="1" fill="#F3F4F6"/></svg> Profil</button></li>
                 <li data-menu="dokumen"><button onclick="navigate('dokumen')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-teal-50 text-gray-700 flex items-center gap-3 transition-colors"><svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6z" fill="#F59E0B"/><path d="M14 2v6h6" fill="#FCD34D"/><rect x="8" y="12" width="8" height="2" rx="1" fill="#FFFFFF"/><rect x="8" y="16" width="6" height="2" rx="1" fill="#FFFFFF"/></svg> Unduh Dokumen</button></li>
+                <li data-menu="filelengkap" class="super-admin-menu hidden"><button onclick="navigate('filelengkap')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-teal-50 text-gray-700 flex items-center gap-3 transition-colors"><svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 4a2 2 0 0 1 2-2h8l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4z" fill="#0EA5E9"/><path d="M14 2v6h6" fill="#7DD3FC"/><rect x="7" y="11" width="10" height="1.8" rx="0.9" fill="#FFFFFF"/><rect x="7" y="15" width="6" height="1.8" rx="0.9" fill="#FFFFFF"/><circle cx="16" cy="16" r="3.5" fill="#F59E0B"/><path d="M14.8 16l1 1 1.8-1.8" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg> File Lengkap</button></li>
                 <li data-menu="verifikasi"><button onclick="kirimWA()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-teal-50 text-gray-700 flex items-center justify-between gap-2 transition-colors"><div class="flex items-center gap-3"><svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.48 2 2 6.48 2 12C2 13.75 2.45 15.4 3.24 16.84L2 22L7.33 20.8C8.75 21.57 10.33 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM17.34 16.32C17.15 16.86 16.4 17.34 15.82 17.47C15.34 17.58 14.65 17.65 11.96 16.53C8.55 15.11 6.36 11.64 6.2 11.43C6.04 11.22 4.96 9.79 4.96 8.31C4.96 6.83 5.71 6.1 6 5.8C6.24 5.56 6.64 5.46 7 5.46C7.11 5.46 7.22 5.46 7.32 5.47C7.62 5.49 7.78 5.52 7.97 5.97C8.21 6.55 8.79 7.97 8.86 8.12C8.93 8.27 9.02 8.46 8.92 8.65C8.83 8.84 8.76 8.94 8.61 9.11C8.46 9.28 8.3 9.49 8.16 9.63C8.01 9.79 7.85 9.96 8.03 10.22C8.21 10.48 8.79 11.43 9.64 12.18C10.74 13.15 11.64 13.46 11.93 13.58C12.22 13.7 12.56 13.67 12.76 13.46C13.01 13.19 13.34 12.69 13.68 12.18C13.93 11.8 14.3 11.75 14.65 11.88C15.01 12 16.89 12.93 17.27 13.11C17.65 13.3 17.9 13.39 17.99 13.55C18.08 13.7 18.08 14.46 17.7 15.34L17.34 16.32Z" fill="#22C55E"/></svg> <span>Ajukan Verifikasi</span></div><span class="text-[10px] bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full shrink-0">Kirim WA</span></button></li>
                 <li data-menu="kredensial"><button onclick="ajukanKredensial()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-teal-50 text-gray-700 flex items-center justify-between gap-2 transition-colors"><div class="flex items-center gap-3"><svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="18" height="16" rx="2" fill="#3B82F6"/><path d="M8 9h8M8 13h5" stroke="#BFDBFE" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="15" r="4" fill="#F59E0B"/><path d="M15 15l1 1 2-2" stroke="#FFFBEB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> <span>Ajukan Kredensial</span></div><span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded-full shrink-0">Unduh Word</span></button></li>
                 <li data-menu="dashboard" class="admin-menu hidden"><button onclick="navigate('dashboard')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-teal-50 text-gray-700 flex items-center gap-3 transition-colors"><svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="7" height="7" rx="1" fill="#14B8A6"/><rect x="14" y="3" width="7" height="7" rx="1" fill="#14B8A6"/><rect x="14" y="14" width="7" height="7" rx="1" fill="#14B8A6"/><rect x="3" y="14" width="7" height="7" rx="1" fill="#14B8A6"/></svg> Dashboard</button></li>
@@ -834,6 +835,71 @@
                             <button type="button" onclick="prevDokumenPage()" id="btnPrevDokumen" class="px-3 py-1.5 bg-teal-600 text-white rounded hover:bg-teal-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer" title="Halaman Sebelumnya" aria-label="Halaman Sebelumnya"><i class="fas fa-chevron-left"></i></button>
                             <span id="pageIndicatorDokumen" class="px-2 font-bold text-teal-700 text-xs">Hal 1 / 1</span>
                             <button type="button" onclick="nextDokumenPage()" id="btnNextDokumen" class="px-3 py-1.5 bg-teal-600 text-white rounded hover:bg-teal-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer" title="Halaman Selanjutnya" aria-label="Halaman Selanjutnya"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FILE LENGKAP (SUPER ADMIN ONLY) -->
+            <div id="view_filelengkap" class="view-section hidden flex-col h-full">
+                <!-- Header -->
+                <div class="flex flex-wrap justify-between items-center gap-3 mb-6 shrink-0">
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-bold text-teal-800 flex items-center gap-2">
+                            <i class="fas fa-archive text-teal-600"></i>
+                            <span>File Lengkap</span>
+                        </h2>
+                        <p class="text-xs text-gray-500 mt-1">Daftar arsip seluruh berkas dokumen resmi (Sertifikat, SPK & RKK) Komite Keperawatan RSUD Subang.</p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap justify-end">
+                        <span id="syncStatusFileLengkap" class="text-[11px] text-teal-700 bg-teal-50 border border-teal-200/80 px-2.5 py-1.5 rounded-lg font-medium inline-flex items-center gap-1.5 shadow-2xs" title="Status sinkronisasi real-time dengan Google Drive">
+                            <i id="syncIconFileLengkap" class="fas fa-check-circle text-teal-500"></i>
+                            <span id="syncTextFileLengkap">Tersinkron GDrive</span>
+                        </span>
+                        <button type="button" id="btnRefreshFileLengkap" onclick="loadFileLengkapList(true)" class="bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded-lg text-xs font-bold transition-colors shadow-md whitespace-nowrap inline-flex items-center gap-1.5 cursor-pointer">
+                            <i id="iconRefreshFileLengkap" class="fas fa-sync-alt"></i>
+                            <span>Refresh</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search & Summary Bar -->
+                <div class="bg-white rounded-2xl p-3 sm:p-4 mb-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+                    <div class="relative flex-1 max-w-md">
+                        <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                        <input type="text" id="inputSearchFileLengkap" oninput="filterFileLengkapList()" placeholder="Cari nama berkas, kategori, pengunggah, atau ekstensi..." class="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-gray-200 rounded-lg outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    </div>
+                    <div class="flex items-center justify-between sm:justify-end gap-3 text-xs text-gray-500">
+                        <span id="fileLengkapSummary" class="font-medium">Memuat data berkas...</span>
+                    </div>
+                </div>
+
+                <!-- Grid Kartu Berkas -->
+                <div id="gridFileLengkap" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-6">
+                    <div class="col-span-full p-8 text-center text-teal-600 font-bold bg-white rounded-2xl border border-teal-50">
+                        <i class="fas fa-spinner fa-spin mr-2 text-xl"></i>Sedang memuat seluruh berkas dari Google Drive...
+                    </div>
+                </div>
+
+                <!-- Baris Paginasi -->
+                <div id="fileLengkapPaginationBar" class="bg-white rounded-2xl p-3 sm:p-4 mb-8 shadow-sm border border-gray-100 flex flex-wrap justify-between items-center gap-3 text-xs shrink-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-teal-800 font-bold">Tampilkan:</span>
+                        <select id="selectRowsFileLengkap" onchange="changeRowsFileLengkap()" class="p-1.5 border border-teal-300 rounded text-xs outline-none bg-white text-teal-800 font-bold cursor-pointer transition-colors focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="all">Semua</option>
+                        </select>
+                        <span class="text-teal-800 font-bold hidden sm:inline">berkas / halaman</span>
+                    </div>
+                    <div class="flex items-center gap-3 sm:gap-4">
+                        <span id="paginationInfoFileLengkap" class="text-teal-800 font-bold">Menampilkan 0 - 0 dari 0 berkas</span>
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="prevFileLengkapPage()" id="btnPrevFileLengkap" class="px-3 py-1.5 bg-teal-600 text-white rounded hover:bg-teal-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer" title="Halaman Sebelumnya" aria-label="Halaman Sebelumnya"><i class="fas fa-chevron-left"></i></button>
+                            <span id="pageIndicatorFileLengkap" class="px-2 font-bold text-teal-700 text-xs">Hal 1 / 1</span>
+                            <button type="button" onclick="nextFileLengkapPage()" id="btnNextFileLengkap" class="px-3 py-1.5 bg-teal-600 text-white rounded hover:bg-teal-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer" title="Halaman Selanjutnya" aria-label="Halaman Selanjutnya"><i class="fas fa-chevron-right"></i></button>
                         </div>
                     </div>
                 </div>
@@ -2654,6 +2720,18 @@
                             success: true,
                             message: 'Dokumen berhasil dihapus dari Google Drive (Simulasi Mock).'
                         };
+                    },
+                    getFileLengkapList: function(actorNip) {
+                        const sResp = mockHandlers.getDokumenList('sertifikat', actorNip);
+                        const rResp = mockHandlers.getDokumenList('spk_rkk', actorNip);
+                        const sFiles = (sResp && sResp.files) ? sResp.files.map(function(f){ return Object.assign({}, f, { kategoriLabel: 'Sertifikat' }); }) : [];
+                        const rFiles = (rResp && rResp.files) ? rResp.files.map(function(f){ return Object.assign({}, f, { kategoriLabel: 'SPK & RKK' }); }) : [];
+                        return {
+                            success: true,
+                            category: 'filelengkap',
+                            folders: (sResp.folders || []).concat(rResp.folders || []),
+                            files: sFiles.concat(rFiles)
+                        };
                     }
                 };
 
@@ -3062,6 +3140,10 @@
             if (!currentUser) return false;
 
             let key = viewName;
+            if (viewName === 'filelengkap') {
+                const r = (currentUser.role || '').trim().toUpperCase();
+                return r === 'SUPER ADMIN';
+            }
             if (viewName === 'users') key = 'setting_users';
             if (viewName === 'slideshow') key = 'setting_slideshow';
             if (viewName === 'runningtext') key = 'setting_runningtext';
@@ -3163,7 +3245,7 @@
             }
 
             // Guard: Cegah akses jika bukan Super Admin
-            if (viewName === 'users' || viewName === 'slideshow' || viewName === 'runningtext' || viewName === 'backup') {
+            if (viewName === 'users' || viewName === 'slideshow' || viewName === 'runningtext' || viewName === 'backup' || viewName === 'filelengkap') {
                 if (!currentUser || !currentUser.role) {
                     viewName = 'beranda';
                 } else {
@@ -3218,6 +3300,8 @@
                 updateBerandaUI();
             } else if (viewName === 'dokumen') {
                 switchDokumenTab(activeDokumenTab || 'sertifikat');
+            } else if (viewName === 'filelengkap') {
+                loadFileLengkapList();
             } else if (viewName === 'datakomper') {
                 loadDataKomper();
             } else if (viewName === 'dashboard') {
@@ -9716,6 +9800,395 @@
                                     icon: 'error',
                                     title: 'Gagal Menghapus',
                                     text: res ? res.message : 'Dokumen tidak dapat dihapus.',
+                                    confirmButtonColor: '#0d9488'
+                                });
+                            }
+                        })
+                        .withFailureHandler(function(err) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error Server',
+                                text: err ? err.message : 'Gagal menghubungi server.',
+                                confirmButtonColor: '#0d9488'
+                            });
+                        })
+                        .hapusDokumenFromDrive(fileId, currentUser.nip);
+                }
+            });
+        }
+
+        // ==========================================
+        // FITUR FILE LENGKAP (SUPER ADMIN ONLY)
+        // ==========================================
+        let fileLengkapCurrentPage = 1;
+        let fileLengkapRowsPerPage = '10';
+        let fileLengkapCache = null;
+        let fileLengkapAllData = [];
+        let fileLengkapFilteredData = [];
+
+        function setFileLengkapSyncStatus(status, text) {
+            const statusEl = document.getElementById('syncStatusFileLengkap');
+            const iconEl = document.getElementById('syncIconFileLengkap');
+            const textEl = document.getElementById('syncTextFileLengkap');
+            const refreshIcon = document.getElementById('iconRefreshFileLengkap');
+            const refreshBtn = document.getElementById('btnRefreshFileLengkap');
+
+            if (!statusEl || !iconEl || !textEl) return;
+
+            if (status === 'syncing') {
+                statusEl.className = 'text-[11px] text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1.5 rounded-lg font-medium inline-flex items-center gap-1.5 shadow-2xs transition-colors';
+                iconEl.className = 'fas fa-sync-alt fa-spin text-amber-500';
+                textEl.innerText = text || 'Menyinkronkan...';
+                if (refreshIcon) refreshIcon.classList.add('fa-spin');
+                if (refreshBtn) refreshBtn.disabled = true;
+            } else if (status === 'synced') {
+                statusEl.className = 'text-[11px] text-teal-700 bg-teal-50 border border-teal-200/80 px-2.5 py-1.5 rounded-lg font-medium inline-flex items-center gap-1.5 shadow-2xs transition-colors';
+                iconEl.className = 'fas fa-check-circle text-teal-500';
+                textEl.innerText = text || 'Tersinkron GDrive';
+                if (refreshIcon) refreshIcon.classList.remove('fa-spin');
+                if (refreshBtn) refreshBtn.disabled = false;
+            } else if (status === 'error') {
+                statusEl.className = 'text-[11px] text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-1.5 rounded-lg font-medium inline-flex items-center gap-1.5 shadow-2xs transition-colors';
+                iconEl.className = 'fas fa-exclamation-circle text-rose-500';
+                textEl.innerText = text || 'Gagal Sinkron';
+                if (refreshIcon) refreshIcon.classList.remove('fa-spin');
+                if (refreshBtn) refreshBtn.disabled = false;
+            }
+        }
+
+        function loadFileLengkapList(forceRefresh) {
+            const grid = document.getElementById('gridFileLengkap');
+            const summary = document.getElementById('fileLengkapSummary');
+            const localKey = 'komper_filelengkap_cache';
+
+            let hasRenderedCachedData = false;
+
+            if (!forceRefresh) {
+                let cachedItem = fileLengkapCache;
+                if (!cachedItem) {
+                    try {
+                        const localRaw = localStorage.getItem(localKey);
+                        if (localRaw) cachedItem = JSON.parse(localRaw);
+                    } catch(e) {}
+                }
+
+                if (cachedItem && Array.isArray(cachedItem.files)) {
+                    fileLengkapCache = cachedItem;
+                    fileLengkapAllData = cachedItem.files || [];
+                    fileLengkapCurrentPage = 1;
+                    filterFileLengkapList();
+                    setFileLengkapSyncStatus('synced', 'Tersinkron GDrive');
+                    hasRenderedCachedData = true;
+
+                    if (cachedItem.timestamp && (Date.now() - cachedItem.timestamp < 60000)) {
+                        return;
+                    }
+                }
+            }
+
+            if (!hasRenderedCachedData) {
+                if (grid) {
+                    grid.innerHTML = '<div class="col-span-full p-8 text-center text-teal-600 font-bold bg-white rounded-2xl border border-teal-50">' +
+                        '<i class="fas fa-spinner fa-spin mr-2 text-xl"></i>Sedang menyinkronkan seluruh berkas dari Google Drive...' +
+                        '</div>';
+                }
+                if (summary) summary.innerText = 'Menyinkronkan berkas...';
+                updateFileLengkapPagination(0, 0, 0);
+            }
+
+            setFileLengkapSyncStatus('syncing', hasRenderedCachedData ? 'Memperbarui...' : 'Menyinkronkan...');
+
+            const actorNip = currentUser ? currentUser.nip : '';
+            google.script.run
+                .withSuccessHandler(function(resp) {
+                    let files = [];
+                    if (resp && Array.isArray(resp)) {
+                        files = resp;
+                    } else if (resp && Array.isArray(resp.files)) {
+                        files = resp.files;
+                    }
+
+                    const cacheData = {
+                        files: files,
+                        timestamp: Date.now()
+                    };
+                    fileLengkapCache = cacheData;
+                    try {
+                        localStorage.setItem(localKey, JSON.stringify(cacheData));
+                    } catch(eStore) {}
+
+                    fileLengkapAllData = files;
+                    filterFileLengkapList();
+                    setFileLengkapSyncStatus('synced', 'Tersinkron GDrive');
+                })
+                .withFailureHandler(function(err) {
+                    setFileLengkapSyncStatus('error', 'Gagal Sinkron');
+                    if (hasRenderedCachedData && fileLengkapAllData && fileLengkapAllData.length > 0) {
+                        if (typeof Swal !== 'undefined' && Swal.mixin) {
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true
+                            });
+                            Toast.fire({
+                                icon: 'warning',
+                                title: 'Sinkronisasi GDrive tertunda (menampilkan data tersimpan)'
+                            });
+                        }
+                        return;
+                    }
+
+                    if (grid) {
+                        grid.innerHTML = '<div class="col-span-full p-8 text-center text-rose-500 font-bold bg-white rounded-2xl border border-rose-100">' +
+                            '<i class="fas fa-exclamation-triangle mr-2 text-xl"></i>Gagal memuat berkas: ' + escapeHtml((err && err.message) || 'Terjadi kesalahan sistem.') +
+                            '<div class="mt-3">' +
+                            '<button type="button" onclick="loadFileLengkapList(true)" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs">' +
+                            '<i class="fas fa-sync-alt"></i> Coba Sinkronkan Lagi' +
+                            '</button>' +
+                            '</div>' +
+                            '</div>';
+                    }
+                    if (summary) summary.innerText = 'Gagal memuat berkas';
+                    updateFileLengkapPagination(0, 0, 0);
+                })
+                .getFileLengkapList(actorNip, Boolean(forceRefresh));
+        }
+
+        function filterFileLengkapList() {
+            const searchInput = document.getElementById('inputSearchFileLengkap');
+            const q = (searchInput ? searchInput.value : '').toLowerCase().trim();
+
+            fileLengkapFilteredData = fileLengkapAllData.filter(function(doc) {
+                if (!q) return true;
+                const nama = (doc.namaAsli || doc.namaFile || '').toLowerCase();
+                const pengunggah = (doc.namaPengunggah || '').toLowerCase();
+                const nip = (doc.nipPengunggah || '').toLowerCase();
+                const ext = (doc.ext || '').toLowerCase();
+                const sub = (doc.subfolder || '').toLowerCase();
+                const kat = (doc.kategoriLabel || doc.kategori || '').toLowerCase();
+                return nama.indexOf(q) !== -1 || pengunggah.indexOf(q) !== -1 || nip.indexOf(q) !== -1 || ext.indexOf(q) !== -1 || sub.indexOf(q) !== -1 || kat.indexOf(q) !== -1;
+            });
+
+            fileLengkapCurrentPage = 1;
+            displayFileLengkapPage();
+        }
+
+        function displayFileLengkapPage() {
+            const total = fileLengkapFilteredData.length;
+            let startIndex = 0;
+            let endIndex = total;
+            let pageDocs = fileLengkapFilteredData;
+
+            const sel = document.getElementById('selectRowsFileLengkap');
+            if (sel && sel.value !== fileLengkapRowsPerPage) {
+                sel.value = fileLengkapRowsPerPage;
+            }
+
+            if (fileLengkapRowsPerPage !== 'all') {
+                const rows = parseInt(fileLengkapRowsPerPage) || 10;
+                const maxPages = Math.ceil(total / rows) || 1;
+                if (fileLengkapCurrentPage > maxPages) fileLengkapCurrentPage = maxPages;
+                if (fileLengkapCurrentPage < 1) fileLengkapCurrentPage = 1;
+
+                startIndex = (fileLengkapCurrentPage - 1) * rows;
+                endIndex = Math.min(startIndex + rows, total);
+                pageDocs = fileLengkapFilteredData.slice(startIndex, endIndex);
+            }
+
+            renderFileLengkapCards(pageDocs);
+            updateFileLengkapPagination(total === 0 ? 0 : startIndex + 1, endIndex, total);
+        }
+
+        function updateFileLengkapPagination(start, end, total) {
+            const infoEl = document.getElementById('paginationInfoFileLengkap');
+            const pageInd = document.getElementById('pageIndicatorFileLengkap');
+            const btnPrev = document.getElementById('btnPrevFileLengkap');
+            const btnNext = document.getElementById('btnNextFileLengkap');
+            const summary = document.getElementById('fileLengkapSummary');
+
+            if (summary) {
+                summary.innerText = 'Total ' + total + ' berkas lengkap';
+            }
+
+            if (infoEl) {
+                infoEl.innerText = `Menampilkan ${start} - ${end} dari ${total} berkas`;
+            }
+
+            let maxPages = 1;
+            if (fileLengkapRowsPerPage !== 'all') {
+                const rows = parseInt(fileLengkapRowsPerPage) || 10;
+                maxPages = Math.ceil(total / rows) || 1;
+            }
+
+            if (pageInd) {
+                pageInd.innerText = `Hal ${fileLengkapCurrentPage} / ${maxPages}`;
+            }
+
+            if (btnPrev && btnNext) {
+                btnPrev.disabled = (fileLengkapCurrentPage <= 1 || total === 0);
+                btnNext.disabled = (fileLengkapRowsPerPage === 'all' || fileLengkapCurrentPage >= maxPages || total === 0);
+            }
+        }
+
+        function prevFileLengkapPage() {
+            if (fileLengkapCurrentPage > 1) {
+                fileLengkapCurrentPage--;
+                displayFileLengkapPage();
+            }
+        }
+
+        function nextFileLengkapPage() {
+            if (fileLengkapRowsPerPage === 'all') return;
+            const rows = parseInt(fileLengkapRowsPerPage) || 10;
+            const maxPages = Math.ceil(fileLengkapFilteredData.length / rows);
+            if (fileLengkapCurrentPage < maxPages) {
+                fileLengkapCurrentPage++;
+                displayFileLengkapPage();
+            }
+        }
+
+        function changeRowsFileLengkap() {
+            const sel = document.getElementById('selectRowsFileLengkap');
+            if (sel) {
+                fileLengkapRowsPerPage = sel.value;
+            }
+            fileLengkapCurrentPage = 1;
+            displayFileLengkapPage();
+        }
+
+        function renderFileLengkapCards(docs) {
+            const grid = document.getElementById('gridFileLengkap');
+            if (!grid) return;
+
+            if (!fileLengkapFilteredData || fileLengkapFilteredData.length === 0) {
+                grid.innerHTML = '<div class="col-span-full p-12 text-center bg-white rounded-2xl border border-gray-100 shadow-xs">' +
+                    '<div class="w-16 h-16 mx-auto mb-3 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center text-2xl">' +
+                    '<i class="fas fa-folder-open"></i>' +
+                    '</div>' +
+                    '<h4 class="font-bold text-gray-800 text-sm sm:text-base">Belum Ada Berkas</h4>' +
+                    '<p class="text-xs text-gray-500 mt-1 max-w-md mx-auto">Tidak ada berkas yang ditemukan pada seluruh arsip Google Drive.</p>' +
+                    '</div>';
+                return;
+            }
+
+            let html = '';
+            docs.forEach(function(doc) {
+                const cfg = getFileIconConfig(doc.ext);
+                const safeNama = escapeHtml(doc.namaAsli || doc.namaFile || 'Dokumen');
+                const safeExt = escapeHtml((doc.ext || 'FILE').toUpperCase());
+                const safeUkuran = escapeHtml(doc.ukuran || '-');
+                const safePengunggah = escapeHtml(doc.namaPengunggah && doc.namaPengunggah !== '-' ? doc.namaPengunggah : (doc.nipPengunggah || 'Pegawai'));
+                const safeNip = escapeHtml(doc.nipPengunggah || '');
+                const safeTanggal = escapeHtml(doc.tanggal || '-');
+                const safeUrl = sanitizeUrl(doc.url || '#');
+                const safeDownloadUrl = sanitizeUrl(doc.downloadUrl || doc.url || '#');
+                const safeId = escapeJsAttr(doc.id || '');
+                const safeSubfolder = doc.subfolder ? escapeHtml(doc.subfolder) : '';
+                const kategoriBadge = (doc.kategoriLabel || (doc.kategori === 'spk_rkk' ? 'SPK & RKK' : 'Sertifikat'));
+                const katBg = (doc.kategori === 'spk_rkk' || kategoriBadge === 'SPK & RKK')
+                    ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                    : 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+
+                html += '<div class="card-dokumen bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow flex flex-col justify-between">';
+                html += '  <div>';
+                html += '    <div class="flex items-start gap-3 mb-3">';
+                html += '      <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ' + cfg.bg + '">';
+                html += '        ' + cfg.icon;
+                html += '      </div>';
+                html += '      <div class="flex-1 min-w-0">';
+                html += '        <div class="flex items-center gap-1.5 mb-1">';
+                html += '          <span class="px-2 py-0.5 rounded-full font-bold text-[9px] uppercase ' + katBg + '">' + escapeHtml(kategoriBadge) + '</span>';
+                html += '        </div>';
+                html += '        <h4 class="text-xs sm:text-sm font-bold text-gray-800 truncate" title="' + safeNama + '">' + safeNama + '</h4>';
+                html += '        <div class="flex flex-wrap items-center gap-1.5 text-[10px] sm:text-xs text-gray-500 mt-1">';
+                html += '          <span class="px-1.5 py-0.5 rounded bg-gray-100 font-bold uppercase text-[9px] text-gray-600 tracking-wider">' + safeExt + '</span>';
+                html += '          <span>•</span>';
+                html += '          <span>' + safeUkuran + '</span>';
+                if (safeSubfolder) {
+                    html += '          <span>•</span>';
+                    html += '          <span class="px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 font-medium text-[9px] truncate max-w-[130px]" title="' + safeSubfolder + '"><i class="fas fa-folder text-[8px] mr-1"></i>' + safeSubfolder + '</span>';
+                }
+                html += '        </div>';
+                html += '      </div>';
+                html += '    </div>';
+                html += '    <div class="text-[11px] text-gray-500 space-y-1 border-t border-gray-100 pt-2.5 mb-3">';
+                html += '      <div class="truncate" title="' + safePengunggah + (safeNip ? ' (' + safeNip + ')' : '') + '">';
+                html += '        <i class="fas fa-user-circle mr-1.5 text-teal-600"></i>';
+                html += '        <span class="font-medium text-gray-700">' + safePengunggah + '</span>';
+                html += '      </div>';
+                html += '      <div>';
+                html += '        <i class="far fa-clock mr-1.5 text-teal-600"></i>';
+                html += '        <span>' + safeTanggal + '</span>';
+                html += '      </div>';
+                html += '    </div>';
+                html += '  </div>';
+                html += '  <div class="flex items-center gap-2 pt-2 border-t border-gray-100">';
+                html += '    <a href="' + safeUrl + '" target="_blank" rel="noopener noreferrer" class="flex-1 text-center py-2 px-2 bg-teal-50 hover:bg-teal-100 text-teal-700 rounded-lg text-xs font-bold transition-colors inline-flex items-center justify-center gap-1">';
+                html += '      <i class="fas fa-external-link-alt text-[10px]"></i><span>Buka</span>';
+                html += '    </a>';
+                html += '    <a href="' + safeDownloadUrl + '" target="_blank" rel="noopener noreferrer" class="flex-1 text-center py-2 px-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition-colors shadow-xs inline-flex items-center justify-center gap-1">';
+                html += '      <i class="fas fa-download text-[10px]"></i><span>Unduh</span>';
+                html += '    </a>';
+                html += '    <button type="button" onclick="confirmHapusFileLengkap(\'' + safeId + '\', \'' + safeNama.replace(/'/g, "\\'") + '\')" class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg text-xs font-bold transition-colors shrink-0 cursor-pointer" title="Hapus Berkas" aria-label="Hapus Berkas">';
+                html += '      <i class="fas fa-trash-alt"></i>';
+                html += '    </button>';
+                html += '  </div>';
+                html += '</div>';
+            });
+
+            grid.innerHTML = html;
+        }
+
+        function confirmHapusFileLengkap(fileId, fileName) {
+            if (!currentUser || !currentUser.nip) {
+                return Swal.fire('Error', 'Sesi login tidak valid.', 'error');
+            }
+
+            Swal.fire({
+                title: 'Hapus Berkas?',
+                html: 'Apakah Anda yakin ingin menghapus berkas:<br><strong class="text-teal-700">' + escapeHtml(fileName) + '</strong>?<br><span class="text-xs text-gray-500">Berkas akan dipindahkan ke Sampah Google Drive.</span>',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e11d48',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '<i class="fas fa-trash-alt mr-1"></i> Ya, Hapus',
+                cancelButtonText: 'Batal'
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Menghapus...',
+                        text: 'Memindahkan berkas ke sampah...',
+                        allowOutsideClick: false,
+                        didOpen: function() {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    google.script.run
+                        .withSuccessHandler(function(res) {
+                            if (res && res.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Terhapus',
+                                    text: res.message || 'Berkas berhasil dihapus.',
+                                    confirmButtonColor: '#0d9488'
+                                });
+                                fileLengkapCache = null;
+                                try { localStorage.removeItem('komper_filelengkap_cache'); } catch(e) {}
+                                dokumenCache['sertifikat'] = null;
+                                dokumenCache['spk_rkk'] = null;
+                                try {
+                                    localStorage.removeItem('komper_dokumen_cache_sertifikat');
+                                    localStorage.removeItem('komper_dokumen_cache_spk_rkk');
+                                } catch(e) {}
+                                loadFileLengkapList(true);
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal Menghapus',
+                                    text: res ? res.message : 'Berkas tidak dapat dihapus.',
                                     confirmButtonColor: '#0d9488'
                                 });
                             }
