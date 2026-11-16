@@ -194,7 +194,17 @@
         .gdrive-folder-pill {
             background-color: #f0f4f9;
             border: 1px solid #e2e8f0;
+            color: #000000 !important;
             transition: all 0.2s ease-in-out;
+        }
+        .gdrive-folder-pill span,
+        .gdrive-folder-pill i,
+        .gdrive-folder-pill button {
+            color: #000000 !important;
+        }
+        .gdrive-folder-pill svg {
+            color: #000000 !important;
+            fill: currentColor;
         }
         .gdrive-folder-pill:hover {
             background-color: #e5ebf3;
@@ -204,16 +214,30 @@
             background-color: #ccfbf1 !important;
             border-color: #0d9488 !important;
             box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2);
+            color: #000000 !important;
         }
-        .gdrive-folder-pill.active-folder span {
-            color: #0f766e !important;
+        .gdrive-folder-pill.active-folder span,
+        .gdrive-folder-pill.active-folder i,
+        .gdrive-folder-pill.active-folder button {
+            color: #000000 !important;
         }
         .gdrive-folder-pill.active-folder svg {
-            color: #0d9488 !important;
+            color: #000000 !important;
+            fill: currentColor;
         }
         body.dark-mode .gdrive-folder-pill {
             background-color: #1e293b !important;
             border-color: #334155 !important;
+            color: #f3f4f6 !important;
+        }
+        body.dark-mode .gdrive-folder-pill span,
+        body.dark-mode .gdrive-folder-pill i,
+        body.dark-mode .gdrive-folder-pill button {
+            color: #f3f4f6 !important;
+        }
+        body.dark-mode .gdrive-folder-pill svg {
+            color: #cbd5e1 !important;
+            fill: currentColor;
         }
         body.dark-mode .gdrive-folder-pill:hover {
             background-color: #334155 !important;
@@ -221,12 +245,16 @@
         body.dark-mode .gdrive-folder-pill.active-folder {
             background-color: #134e4a !important;
             border-color: #2dd4bf !important;
+            color: #5eead4 !important;
         }
-        body.dark-mode .gdrive-folder-pill.active-folder span {
+        body.dark-mode .gdrive-folder-pill.active-folder span,
+        body.dark-mode .gdrive-folder-pill.active-folder i,
+        body.dark-mode .gdrive-folder-pill.active-folder button {
             color: #5eead4 !important;
         }
         body.dark-mode .gdrive-folder-pill.active-folder svg {
             color: #2dd4bf !important;
+            fill: currentColor;
         }
         body.dark-mode #bannerActiveFileLengkapFolder {
             background-color: #134e4a !important;
@@ -10154,12 +10182,12 @@
                 html += '<div onclick="selectFileLengkapFolder(\'' + escapeJsAttr(fld.nama) + '\')" class="gdrive-folder-pill ' + activeClass + ' flex items-center justify-between gap-2 px-3 py-2.5 rounded-2xl cursor-pointer select-none transition-all shadow-2xs group hover:shadow-xs" title="' + safeName + ' (' + (fld.berkasCount || 0) + ' berkas)">';
                 html += '  <div class="flex items-center gap-2.5 min-w-0 flex-1">';
                 // Google Drive Shared Folder SVG Icon (Folder dengan Siluet Orang)
-                html += '    <svg class="w-5 h-5 ' + (isActive ? 'text-teal-600' : 'text-gray-600 dark:text-gray-300') + ' shrink-0" viewBox="0 0 24 24" fill="currentColor">';
+                html += '    <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">';
                 html += '      <path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-5 3c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm4 8h-8v-1c0-1.33 2.67-2 4-2s4 .67 4 2v1z"/>';
                 html += '    </svg>';
-                html += '    <span class="font-bold text-xs ' + (isActive ? 'text-teal-900' : 'text-gray-800 dark:text-gray-100') + ' truncate uppercase tracking-tight">' + safeName + '</span>';
+                html += '    <span class="font-bold text-xs truncate uppercase tracking-tight">' + safeName + '</span>';
                 html += '  </div>';
-                html += '  <button type="button" onclick="event.stopPropagation(); window.open(\'' + safeUrl + '\', \'_blank\')" class="p-1 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 dark:hover:text-gray-200 transition-colors shrink-0" title="Buka Folder di Google Drive" aria-label="Buka Folder di Google Drive">';
+                html += '  <button type="button" onclick="event.stopPropagation(); window.open(\'' + safeUrl + '\', \'_blank\')" class="p-1 rounded-full transition-colors shrink-0" title="Buka Folder di Google Drive" aria-label="Buka Folder di Google Drive">';
                 html += '    <i class="fas fa-ellipsis-v text-xs"></i>';
                 html += '  </button>';
                 html += '</div>';
@@ -10465,6 +10493,15 @@
                             });
                         })
                         .hapusDokumenFromDrive(fileId, currentUser.nip);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+rentUser.nip);
                 }
             });
         }
