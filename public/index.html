@@ -10182,13 +10182,13 @@
                 html += '<div onclick="selectFileLengkapFolder(\'' + escapeJsAttr(fld.nama) + '\')" class="gdrive-folder-pill ' + activeClass + ' flex items-center justify-between gap-2 px-3 py-2.5 rounded-2xl cursor-pointer select-none transition-all shadow-2xs group hover:shadow-xs" title="' + safeName + ' (' + (fld.berkasCount || 0) + ' berkas)">';
                 html += '  <div class="flex items-center gap-2.5 min-w-0 flex-1">';
                 // Google Drive Shared Folder SVG Icon (Folder dengan Siluet Orang)
-                html += '    <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">';
+                html += '    <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color:#000000 !important;">';
                 html += '      <path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-5 3c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm4 8h-8v-1c0-1.33 2.67-2 4-2s4 .67 4 2v1z"/>';
                 html += '    </svg>';
-                html += '    <span class="font-bold text-xs truncate uppercase tracking-tight">' + safeName + '</span>';
+                html += '    <span class="font-bold text-xs truncate uppercase tracking-tight" style="color:#000000 !important;">' + safeName + '</span>';
                 html += '  </div>';
                 html += '  <button type="button" onclick="event.stopPropagation(); window.open(\'' + safeUrl + '\', \'_blank\')" class="p-1 rounded-full transition-colors shrink-0" title="Buka Folder di Google Drive" aria-label="Buka Folder di Google Drive">';
-                html += '    <i class="fas fa-ellipsis-v text-xs"></i>';
+                html += '    <i class="fas fa-ellipsis-v text-xs" style="color:#000000 !important;"></i>';
                 html += '  </button>';
                 html += '</div>';
             });
